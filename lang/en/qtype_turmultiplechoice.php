@@ -74,8 +74,8 @@ $string['q_hard3'] = 'Sværhedsgrad 9';
 
 
 
-$string['selectmulti'] = 'Select one or more:';
 $string['selectone'] = 'Select one:';
+$string['selectmultiple'] = 'Select any correct answers:';
 $string['shuffleanswers'] = 'Shuffle the choices?';
 $string['shuffleanswers_help'] = 'If enabled, the order of the answers is randomly shuffled for each attempt, provided that "Shuffle within questions" in the activity settings is also enabled.';
 $string['singleanswer'] = 'Choose one answer.';

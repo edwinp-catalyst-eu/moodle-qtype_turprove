@@ -1,36 +1,9 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * Multiple choice question renderer classes.
- *
- * @package    qtype
- * @subpackage turmultiplechoice
- */
-
 
 defined('MOODLE_INTERNAL') || die();
 
-
-/**
- * Base class for generating the bits of output common to multiple choice
- * single and multiple questions.
- *
- */
 abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined_feedback_renderer {
+
     protected abstract function get_input_type();
 
     protected abstract function get_input_name(question_attempt $qa, $value);
@@ -38,6 +11,45 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
     protected abstract function get_input_value($value);
 
     protected abstract function get_input_id(question_attempt $qa, $value);
+
+    protected function get_answersound(question_answer $ans, $contextid, $slot, $usageid) {
+
+        $fs = get_file_storage();
+        $files = $fs->get_area_files(1, 'question', 'answersound', $ans->id);
+        if ($file = end($files)) {
+            $filename = $file->get_filename();
+            if ($filename != '.') {
+                return moodle_url::make_file_url('/pluginfile.php',
+                        "/1/question/answersound/$usageid/$slot/$ans->id/$filename");
+            }
+        }
+    }
+
+    protected function get_questionimage($questionid, $contextid, $slot, $usageid) {
+
+        $fs = get_file_storage();
+        $files = $fs->get_area_files(1, 'question', 'questionimage', $questionid);
+        if ($file = end($files)) {
+            $filename = $file->get_filename();
+            if ($filename != '.') {
+                return moodle_url::make_file_url('/pluginfile.php',
+                        "/1/question/questionimage/$usageid/$slot/$questionid/$filename");
+            }
+        }
+    }
+
+    protected function get_questionsound($questionid, $contextid, $slot, $usageid) {
+
+        $fs = get_file_storage();
+        $files = $fs->get_area_files(1, 'question', 'questionsound', $questionid);
+        if ($file = end($files)) {
+            $filename = $file->get_filename();
+            if ($filename != '.') {
+                return moodle_url::make_file_url('/pluginfile.php',
+                        "/1/question/questionsound/$usageid/$slot/$questionid/$filename");
+            }
+        }
+    }
 
     /**
      * Whether a choice should be considered right, wrong or partially right.
@@ -48,8 +60,7 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
 
     protected abstract function prompt();
 
-    public function formulation_and_controls(question_attempt $qa,
-            question_display_options $options) {
+    public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
 
         $question = $qa->get_question();
         $response = $question->get_response($qa);
@@ -79,6 +90,11 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
             } else {
                 unset($inputattributes['checked']);
             }
+
+            $answersound = ($answersoundurl = $this->get_answersound($ans,
+                    $question->contextid, $qa->get_slot(), $qa->get_usage_id())) ?
+                        html_writer::div('', 'audioplay', array('data-src' => $answersoundurl)) : '';
+
             $hidden = '';
             if (!$options->readonly && $this->get_input_type() == 'checkbox') {
                 $hidden = html_writer::empty_tag('input', array(
@@ -87,14 +103,21 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
                     'value' => 0,
                 ));
             }
-            $radiobuttons[] = $hidden . html_writer::empty_tag('input', $inputattributes) .
+            $radiobuttons[] = $answersound . $hidden .
                     html_writer::tag('label',
-                        $question->make_html_inline($question->format_text(
-                                $ans->answer, $ans->answerformat,
-                                $qa, 'question', 'answer', $ansid)),
-                    array('for' => $inputattributes['id']));
+                        $question->make_html_inline(
+                                        $question->format_text(
+                                            $ans->answer,
+                                            $ans->answerformat,
+                                            $qa,
+                                            'question',
+                                            'answer',
+                                            $ansid
+                                        )
+                                    ),
+                    array('for' => $inputattributes['id'])) . html_writer::empty_tag('input', $inputattributes);
 
-            // $options->suppresschoicefeedback is a hack specific to the
+            // Param $options->suppresschoicefeedback is a hack specific to the
             // oumultiresponse question type. It would be good to refactor to
             // avoid refering to it here.
             if ($options->feedback && empty($options->suppresschoicefeedback) &&
@@ -118,6 +141,18 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
         }
 
         $result = '';
+
+        $questionsoundurl = $this->get_questionsound($question->id,
+                $question->contextid, $qa->get_slot(), $qa->get_usage_id());
+        $audiosource = html_writer::tag('source', '',
+                array('type' => 'audio/mpeg', 'src' => $questionsoundurl));
+        $audiosource .= 'Your browser does not support the audio tag.'; // TODO: Lang string
+        $audioelement = html_writer::tag('audio', $audiosource,
+                array('id' => 'audiodiv'));
+        $result .= $audioelement;
+
+        $result .= html_writer::div('', 'audioplay',
+                array('data-src' => $questionsoundurl));
         $result .= html_writer::tag('div', $question->format_questiontext($qa),
                 array('class' => 'qtext'));
 
@@ -129,9 +164,13 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
             $result .= html_writer::tag('div', $radio . ' ' . $feedbackimg[$key] . $feedback[$key],
                     array('class' => $classes[$key])) . "\n";
         }
-        $result .= html_writer::end_tag('div'); // answer
+        $result .= html_writer::end_tag('div'); // Answer.
 
-        $result .= html_writer::end_tag('div'); // ablock
+        $questionimage = html_writer::empty_tag('img', array(
+            'src' => $this->get_questionimage($question->id, $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
+        $result .= html_writer::div($questionimage, 'questionimage');
+
+        $result .= html_writer::end_tag('div'); // Ablock.
 
         if ($qa->get_state() == question_state::$invalid) {
             $result .= html_writer::nonempty_tag('div',
@@ -139,25 +178,27 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
                     array('class' => 'validationerror'));
         }
 
+        $this->page->requires->js_init_call(
+                    'M.qtype_turmultiplechoice.init',
+                    array(
+                        '#q' . $qa->get_slot(),
+                        $options->readonly,
+                        $question->autoplay
+                    ),
+                    false,
+                    array(
+                        'name'     => 'qtype_turmultiplechoice',
+                        'fullpath' => '/question/type/turmultiplechoice/module.js',
+                        'requires' => array('base', 'node', 'event', 'overlay'),
+                    )
+                );
+
         return $result;
-    }
-
-    protected function number_html($qnum) {
-        return $qnum . '. ';
-    }
-
-    public function specific_feedback(question_attempt $qa) {
-        return $this->combined_feedback($qa);
     }
 }
 
-
-/**
- * Subclass for generating the bits of output specific to multiple choice
- * single questions.
- *
- */
 class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_renderer_base {
+
     protected function get_input_type() {
         return 'radio';
     }
@@ -181,81 +222,31 @@ class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_re
     protected function prompt() {
         return get_string('selectone', 'qtype_turmultiplechoice');
     }
-
-    public function correct_response(question_attempt $qa) {
-        $question = $qa->get_question();
-
-        foreach ($question->answers as $ansid => $ans) {
-            if (question_state::graded_state_for_fraction($ans->fraction) ==
-                    question_state::$gradedright) {
-                return get_string('correctansweris', 'qtype_turmultiplechoice',
-                        $question->format_text($ans->answer, $ans->answerformat,
-                                $qa, 'question', 'answer', $ansid));
-            }
-        }
-
-        return '';
-    }
 }
 
-/**
- * Subclass for generating the bits of output specific to multiple choice
- * multi=select questions.
- *
- */
 class qtype_turmultiplechoice_multi_renderer extends qtype_turmultiplechoice_renderer_base {
+
     protected function get_input_type() {
         return 'checkbox';
     }
 
     protected function get_input_name(question_attempt $qa, $value) {
-        return $qa->get_qt_field_name('choice' . $value);
+        return $qa->get_qt_field_name('answer');
     }
 
     protected function get_input_value($value) {
-        return 1;
+        return $value;
     }
 
     protected function get_input_id(question_attempt $qa, $value) {
-        return $this->get_input_name($qa, $value);
+        return $qa->get_qt_field_name('answer' . $value);
     }
 
     protected function is_right(question_answer $ans) {
-        if ($ans->fraction > 0) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return $ans->fraction;
     }
 
     protected function prompt() {
-        return get_string('selectmulti', 'qtype_turmultiplechoice');
-    }
-
-    public function correct_response(question_attempt $qa) {
-        $question = $qa->get_question();
-
-        $right = array();
-        foreach ($question->answers as $ansid => $ans) {
-            if ($ans->fraction > 0) {
-                $right[] = $question->format_text($ans->answer, $ans->answerformat,
-                        $qa, 'question', 'answer', $ansid);
-            }
-        }
-
-        if (!empty($right)) {
-                return get_string('correctansweris', 'qtype_turmultiplechoice',
-                        implode(', ', $right));
-        }
-        return '';
-    }
-
-    protected function num_parts_correct(question_attempt $qa) {
-        if ($qa->get_question()->get_num_selected_choices($qa->get_last_qt_data()) >
-                $qa->get_question()->get_num_correct_choices()) {
-            return get_string('toomanyselected', 'qtype_turmultiplechoice');
-        }
-
-        return parent::num_parts_correct($qa);
+        return get_string('selectmultiple', 'qtype_turmultiplechoice');
     }
 }

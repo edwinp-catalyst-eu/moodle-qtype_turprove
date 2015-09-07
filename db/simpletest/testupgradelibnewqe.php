@@ -158,7 +158,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
             'hints' => array (
                 1 => (object) array(
                     'hint' => 'First hint',
-                    'question' => '2',
+                    'questionid' => '2',
                     'shownumcorrect' => null,
                     'autoplay' => '0',
                     'clearwrong' => null,
@@ -167,7 +167,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
                 ),
                 2 => (object) array(
                     'hint' => 'Second hint',
-                    'question' => '2',
+                    'questionid' => '2',
                     'shownumcorrect' => null,
                     'autoplay' => '0',
                     'clearwrong' => null,
@@ -179,7 +179,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
         $qsession = (object) array(
             'id' => '2',
             'attemptid' => '2',
-            'question' => '2',
+            'questionid' => '2',
             'newest' => '6',
             'newgraded' => '6',
             'sumpenalty' => '0.3333333',
@@ -233,7 +233,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 2,
+            'questionid' => 2,
             'variant' => 1,
             'maxmark' => 1,
             'minfraction' => 0,
@@ -381,7 +381,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
         $qsession = (object) array(
             'id' => '132',
             'attemptid' => '17',
-            'question' => '72',
+            'questionid' => '72',
             'newest' => '196',
             'newgraded' => '196',
             'sumpenalty' => '0',
@@ -409,7 +409,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 72,
+            'questionid' => 72,
             'variant' => 1,
             'maxmark' => 1,
             'minfraction' => 0,
@@ -563,7 +563,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
         $qsession = (object) array(
             'id' => '2412',
             'attemptid' => '181',
-            'question' => '218',
+            'questionid' => '218',
             'newest' => '3891',
             'newgraded' => '3891',
             'sumpenalty' => '0',
@@ -604,7 +604,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 218,
+            'questionid' => 218,
             'variant' => 1,
             'maxmark' => 1,
             'minfraction' => 0,
@@ -760,7 +760,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
         $qsession = (object) array(
             'id' => '30584',
             'attemptid' => '3237',
-            'question' => '2855',
+            'questionid' => '2855',
             'newest' => '72341',
             'newgraded' => '72341',
             'sumpenalty' => '0',
@@ -827,7 +827,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 2855,
+            'questionid' => 2855,
             'variant' => 1,
             'maxmark' => 5,
             'minfraction' => 0,
@@ -985,7 +985,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 72,
+            'questionid' => 72,
             'variant' => 1,
             'maxmark' => 1,
             'minfraction' => 0,
@@ -1125,7 +1125,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $qsession = (object) array(
             'id' => '140',
             'attemptid' => '38',
-            'question' => '179',
+            'questionid' => '179',
             'newest' => '273',
             'newgraded' => '273',
             'sumpenalty' => '0.2',
@@ -1179,7 +1179,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 179,
+            'questionid' => 179,
             'variant' => 1,
             'maxmark' => 1,
             'minfraction' => 0,
@@ -1350,7 +1350,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $qsession = (object) array(
             'id' => '2018195',
             'attemptid' => '174745',
-            'question' => '26132',
+            'questionid' => '26132',
             'newest' => '5162301',
             'newgraded' => '5162301',
             'sumpenalty' => '0',
@@ -1417,7 +1417,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 26132,
+            'questionid' => 26132,
             'variant' => 1,
             'maxmark' => 0,
             'minfraction' => 0,
@@ -1595,7 +1595,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $qsession = (object) array(
             'id' => '2653368',
             'attemptid' => '229026',
-            'question' => '60137',
+            'questionid' => '60137',
             'newest' => '6676055',
             'newgraded' => '6676055',
             'sumpenalty' => '0.1',
@@ -1649,7 +1649,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 60137,
+            'questionid' => 60137,
             'variant' => 1,
             'maxmark' => 1,
             'minfraction' => 0,
@@ -1798,7 +1798,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $qsession = (object) array(
             'id' => '3131',
             'attemptid' => '302',
-            'question' => '163',
+            'questionid' => '163',
             'newest' => '14715',
             'newgraded' => '14715',
             'sumpenalty' => '0',
@@ -1878,7 +1878,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 163,
+            'questionid' => 163,
             'variant' => 1,
             'maxmark' => 1,
             'minfraction' => 0,
@@ -2037,7 +2037,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $qsession = (object) array(
             'id' => '4307870',
             'attemptid' => '428770',
-            'question' => '89040',
+            'questionid' => '89040',
             'newest' => '11002905',
             'newgraded' => '11002905',
             'sumpenalty' => '0.33',
@@ -2091,7 +2091,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 89040,
+            'questionid' => 89040,
             'variant' => 1,
             'maxmark' => 1,
             'minfraction' => 0,
@@ -2239,7 +2239,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $qsession = (object) array(
             'id' => '49446',
             'attemptid' => '4338',
-            'question' => '3863',
+            'questionid' => '3863',
             'newest' => '112195',
             'newgraded' => '112195',
             'sumpenalty' => '0',
@@ -2306,7 +2306,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 3863,
+            'questionid' => 3863,
             'variant' => 1,
             'maxmark' => 5,
             'minfraction' => 0,
@@ -2461,7 +2461,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $qsession = (object) array(
             'id' => '591',
             'attemptid' => '94',
-            'question' => '247',
+            'questionid' => '247',
             'newest' => '1220',
             'newgraded' => '1220',
             'sumpenalty' => '0',
@@ -2515,7 +2515,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 247,
+            'questionid' => 247,
             'variant' => 1,
             'maxmark' => 0,
             'minfraction' => 0,
@@ -2672,7 +2672,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $qsession = (object) array(
             'id' => '594',
             'attemptid' => '94',
-            'question' => '242',
+            'questionid' => '242',
             'newest' => '1223',
             'newgraded' => '1223',
             'sumpenalty' => '0',
@@ -2726,7 +2726,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
 
         $expectedqa = (object) array(
             'behaviour' => 'deferredfeedback',
-            'question' => 242,
+            'questionid' => 242,
             'variant' => 1,
             'maxmark' => 0,
             'minfraction' => 0,

@@ -115,7 +115,22 @@ abstract class qtype_turmultiplechoice_base extends question_graded_automaticall
 
         } else if ($component == 'question' && $filearea == 'hint') {
             return $this->check_hint_file_access($qa, $options, $args);
+        } else if ($component == 'question' && $filearea == 'questionimage') {
 
+            // TODO: check_questionimage_access
+            return true;
+        } else if ($component == 'question' && $filearea == 'questionsound') {
+
+            // TODO: check_questionsound_access
+            return true;
+        } else if ($component == 'question' && $filearea == 'answersound') {
+
+            // TODO: check_answersound_access
+            return true;
+        } else if ($component == 'question' && $filearea == 'feedbacksound') {
+
+            // TODO: check_feedbacksound_access
+            return true;
         } else {
             return parent::check_file_access($qa, $options, $component, $filearea,
                     $args, $forcedownload);

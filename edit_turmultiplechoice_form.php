@@ -38,7 +38,7 @@ class qtype_turmultiplechoice_edit_form extends question_edit_form {
 
         $mform->removeElement('defaultmark');
         $mform->addElement('hidden', 'defaultmark', '1');
-        $mform->removeElement('generalfeedback');
+        //$mform->removeElement('generalfeedback');
 
         $mform->addElement('advcheckbox', 'autoplay',
                 get_string('autoplay', 'qtype_turmultiplechoice'), null, null, array(0, 1));
@@ -76,6 +76,7 @@ class qtype_turmultiplechoice_edit_form extends question_edit_form {
         $mform->setDefault('qdifficulty', 0);
 
         $mform->addElement('hidden', 'shuffleanswers', 1);
+        $mform->setType('shuffleanswers', PARAM_INT);
 
         $this->add_per_answer_fields($mform, get_string('choiceno', 'qtype_turmultiplechoice', '{no}'),
                 question_bank::fraction_options_full(), max(4, QUESTION_NUMANS_START), 4);
