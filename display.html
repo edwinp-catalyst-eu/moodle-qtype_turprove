@@ -1,0 +1,195 @@
+<div id="q_container"></div>
+<div id="mainlayout">
+    <div id="leftcolumn">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td height="18"></td>
+                <td height="18" bgcolor="#E0F0FF" class="question_midcolmn"><span style="font-size: 11px; font-weight: bold; color: #666666; padding-left: 5px;"><?php echo get_string('question', 'qtype_turmultiplechoice'); ?> <?php echo($qnumbering); ?></span></td>
+                <td height="18" bgcolor="#E0F0FF" class="question_rightcolmn"></td>
+            </tr>
+            <tr class="cellspacer-top"><td></td><td></td><td></td></tr>
+            <tr class="cellspacer-top"><td></td><td></td><td></td></tr>
+            <tr>
+                <td class="question_leftcolmn"><?php echo $questionspeak; ?></td>
+                <td class="question_midcolmn" style="height: 58px; vertical-align: top;"><span style="font-size: 16px; color: #336633; font-weight: bold;"><?php echo $questiontext; ?></span></td>
+                <td class="question_rightcolmn"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="question_midcolmn turbottomborder"></td>
+                <td class="question_rightcolmn turbottomborder"><span style="font-size: 11px; color: #336633; font-weight: bold;"> </span></td>
+            </tr>
+
+            <?php $row = 1; $tc = 1; foreach ($anss as $answer) { ?>
+            <tr class="cellspacer-top"><td></td><td></td><td></td></tr>
+            <tr>
+                <td class="question_leftcolmn"><?php echo $answer->answersound;?></td>
+                <td class="question_midcolmn anwsertext"><?php echo $answer->text; ?></td>
+                <td class="question_rightcolmn"><?php echo $answer->control; ?></td>
+            </tr>
+            <tr class="cellspacer-center"><td></td><td></td><td></td></tr>
+            <tr>
+
+                <td class="question_leftcolmn">
+                    <?php if ($isreview) {
+                    if($answer->feedback != '') {
+                    echo $answer->feedbacksound;
+                    }
+                    } ?></td>
+                <td class="question_midcolmn feedbacktext turbottomborder"><?php if ($isreview) { echo $answer->feedback; } ?></td>
+                <td class="question_rightcolmn turbottomborder"><span><?php if ($isreview) { echo $answer->feedbackimg; } ?></span></td>
+            </tr>
+            <?php $tc++; } ?>
+        </table>
+    </div>
+    <div id="centercolumn">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td><a href="<?php echo $image; ?>" rel="shadowbox" title="<?php echo $questiontext; ?>" >
+                        <img width="<?php echo $thumb_w; ?>" height="<?php echo $thumb_h; ?>" class="qimage" src="
+                             <?php echo $image; ?>" alt="" /></td></a>
+            </tr>
+            <tr>
+                <td><a href="<?php echo $image; ?>" rel="shadowbox" title="<?php echo $questiontext; ?>" > <img style="float: right; clear: both: border: none;" width="24px" height="24px" border="0px" class="zoom" src="<?php echo $zoom; ?>" /></a></td>
+            </tr>
+            <tr>
+                <td id="customtimer"><span>Tid tilbage: </span><span id="customtimer"></span></td>
+            </tr>
+            <tr>
+                <td id="answerstatus-heading"><span><?php if (isset($answerstatus)) { echo $answerstatus; } ?></span></td>
+            </tr>
+            <tr>
+                <td id="answerstatus">
+                    <table border="0" id="answerstatus-table"><tr>
+                            <?php if ($isreview) { ?>
+                            <?php if ($resultsoverview) { ?>
+
+                            <?php $i = 1; foreach ($resultsoverview as $result) { ?>
+                            <?php if ($i > 1 and (($i - 1) % 10) == 0) {?> </tr><tr> <?php } ?>
+                            <td class="answerstatus-cell">
+                                <a class="<?php if ($result[1] == 0) { echo 'answerstatus_false'; } else { echo 'answerstatus_true'; } ?>" href="<?php echo $result[2]; ?>" title="<?php echo $lang_question . ' ' . $i; ?>"><?php echo $i; ?></a>
+                            </td>
+                            <?php $i++; } ?>
+
+                            <?php } ?>
+                            <?php } ?>
+                        </tr></table>
+                </td>
+            </tr>
+            <tr>
+                <td><?php echo $answerstatushelp; ?></td>
+            </tr>
+        </table>
+    </div>
+
+    <?php print_object($isreview); ?>
+</div>
+
+<script type="text/javascript"> 
+    function init_page() {
+
+        if ( quizIsAdaptive && (document.URL.search('/mod/quiz/review.php') > 0) && (document.referrer.search('/mod/quiz/attempt.php?') > 0)) {
+            
+            // don't show the review page for this question type
+            window.location = "<?php echo $CFG->wwwroot . '/course/view.php?id=' . $COURSE->id; ?>";
+        } else {
+            YAHOO.util.Dom.setStyle('page', 'display', 'block');
+
+            // normal quiz attempt, build a yahoo layout
+            var layout = new YAHOO.widget.Layout('q_container',{
+                width: 980,
+                height: 512,
+                units: [
+                    { position: 'top', height: 30}, //Height required here
+                    { position: 'right', width:49}, //Width required here
+                    { position: 'bottom', height: 0 }, //Height required here
+                    { position: 'left', width: 463, gutter: '0 0 0 25', body: 'leftcolumn'}, //Width required here
+                    { position: 'center', gutter: '0 0 0 38', body: 'centercolumn' }
+                ]
+            });
+            layout.render();
+
+            Shadowbox.init({
+                overlayOpacity: 0.9
+            });
+
+            if ($("div#timer").length == 1) {
+                updatecustomtimer();
+            }
+        }
+    }
+    YAHOO.util.Event.onDOMReady(init_page);
+
+    function updatecustomtimer() {
+        if ($("input#time").length == 1) {
+            $("span#customtimer").text( $("input#time").val().substr(2, 5) );
+            $("td#customtimer").show();
+            window.setTimeout(updatecustomtimer, 500);
+        }
+    }
+	
+    function navigatenext() {
+        if (document.URL.search('/attempt.php') > 0) {
+            var elePageingBar = YAHOO.util.Dom.getElementsByClassName('thispage');
+            var eleNextPage = YAHOO.util.Dom.getNextSibling(elePageingBar[0]);
+            if (null == eleNextPage) {
+                if (!quizIsAdaptive) {
+                    // last question in the quiz, continue to the results page
+                    var btnFinish = document.getElementsByName('finishattempt');
+                    btnFinish[0].click();
+                }
+            } else {
+                navigate((eleNextPage.innerHTML) - 1);
+            }
+        }
+
+        if (document.URL.search('/review.php') > 0) {
+            var eleNextPage = YAHOO.util.Dom.getElementsByClassName('next');
+            window.location = eleNextPage[0].href;
+        }
+
+    }
+
+    function navigateprev() {
+        if (document.URL.search('/attempt.php') > 0) {
+            var elePageingBar = YAHOO.util.Dom.getElementsByClassName('thispage');
+            var eleNextPage = YAHOO.util.Dom.getPreviousSibling(elePageingBar[0]).innerHTML;
+            if (eleNextPage > 0) {
+                navigate(eleNextPage-1);
+            }
+        }
+
+        if (document.URL.search('/review.php') > 0) {
+            var elePrevPage = YAHOO.util.Dom.getElementsByClassName('previous');
+            window.location = elePrevPage[0].href;
+
+        }
+    }
+
+    function navigatemenu() {
+        if(window.location.href.indexOf("review.php?attempt") != -1) {
+            window.location = "<?php echo $CFG->wwwroot . '/course/view.php?id=' . $COURSE->id; ?>";
+        } else {
+            var btnFinish = document.getElementsByName('finishattempt');
+            btnFinish[0].click();
+        }
+    }
+
+    document.onkeydown = function(e) {
+        e = e || window.event;
+        var keyCode = e.keyCode || e.which;
+
+        if(keyCode == 39) { navigatenext(); }
+        if(keyCode == 37) { navigateprev(); }
+    }
+</script>
+
+<div class="prevnextquestion">
+    <input type="button" name="previousquestion" value="<?php echo get_string('previous', 'qtype_turmultiplechoice'); ?>" onclick="navigateprev()"/>
+    <input type="button" name="nextquestion" value="<?php echo get_string('next', 'qtype_turmultiplechoice'); ?>" onclick="navigatenext()"/>
+    <input type="button" name="menu" id="menunavigate" value="<?php echo get_string('menu', 'qtype_turmultiplechoice'); ?>" onclick="navigatemenu()"/>
+</div>
+<br><br>
+
+<!--Add the audio controller-->
+<audio type="audio/mp3" preload="auto" src=""></audio>
