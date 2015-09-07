@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Multiple choice question definition classes.
@@ -15,8 +29,6 @@ defined('MOODLE_INTERNAL') || die();
  * Base class for multiple choice questions. The parts that are common to
  * single select and multiple select.
  *
- * @copyright  2009 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class qtype_turmultiplechoice_base extends question_graded_automatically {
     const LAYOUT_DROPDOWN = 0;
@@ -26,7 +38,8 @@ abstract class qtype_turmultiplechoice_base extends question_graded_automaticall
     public $answers;
 
     public $shuffleanswers;
-    public $answernumbering;
+    public $qdifficulty;
+    public $autoplay;
     public $layout = self::LAYOUT_VERTICAL;
 
     public $correctfeedback;
@@ -81,11 +94,11 @@ abstract class qtype_turmultiplechoice_base extends question_graded_automaticall
             return $this->check_combined_feedback_file_access($qa, $options, $filearea);
 
         } else if ($component == 'question' && $filearea == 'answer') {
-            $answerid = reset($args); // Itemid is answer id.
+            $answerid = reset($args); // itemid is answer id.
             return  in_array($answerid, $this->order);
 
         } else if ($component == 'question' && $filearea == 'answerfeedback') {
-            $answerid = reset($args); // Itemid is answer id.
+            $answerid = reset($args); // itemid is answer id.
             $response = $this->get_response($qa);
             $isselected = false;
             foreach ($this->order as $value => $ansid) {
@@ -94,7 +107,7 @@ abstract class qtype_turmultiplechoice_base extends question_graded_automaticall
                     break;
                 }
             }
-            // Param $options->suppresschoicefeedback is a hack specific to the
+            // $options->suppresschoicefeedback is a hack specific to the
             // oumultiresponse question type. It would be good to refactor to
             // avoid refering to it here.
             return $options->feedback && empty($options->suppresschoicefeedback) &&
@@ -121,8 +134,6 @@ abstract class qtype_turmultiplechoice_base extends question_graded_automaticall
 /**
  * Represents a multiple choice question where only one choice should be selected.
  *
- * @copyright  2009 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_turmultiplechoice_single_question extends qtype_turmultiplechoice_base {
     public function get_renderer(moodle_page $page) {
@@ -220,8 +231,6 @@ class qtype_turmultiplechoice_single_question extends qtype_turmultiplechoice_ba
 /**
  * Represents a multiple choice question where multiple choices can be selected.
  *
- * @copyright  2009 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_turmultiplechoice_multi_question extends qtype_turmultiplechoice_base {
     public function get_renderer(moodle_page $page) {
@@ -322,7 +331,7 @@ class qtype_turmultiplechoice_multi_question extends qtype_turmultiplechoice_bas
     public function is_same_response(array $prevresponse, array $newresponse) {
         foreach ($this->order as $key => $notused) {
             $fieldname = $this->field($key);
-            if (!question_utils::arrays_same_at_key_integer($prevresponse, $newresponse, $fieldname)) {
+            if (!question_utils::arrays_same_at_key($prevresponse, $newresponse, $fieldname)) {
                 return false;
             }
         }

@@ -15,15 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for the multiple choice question type.
+ * Serve question type files
  *
+ * @since      2.0
  * @package    qtype
  * @subpackage turmultiplechoice
  */
 
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'qtype_turmultiplechoice';
-$plugin->version   = 2015090400;
-$plugin->requires  = 2011033010;
-$plugin->maturity  = MATURITY_BETA;
+
+/**
+ * Checks file access for multiple choice questions.
+ */
+function qtype_turmultiplechoice_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
+    global $CFG;
+    require_once($CFG->libdir . '/questionlib.php');
+    question_pluginfile($course, $context, 'qtype_turmultiplechoice', $filearea, $args, $forcedownload);
+}
