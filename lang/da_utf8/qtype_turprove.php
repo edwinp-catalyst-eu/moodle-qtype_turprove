@@ -7,6 +7,7 @@ $string['answersound'] = 'Speak til svaret';
 $string['feedbacksound'] = 'Speak til feedbacken';
 $string['feedback'] = 'Feedback';
 $string['answerhowmany'] = 'Et eller flere svar?';
+$string['editingturprove'] = 'Editing a TUR Multiple Choice question';
 $string['answersingleno'] = 'Flere svar er tilladt';
 $string['answersingleyes'] = 'Kun et svar';
 $string['statement_answer'] = 'Det korrekte svar for dette udsagn er:';

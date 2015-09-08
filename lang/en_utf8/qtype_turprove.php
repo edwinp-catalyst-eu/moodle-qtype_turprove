@@ -1,29 +1,26 @@
 <?PHP // $Id: qtype_turprove.php,v 1.2 2007/09/11 09:38:09 thepurpleblob Exp $
 
-$string['correctanswer'] = 'Correct answer';
 $string['addmorechoiceblanks'] = 'Blanks for {no} More Choices';
 $string['statement_answer'] = 'This answer is correct';
+$string['addingturprove'] = 'TUR Prøve';
 $string['answerhowmany'] = 'One or multiple answers?';
-$string['answernumbering'] = 'Number the choices?';
 $string['answersingleno'] = 'Multiple answers allowed';
 $string['answersingleyes'] = 'One answer only';
-$string['choiceno'] = 'Choice {$a}';
+$string['choiceno'] = 'Choice $a';
 $string['choices'] = 'Available choices';
 $string['clozeaid'] = 'Enter missing word';
 $string['correctfeedback'] = 'For any correct answer';
-$string['pluginnameadding'] = 'Adding a TUR Prøve question';
-$string['pluginnameediting'] = 'Editing a TUR Prøve question';
-$string['pluginnamesummary'] = 'Summary of a TUR Prøve question';
-$string['errfractionsaddwrong'] = 'The positive grades you have chosen do not add up to 100%<br />Instead, they add up to {$a}%';
-$string['errfractionsnomax'] = 'One of the answers should be 100%, so that it is<br />possible to get a full grade for this question.';
+$string['editingturprove'] = 'Editing a TUR Prøve question';
+$string['errfractionsaddwrong'] = 'The positive grades you have chosen do not add up to 100%%<br />Instead, they add up to $a%%';
+$string['errfractionsnomax'] = 'One of the answers should be 100%%, so that it is<br />possible to get a full grade for this question.';
 $string['feedback'] = 'Feedback';
 $string['fillouttwochoices'] = 'You must fill out at least two choices.  Choices left blank will not be used.';
-$string['fractionsaddwrong'] = 'The positive grades you have chosen do not add up to 100%<br />Instead, they add up to {$a}%<br />Do you want to go back and fix this question?';
-$string['fractionsnomax'] = 'One of the answers should be 100%, so that it is<br />possible to get a full grade for this question.<br />Do you want to go back and fix this question?';
+$string['fractionsaddwrong'] = 'The positive grades you have chosen do not add up to 100%%<br />Instead, they add up to $a%%<br />Do you want to go back and fix this question?';
+$string['fractionsnomax'] = 'One of the answers should be 100%%, so that it is<br />possible to get a full grade for this question.<br />Do you want to go back and fix this question?';
 $string['incorrectfeedback'] = 'For any incorrect answer';
-$string['pluginname'] = 'TUR Prøve';
+$string['turprove'] = 'TUR Prøve';
 $string['nonofabove'] = 'None of the above';
-$string['notenoughanswers'] = 'This type of question requires at least {$a} answers';
+$string['notenoughanswers'] = 'This type of question requires at least $a answers';
 $string['overallfeedback'] = 'Overall Feedback';
 $string['overallcorrectfeedback'] = 'Feedback for any correct answer';
 $string['overallincorrectfeedback'] = 'Feedback for any incorrect answer';
@@ -54,8 +51,4 @@ $string['menu'] = 'Menu';
 $string['menu_navigation_warning'] = 'Are you sure you wish to exit this quiz?';
 $string['show_feedback_warning'] = 'You are about to end this quiz, afterwards you cannot changes your answers. Are you sure you wish to exit?';
 $string['questionnumbering'] = ' of ';
-
-$string['autoplay'] = 'Autoplay';
-$string['penaltyfactor'] = 'Penalty factor';
-$string['pluginname_help'] = 'Help description (TODO)';
 ?>

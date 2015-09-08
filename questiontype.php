@@ -1,11 +1,23 @@
 <?php
 
-require_once(dirname(__FILE__) . '/helpers.php');
+// $Id: questiontype.php,v 1.2 2007/09/11 09:35:04 thepurpleblob Exp $
+///////////////////
+/// MULTIDISTRACY ///
+///////////////////
+/// QUESTION TYPE CLASS //////////////////
+///
+/// This class contains some special features in order to make the
+/// question type embeddable within a multianswer (cloze) question
+///
 
-class qtype_turprove extends question_type {
+class question_turprove_qtype extends default_questiontype {
 
     var $soundcounter = 0;
     var $feedsoundcounter = 0;
+
+    function name() {
+        return 'turprove';
+    }
 
     function has_html_answers() {
         return true;
@@ -37,7 +49,7 @@ class qtype_turprove extends question_type {
             require_js($baseurl . '/script.php');
         }
         
-        // BEGIN: audio.js / http://kolber.github.com/audiojs/
+        // BEGIN: audio.sj / http://kolber.github.com/audiojs/
         require_js($baseurl . '/audiojs/audio.min.js');
         require_js($baseurl . '/js/audiojs-local-120303.js');
         $stylesheets[] = 'css/audiojs-120303.css';
@@ -80,6 +92,209 @@ class qtype_turprove extends question_type {
         return $contributions;
     }
 
+    function tur_setcustomfraction($numAnswers) {
+        $turfraction = 0;
+        switch ($numAnswers) {
+            case 1:
+                $turfraction = 1;
+                break;
+            case 2:
+                $turfraction = 0.5;
+                break;
+            case 3:
+                $turfraction = 0.33333;
+                break;
+            case 4:
+                $turfraction = 0.25;
+                break;
+            case 5:
+                $turfraction = 0.20;
+                break;
+            case 10:
+                $turfraction = 0.1;
+                break;
+            default:
+                print($numAnswers . '-> Illegal number!');
+        }
+        return $turfraction;
+    }
+
+    function get_question_options(&$question) {
+        //print('questiontype.php: get_question_options' . '<br />');
+        // Get additional information from database
+        // and attach it to the question object
+
+        if (!$question->options = get_record('question_turprove', 'question', $question->id)) {
+            notify('Error: Missing question options for turprove question' . $question->id . '!');
+            return false;
+        }
+        if (!$question->options->answers = get_records_select('question_answers', 'id IN (' . $question->options->answers . ')', 'id')) {
+            notify('Error: Missing question answers for turprove question' . $question->id . '!');
+            return false;
+        }
+        return true;
+    }
+
+    function save_question_options($question) {
+        //print('save_question_options');
+        $numAnswers = 0;
+
+        $result = new stdClass;
+        if (!$oldanswers = get_records("question_answers", "question", $question->id, "id ASC")) {
+            $oldanswers = array();
+        }
+        // following hack to check at least two answers exist
+        $answercount = 0;
+        foreach ($question->answer as $key => $dataanswer) {
+            if ($dataanswer != "") {
+                $answercount++;
+            }
+        }
+        $answercount += count($oldanswers);
+        if ($answercount < 2) {
+            // check there are at lest 2 answers for multiple choice
+            $result->notice = get_string("notenoughanswers", "qtype_turprove", "2");
+            return $result;
+        }
+
+        /* DMD */
+        foreach ($question->answer as $key => $answer) {
+            $trimmedanswer = trim($answer);
+            if (!empty($trimmedanswer)) {
+                $numAnswers++;
+            }
+        }
+
+        // Insert all the new answers
+        $totalfraction = 0;
+        $maxfraction = -1;
+        $answers = array();
+        foreach ($question->answer as $key => $dataanswer) {
+            if ($dataanswer != "") {
+                if ($answer = array_shift($oldanswers)) {
+                    // Existing answer, so reuse it
+                    $answer->answer = $dataanswer;
+
+                    // $answer->answersound = $question->{'answersound[' . $key . ']'};
+                    // $answer->feedbacksound = $question->{'feedbacksound[' . $key . ']'};
+                    // answersound
+                    $answersound = $question->{'answersound[' . $key . ']'};
+                    if ($answersound == "") {
+                        $answersound = $question->answersound[$key];
+                    }
+                    $answer->answersound = $answersound;
+
+                    //feedback sound
+                    $feedbacksound = $question->{'feedbacksound[' . $key . ']'};
+                    if ($feedbacksound == "") {
+                        $feedbacksound = $question->feedbacksound[$key];
+                    }
+                    $answer->feedbacksound = $feedbacksound;
+
+                    $answer->fraction = $this->tur_setcustomfraction($numAnswers);
+
+                    //$answer->fraction = $question->fraction[$key];
+                    $answer->tur_answer_truefalse = $question->tur_answer_truefalse[$key];
+                    $answer->feedback = $question->feedback[$key];
+                    if (!update_record("question_answers", $answer)) {
+                        $result->error = "Could not update quiz answer! (id=$answer->id)";
+                        return $result;
+                    }
+                } else {
+                    unset($answer);
+                    $answer->answer = $dataanswer;
+                    $answer->question = $question->id;
+
+                    $answer->fraction = $this->tur_setcustomfraction($numAnswers);
+                    $answer->tur_answer_truefalse = $question->tur_answer_truefalse[$key];
+                    $answer->feedback = $question->feedback[$key];
+
+                    //$answer->answersound = $question->answersound[$key];
+                    //$answer->answersound = $question->{'answersound[' . $key . ']'};
+                    //$answer->feedbacksound = $question->feedbacksound[$key];
+                    //$answer->feedbacksound = $question->{'feedbacksound[' . $key . ']'};
+                    // answersound
+                    $answersound = $question->{'answersound[' . $key . ']'};
+                    if ($answersound == "") {
+                        $answersound = $question->answersound[$key];
+                    }
+                    $answer->answersound = $answersound;
+
+                    //feedback sound
+                    $feedbacksound = $question->{'feedbacksound[' . $key . ']'};
+                    if ($feedbacksound == "") {
+                        $feedbacksound = $question->feedbacksound[$key];
+                    }
+                    $answer->feedbacksound = $feedbacksound;
+
+
+                    if (!$answer->id = insert_record("question_answers", $answer)) {
+                        $result->error = "Could not insert quiz answer! ";
+                        return $result;
+                    }
+                }
+                $answers[] = $answer->id;
+
+                if ($question->fraction[$key] > 0) {
+                    // Sanity checks
+                    $totalfraction += $answer->fraction;
+                }
+
+                if ($question->fraction[$key] > $maxfraction) {
+                    $maxfraction = $question->fraction[$key];
+                }
+            }
+        }
+        $update = true;
+        $options = get_record("question_turprove", "question", $question->id);
+        if (!$options) {
+            $update = false;
+            $options = new stdClass;
+            $options->question = $question->id;
+        }
+        $options->questionsound = $question->questionsound;
+        $options->answers = implode(",", $answers);
+        $options->single = $question->single;
+        $options->autoplay = $question->autoplay;
+        $options->qdifficulty = $question->qdifficulty;
+        $options->answernumbering = $question->answernumbering;
+        $options->shuffleanswers = $question->shuffleanswers;
+
+        if ($update) {
+            if (!update_record("question_turprove", $options)) {
+                $result->error = "Could not update quiz turprove options! (id=$options->id)";
+                return $result;
+            }
+        } else {
+            if (!insert_record("question_turprove", $options)) {
+                $result->error = "Could not insert quiz turprove options!";
+                return $result;
+            }
+        }
+
+        if (!empty($oldanswers)) {
+            foreach ($oldanswers as $oa) {
+                delete_records('question_answers', 'id', $oa->id);
+            }
+        }
+
+        if ($options->single) {
+            if ($maxfraction != 1) {
+                $maxfraction = $maxfraction * 100;
+                $result->noticeyesno = get_string("fractionsnomax", "qtype_turprove", $maxfraction);
+                return $result;
+            }
+        } else {
+            $totalfraction = round($totalfraction, 2);
+            if ($totalfraction != 1) {
+                $totalfraction = $totalfraction * 100;
+                $result->noticeyesno = get_string("fractionsaddwrong", "qtype_turprove", $totalfraction);
+                return $result;
+            }
+        }
+        return true;
+    }
+
     /**
      * Returns an array with the stuats for the questions in the current quiz
      *
@@ -109,12 +324,106 @@ class qtype_turprove extends question_type {
         return $resultsarr;
     }
 
-    function extra_question_fields() {
-        return array('question_turprove', 'questionsound', 'layout', 'answers', 'single', 'shuffleanswers', 'autoplay', 'correctfeedback', 'partiallycorrectfeedback', 'incorrectfeedback', 'qdifficulty');
+    /**
+     * Deletes question from the question-type specific tables
+     *
+     * @return boolean Success/Failure
+     * @param object $question  The question being deleted
+     */
+    function delete_question($questionid) {
+        delete_records("question_turprove", "question", $questionid);
+        return true;
     }
 
-    function extra_answer_fields() {
-        return array('question_answers_turprove', 'answersound', 'feedbacksound', 'tur_answer_truefalse');
+    function create_session_and_responses(&$question, &$state, $cmoptions, $attempt) {
+        //print('create_session_and_responses <br/>');
+        // create an array of answerids ??? why so complicated ???
+        $answerids = array_values(array_map(create_function('$val', 'return $val->id;'), $question->options->answers));
+        // Shuffle the answers if required
+        if ($cmoptions->shuffleanswers and $question->options->shuffleanswers) {
+            $answerids = swapshuffle($answerids);
+        }
+        $state->options->order = $answerids;
+        // Create empty responses
+        if ($question->options->single) {
+            $state->responses = array('' => '');
+        } else {
+            //$state->responses = array();
+            $state->responses = array('' => '');
+        }
+        return true;
+    }
+
+    function extra_question_fields() {
+        //print('extra_question_fields' . '<br />');
+        return array('question_turprove', 'questionsound, autoplay, qdifficulty');
+    }
+
+    function restore_session_and_responses(&$question, &$state) {
+        //  print('restore_session_and_responses' . '<br />');
+        //t3lib_div::debug($state, '1');
+        // The serialized format for multiple choice quetsions
+        // is an optional comma separated list of answer ids (the order of the
+        // answers) followed by a colon, followed by another comma separated
+        // list of answer ids, which are the radio/checkboxes that were
+        // ticked.
+        // E.g. 1,3,2,4:2,4 means that the answers were shown in the order
+        // 1, 3, 2 and then 4 and the answers 2 and 4 were checked.
+        $pos = strpos($state->responses[''], ':');
+        if (false === $pos) {
+            // No order of answers is given, so use the default
+            $state->options->order = array_keys($question->options->answers);
+        } else {
+            // Restore the order of the answers
+            $state->options->order = explode(',', substr($state->responses[''], 0, $pos));
+            $state->responses[''] = substr($state->responses[''], $pos + 1);
+        }
+
+        // Restore the responses
+        // This is done in different ways if only a single answer is allowed or
+        // if multiple answers are allowed. For single answers the answer id is
+        // saved in $state->responses[''], whereas for the multiple answers case
+        // the $state->responses array is indexed by the answer ids and the
+        // values are also the answer ids (i.e. key = value).
+        if (empty($state->responses[''])) {
+            // No previous responses
+            if ($question->options->single) {
+                $state->responses = array('' => '');
+            } else {
+                $state->responses = array();
+            }
+        } else {
+            if ($question->options->single) {
+                $state->responses = array('' => $state->responses['']);
+            } else {
+                // Get array of answer ids
+
+                $a = array_flip($state->options->order);
+                $a = array_keys($a);
+                //  t3lib_div::debug($a);
+                $b = explode(',', $state->responses['']);
+                //  t3lib_div::debug($b);
+                $d = array();
+                for ($i = 0; $i <= count($a) - 1; $i++) {
+                    $flag = false;
+                    foreach ($b as $actualanswer) {
+                        if ($a[$i] == $this->stripAnswerid($actualanswer)) {
+                            //  print('MATCH: ' . $a[$i] .' == ' . $this->stripAnswerid($actualanswer) . '<br />');
+                            $d[$i] = $actualanswer;
+                            $flag = true;
+                        }
+                    }
+
+                    if (!$flag) {
+                        $d[$i] = $a[$i] . '_0';
+                    }
+                }
+                $c = array_combine($a, $d);
+                //  t3lib_div::debug($d, 'DD');
+                $state->responses = $c;
+            }
+        }
+        return true;
     }
 
     function save_session_and_responses(&$question, &$state) {
@@ -316,6 +625,278 @@ class qtype_turprove extends question_type {
         }
     }
 
+    function print_question_formulation_and_controls(&$question, &$state, $cmoptions, $options) {
+        //print('print_question_formulation_and_controls' . '<br />');
+        global $CFG, $COURSE;
+        
+//        echo ('<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>');
+        
+        $answers = &$question->options->answers;
+
+        $correctanswers = $this->prove_get_correct_responses($question, $state);
+
+        $readonly = empty($options->readonly) ? '' : 'disabled="disabled"';
+        $formatoptions = new stdClass;
+        $formatoptions->noclean = true;
+        $formatoptions->para = false;
+        // Print formulation
+        $questiontext = format_text($question->questiontext, $question->questiontextformat, $formatoptions, $cmoptions->course);
+
+        if (isset($CFG->turimage)) {
+            $image = $this->return_question_image($question);
+        } else {
+            $image = get_question_image($question, $cmoptions->course);
+        }
+
+        /* If question contains sound, render flashobject with soundplayer */
+        $questionspeak = '';
+        if (!empty($question->options->questionsound)) {
+            if ($this->user_setting_text_in_quiz() == 0) {
+                // render invisible flashobject
+                $questionspeak = $this->user_get_sound($question->options->questionsound, $question->category, true, false, false);
+            } else {
+                $questionspeak = $this->user_get_sound($question->options->questionsound, $question->category, $question->options->autoplay, false, 'true');
+            }
+        }
+
+        $qnumbering = $this->returnQnumber(&$question->id);
+        $isreview = $this->isreview();
+        $zoom = $this->plugin_baseurl() . '/images/speaker.jpg';
+
+        if (!$isreview) {
+            if ($this->user_setting_text_in_quiz() == 2) {
+                // fullscreen
+                $thumb_w = '640';
+                $thumb_h = '480';
+            } elseif ($this->user_setting_text_in_quiz() == 1) {
+                // quiz without text
+                $thumb_w = '553';
+                $thumb_h = '413';
+            } elseif ($this->user_setting_text_in_quiz() == 0) {
+                // quiz including text
+                $thumb_w = '428';
+                $thumb_h = '321';
+            } else {
+                $thumb_w = '428';
+                $thumb_h = '321';
+            }
+        } else {
+            $thumb_w = '430';
+            $thumb_h = '321';
+        }
+
+        $answerprompt = ($question->options->single) ? get_string('singleanswer', 'quiz') : get_string('multipleanswers', 'quiz');
+        // Print each answer in a separate row
+        $answercount = count($state->options->order);
+        $count = 1;
+
+        foreach ($state->options->order as $key => $aid) {
+            $answer = &$answers[$aid];
+            $checked = '';
+            $chosen = false;
+            if ($question->options->single) {
+                $type = 'type="radio"';
+                $name = "name=\"{$question->name_prefix}\"";
+                if (isset($state->responses['']) and $aid == $state->responses['']) {
+                    //$checked = 'checked="checked"';
+                    $chosen = true;
+                }
+            } else {
+                $type = ' type="radio" ';
+                $name = "name=\"{$question->name_prefix}{$aid}\"";
+                if (isset($state->responses[$aid])) {
+                    //$checked = 'checked="checked"';
+                    $chosen = true;
+                }
+            }
+            $a = new stdClass;
+            $a->id = $question->name_prefix . $aid;
+            $a->class = '';
+            $a->feedbackimg = '';
+            $a->answersound = '';
+            $a->feedbacksound = '';
+            $a->useranswer = -1;
+
+            $checked1 = '';
+            $checked2 = '';
+
+            if (isset($state->responses[$key])) {
+                if ($state->responses[$key] == 2) {
+                    $a->useranswer = 1;
+                    $checked1 = 'checked="checked"';
+                    $checked2 = '';
+                } elseif ($state->responses[$key] == 3) {
+                    $a->useranswer = 0;
+                    $checked1 = '';
+                    $checked2 = 'checked="checked"';
+                } elseif ($state->responses[$key] == -1) {
+                    $a->useranswer = null;
+                    $checked1 = '';
+                    $checked2 = '';
+                }
+            } elseif (isset($state->responses[$aid])) {
+                if ($state->responses[$aid] == $aid . '_2') {
+                    $a->useranswer = 1;
+                    $checked1 = 'checked="checked"';
+                    $checked2 = '';
+                } elseif ($state->responses[$aid] == $aid . '_3') {
+                    $a->useranswer = 0;
+                    $checked1 = '';
+                    $checked2 = 'checked="checked"';
+                } elseif ($state->responses[$aid] == -1) {
+                    $a->useranswer = null;
+                    $checked1 = '';
+                    $checked2 = '';
+                }
+            }
+            $a->fraction = $answer->fraction;
+            $a->control = "<input class=\"proeve_chbx\" $name $checked1 $readonly $type value=\"$aid" . "_2\" /><input class=\"proeve_chbx\" $name $checked2 $type $readonly value=\"$aid" . "_3\" />";
+
+            if (($options->feedback || $options->correct_responses) && (($checked1 || $checked2) || $options->readonly)) {
+                if ($a->useranswer == $answer->tur_answer_truefalse) {
+                    $a->feedbackimg = $this->dkmd_question_get_feedback_image(true);
+                } else {
+                    $a->feedbackimg = $this->dkmd_question_get_feedback_image(false);
+                }
+            }
+
+
+            $a->text = format_text($answer->answer, FORMAT_MOODLE, $formatoptions, $cmoptions->course);
+            if (($options->feedback || $options->correct_responses) && (($checked1 || $checked2) || $options->readonly)) {
+                //            if (($options->feedback || $options->correct_responses) && ($checked || $options->readonly)) {
+                $a->feedback = format_text($answer->feedback, FORMAT_MOODLE, $formatoptions, $cmoptions->course);
+            } else {
+                $a->feedback = '';
+            }
+
+            if ($answer->answersound) {
+                if ($this->user_setting_text_in_quiz() == 1) {
+                    // question anwser text
+                    $a->answersound = $this->user_get_sound($answer->answersound, $question->category, 1, false, false);
+                } else {
+                    $a->answersound = $this->user_get_sound($answer->answersound, $question->category, false, false, 'true');
+                }
+            }
+
+            if (($options->feedback || $options->correct_responses) && (($checked1 || $checked2) || $options->readonly)) {
+                //            if (($options->feedback || $options->correct_responses) && ($checked || $options->readonly)) {
+                if ($answer->feedbacksound) {
+                    if ($this->user_setting_text_in_quiz() == 1) {
+                        $a->feedbacksound = $this->user_get_sound($answer->feedbacksound, $question->category, false, 'true', 'false');
+                    } else {
+                        $a->feedbacksound = $this->user_get_sound($answer->feedbacksound, $question->category, false, 'true', 'true');
+                    }
+                } else {
+                    $a->feedbacksound = '';
+                }
+            }
+            $anss[] = clone($a);
+        }
+        /*   */
+        $feedback = '';
+
+        if ($options->feedback) {
+            //  The question has been submitted. Do not play sounds again!
+            $questionspeak = '';
+            if (!empty($question->options->questionsound)) {
+
+                if ($this->user_setting_text_in_quiz() == 1) {
+                    $questionspeak = $this->user_get_sound($question->options->questionsound, $question->category, false, 'false', 'false');
+                } else {
+                    $questionspeak = $this->user_get_sound($question->options->questionsound, $question->category, false, 'false', $this->user_setting_text_in_quiz());
+                }
+            }
+
+            if ($state->raw_grade >= $question->maxgrade / 1.01) {
+                //  print('1 Ja');
+                $feedback = $question->options->correctfeedback;
+            } elseif ($state->raw_grade > 0) {
+                //  print('2 Ja');
+                $feedback = $question->options->partiallycorrectfeedback;
+            } else {
+                $feedback = $question->options->incorrectfeedback;
+            }
+            $feedback = format_text($feedback, $question->questiontextformat, $formatoptions, $cmoptions->course);
+        }
+
+        if (!$isreview) {
+            $helptext = get_string('choose_yesno', 'qtype_turprove');
+        } else {
+            $helptext = '';
+        }
+        // create the results overview
+        //    if ($this->isreview()) {
+        $resultsoverview = $this->create_quiz_results_overview($cmoptions);
+        //   }
+        // language strings used in the html file
+        $answerstatus = get_string("answerstatus", "qtype_turprove");
+        $forward = get_string("fullscreenforward", "qtype_turprove");
+        $back = get_string("fullscreenback", "qtype_turprove");
+        $lang_question = get_string("question", "qtype_turprove");
+        $strconfirmclose = get_string("confirmclose", "quiz");
+
+        // output a javascript var that holds if the audio should autoplay
+        if ($isreview || $options->feedback) {
+            echo '<script type="text/javascript">var soundAutoPlay = false; </script>';
+        } else {
+            if ($question->options->autoplay) {
+                echo '<script type="text/javascript">var soundAutoPlay = true; </script>';
+            } else {
+                echo '<script type="text/javascript">var soundAutoPlay = false; </script>';
+            }
+        }
+
+        // include the correct page type
+        if (!$isreview) {
+            if ($this->user_setting_text_in_quiz() == 0) {
+                include("$CFG->dirroot/question/type/turprove/display_med_tekst.html");
+                echo '<script type="text/javascript">var quizAutoProgress = false; </script>';
+                echo '<script type="text/javascript">var quizShowAudioControls = true; </script>';
+            } elseif ($this->user_setting_text_in_quiz() == 1) {
+                include("$CFG->dirroot/question/type/turprove/display_uden_tekst.html");
+                echo '<script type="text/javascript">var quizAutoProgress = true; </script>';
+                echo '<script type="text/javascript">var quizShowAudioControls = false; </script>';
+            } elseif ($this->user_setting_text_in_quiz() == 2) {
+                include("$CFG->dirroot/question/type/turprove/display_fullscreen.html");
+                echo '<script type="text/javascript">var quizAutoProgress = true; </script>';
+                echo '<script type="text/javascript">var quizShowAudioControls = false; </script>';
+            }
+        } else {
+            include("$CFG->dirroot/question/type/turprove/display_med_tekst.html");
+            echo '<script type="text/javascript">var quizAutoProgress = false; </script>';
+            echo '<script type="text/javascript">var quizShowAudioControls = true; </script>';
+        }
+        
+        // BEGIN: custom js scripts
+//        echo '<script type="text/javascript" src="' . $CFG->wwwroot . '/question/type/turprove/js/prove.js"></script>';
+//        echo '<script type="text/javascript" src="' . $CFG->wwwroot . '/question/type/turprove/js/audioplayer.js"></script>';
+        // END: custom js scripts
+        
+    }
+
+    function question_get_feedback_image($fraction, $selected = true) {
+        global $CFG;
+        //print('question_get_feedback_image: ' + $fraction);
+        if ($fraction >= 0.25) {
+            if ($selected) {
+                $feedbackimg = '<img src="' . $CFG->wwwroot . '/question/type/turprove/images/ok.gif" ' . 'alt="' . get_string('correct', 'quiz') . '" class="icon" />';
+            } else {
+                $feedbackimg = '<img src="' . $CFG->wwwroot . '/question/type/turprove/images/ok.gif" ' . 'alt="' . get_string('correct', 'quiz') . '" class="icon" />';
+            }
+        } else {
+            if ($fraction == -1) {
+                $feedbackimg = '';
+            } else {
+                if ($selected) {
+                    $feedbackimg = '<img src="' . $CFG->wwwroot . '/question/type/turprove/images/no.gif"' . 'alt="' . get_string('incorrect', 'quiz') . '" class="icon" />';
+                } else {
+                    $feedbackimg = '<img src="' . $CFG->wwwroot . '/question/type/turprove/images/no.gif" ' . 'alt="' . get_string('incorrect', 'quiz') . '" class="icon" />';
+                }
+            }
+        }
+        return $feedbackimg;
+    }
+
     /* DKMD: New feedbackimage function. Ignore fraction, just check if answer is correct or not */
 
     function dkmd_question_get_feedback_image($answercorrect) {
@@ -426,10 +1007,384 @@ class qtype_turprove extends question_type {
         return implode(',', $this->get_actual_response($question, $state));
     }
 
-    public static function get_numbering_styles() {
+    /// BACKUP FUNCTIONS ////////////////////////////
+
+    /*
+     * Backup the data in the question
+     *
+     * This is used in question/backuplib.php
+     */
+    function backup($bf, $preferences, $question, $level = 6) {
+        //print('backup()');
+        $status = true;
+        $multichoices = get_records("question_turprove", "question", $question, "id");
+        //If there are multichoices
+        if ($multichoices) {
+            //Iterate over each multichoice
+            foreach ($multichoices as $multichoice) {
+                $status = fwrite($bf, start_tag("turprove", $level, true));
+                //Print multichoice contents
+                fwrite($bf, full_tag("LAYOUT", $level + 1, false, $multichoice->layout));
+                fwrite($bf, full_tag("ANSWERS", $level + 1, false, $multichoice->answers));
+                fwrite($bf, full_tag("SINGLE", $level + 1, false, $multichoice->single));
+                fwrite($bf, full_tag("SHUFFLEANSWERS", $level + 1, false, $multichoice->shuffleanswers));
+                fwrite($bf, full_tag("CORRECTFEEDBACK", $level + 1, false, $multichoice->correctfeedback));
+                fwrite($bf, full_tag("PARTIALLYCORRECTFEEDBACK", $level + 1, false, $multichoice->partiallycorrectfeedback));
+                fwrite($bf, full_tag("INCORRECTFEEDBACK", $level + 1, false, $multichoice->incorrectfeedback));
+
+                fwrite($bf, full_tag("QUESTIONSOUND", $level + 1, false, $multichoice->questionsound));
+                fwrite($bf, full_tag("AUTOPLAY", $level + 1, false, $multichoice->autoplay));
+                fwrite($bf, full_tag("QDIFFICULTY", $level + 1, false, $multichoice->qdifficulty));
+
+                $status = fwrite($bf, end_tag("turprove", $level, true));
+            }
+
+            //Now print question_answers
+            //  $status = backup_answers();
+            //  $status = question_backup_answers_tur($bf,$preferences,$question);
+            $answers = get_records("question_answers", "question", $question, "id");
+            //If there are answers
+            if ($answers) {
+
+
+                $status = $status && fwrite($bf, start_tag("ANSWERS", $level, true));
+                //Iterate over each answer
+                foreach ($answers as $answer) {
+                    $status = $status && fwrite($bf, start_tag("ANSWER", $level + 1, true));
+                    //Print answer contents
+                    fwrite($bf, full_tag("ID", $level + 2, false, $answer->id));
+                    fwrite($bf, full_tag("ANSWER_TEXT", $level + 2, false, $answer->answer));
+                    fwrite($bf, full_tag("FRACTION", $level + 2, false, $answer->fraction));
+                    fwrite($bf, full_tag("FEEDBACK", $level + 2, false, $answer->feedback));
+
+                    if ($answer->answersound == null) {
+                        fwrite($bf, full_tag("ANSWERSOUND", $level + 2, false, ''));
+                    } else {
+                        fwrite($bf, full_tag("ANSWERSOUND", $level + 2, false, $answer->answersound));
+                    }
+
+                    if ($answer->feedbacksound == null) {
+                        fwrite($bf, full_tag("FEEDBACKSOUND", $level + 2, false, ''));
+                    } else {
+                        fwrite($bf, full_tag("FEEDBACKSOUND", $level + 2, false, $answer->feedbacksound));
+                    }
+
+                    if ($answer->tur_answer_truefalse == null) {
+                        fwrite($bf, full_tag("TUR_ANSWER_TRUEFALSE", $level + 2, false, ''));
+                    } else {
+                        fwrite($bf, full_tag("TUR_ANSWER_TRUEFALSE", $level + 2, false, $answer->tur_answer_truefalse));
+                    }
+
+                    $status = $status && fwrite($bf, end_tag("ANSWER", $level + 1, true));
+                }
+                $status = $status && fwrite($bf, end_tag("ANSWERS", $level, true));
+            }
+
+            //Now print question_answers
+            //    $status = question_backup_answers($bf, $preferences, $question);
+        }
+        return $status;
+    }
+
+    /// RESTORE FUNCTIONS /////////////////
+
+    /*
+     * Restores the data in the question
+     *
+     * This is used in question/restorelib.php
+     */
+    function restore($old_question_id, $new_question_id, $info, $restore) {
+        //print('restore' . '<br />');
+        $status = true;
+
+        // update the question _answers table with the additional information
+        if ($new_question_id > 0) {
+            $answers = $info['#']['ANSWERS']['0']['#']['ANSWER'];
+            for ($i = 0; $i < sizeof($answers); $i++) {
+                $ans_info = $answers[$i];
+
+                $answer = new stdClass;
+                $answer->question = $new_question_id;
+                $answer->answer = backup_todb($ans_info['#']['ANSWER_TEXT']['0']['#']);
+                $answer->fraction = backup_todb($ans_info['#']['FRACTION']['0']['#']);
+                $answer->feedback = backup_todb($ans_info['#']['FEEDBACK']['0']['#']);
+                $answer->answersound = backup_todb($ans_info['#']['ANSWERSOUND']['0']['#']);
+                $answer->feedbacksound = backup_todb($ans_info['#']['FEEDBACKSOUND']['0']['#']);
+                $answer->tur_answer_truefalse = backup_todb($ans_info['#']['TUR_ANSWER_TRUEFALSE']['0']['#']);
+
+                $ansid = get_record('question_answers', 'question', $new_question_id, 'answer', $answer->answer, 'fraction', $answer->fraction, 'id');
+                $answer->id = $ansid->id;
+
+                $chckans = update_record(question_answers, $answer);
+            }
+        }
+
+        //Get the multichoices array
+        $multichoices = $info['#']['TURPROVE'];
+
+        //Iterate over multichoices
+        for ($i = 0; $i < sizeof($multichoices); $i++) {
+            $mul_info = $multichoices[$i];
+
+            //Now, build the question_multichoice record structure
+            $multichoice = new stdClass;
+            $multichoice->question = $new_question_id;
+            $multichoice->layout = backup_todb($mul_info['#']['LAYOUT']['0']['#']);
+            $multichoice->answers = backup_todb($mul_info['#']['ANSWERS']['0']['#']);
+            $multichoice->single = backup_todb($mul_info['#']['SINGLE']['0']['#']);
+            $multichoice->shuffleanswers = isset($mul_info['#']['SHUFFLEANSWERS']['0']['#']) ? backup_todb($mul_info['#']['SHUFFLEANSWERS']['0']['#']) : '';
+            if (array_key_exists("CORRECTFEEDBACK", $mul_info['#'])) {
+                $multichoice->correctfeedback = backup_todb($mul_info['#']['CORRECTFEEDBACK']['0']['#']);
+            } else {
+                $multichoice->correctfeedback = '';
+            }
+            if (array_key_exists("PARTIALLYCORRECTFEEDBACK", $mul_info['#'])) {
+                $multichoice->partiallycorrectfeedback = backup_todb($mul_info['#']['PARTIALLYCORRECTFEEDBACK']['0']['#']);
+            } else {
+                $multichoice->partiallycorrectfeedback = '';
+            }
+            if (array_key_exists("INCORRECTFEEDBACK", $mul_info['#'])) {
+                $multichoice->incorrectfeedback = backup_todb($mul_info['#']['INCORRECTFEEDBACK']['0']['#']);
+            } else {
+                $multichoice->incorrectfeedback = '';
+            }
+
+            if (array_key_exists("QUESTIONSOUND", $mul_info['#'])) {
+                $multichoice->questionsound = backup_todb($mul_info['#']['QUESTIONSOUND']['0']['#']);
+            } else {
+                $multichoice->questionsound = '';
+            }
+
+            if (array_key_exists("AUTOPLAY", $mul_info['#'])) {
+                $multichoice->autoplay = backup_todb($mul_info['#']['AUTOPLAY']['0']['#']);
+            } else {
+                $multichoice->autoplay = '';
+            }
+
+            if (array_key_exists("QDIFFICULTY", $mul_info['#'])) {
+                $multichoice->qdifficulty = backup_todb($mul_info['#']['QDIFFICULTY']['0']['#']);
+            } else {
+                $multichoice->qdifficulty = '';
+            }
+
+            //We have to recode the answers field (a list of answers id)
+            //Extracts answer id from sequence
+            $answers_field = "";
+            $in_first = true;
+            $tok = strtok($multichoice->answers, ",");
+            while ($tok) {
+                //Get the answer from backup_ids
+                $answer = backup_getid($restore->backup_unique_code, "question_answers", $tok);
+                if ($answer) {
+                    if ($in_first) {
+                        $answers_field .= $answer->new_id;
+                        $in_first = false;
+                    } else {
+                        $answers_field .= "," . $answer->new_id;
+                    }
+                }
+                //check for next
+                $tok = strtok(",");
+            }
+            //We have the answers field recoded to its new ids
+            $multichoice->answers = $answers_field;
+
+            //The structure is equal to the db, so insert the question_shortanswer
+            $newid = insert_record("question_turprove", $multichoice);
+
+            //Do some output
+            if (($i + 1) % 50 == 0) {
+                if (!defined('RESTORE_SILENTLY')) {
+                    echo ".";
+                    if (($i + 1) % 1000 == 0) {
+                        echo "<br />";
+                    }
+                }
+                backup_flush(300);
+            }
+
+            if (!$newid) {
+                $status = false;
+            }
+        }
+
+        return $status;
+    }
+
+    function restore_recode_answer($state, $restore) {
+        //print('restore_recode_answer' . '<br />');
+        $pos = strpos($state->answer, ':');
+        $order = array();
+        $responses = array();
+        if (false === $pos) {
+            // No order of answers is given, so use the default
+            if ($state->answer) {
+                $responses = explode(',', $state->answer);
+            }
+        } else {
+            $order = explode(',', substr($state->answer, 0, $pos));
+            if ($responsestring = substr($state->answer, $pos + 1)) {
+                $responses = explode(',', $responsestring);
+            }
+        }
+        if ($order) {
+            foreach ($order as $key => $oldansid) {
+                $answer = backup_getid($restore->backup_unique_code, "question_answers", $oldansid);
+                if ($answer) {
+                    $order[$key] = $answer->new_id;
+                } else {
+                    echo 'Could not recode turprove answer id ' . $oldansid . ' for state ' . $state->oldid . '<br />';
+                }
+            }
+        }
+        if ($responses) {
+            foreach ($responses as $key => $oldansid) {
+                $answer = backup_getid($restore->backup_unique_code, "question_answers", $oldansid);
+                if ($answer) {
+                    $responses[$key] = $answer->new_id;
+                } else {
+                    echo 'Could not recode turprove response answer id ' . $oldansid . ' for state ' . $state->oldid . '<br />';
+                }
+            }
+        }
+        return implode(',', $order) . ':' . implode(',', $responses);
+    }
+
+    /**
+     * Decode links in question type specific tables.
+     * @return bool success or failure.
+     */
+    function decode_content_links_caller($questionids, $restore, &$i) {
+        $status = true;
+
+        // Decode links in the question_turprove table.
+        if ($multichoices = get_records_list('question_turprove', 'question', implode(',', $questionids), '', 'id, correctfeedback, partiallycorrectfeedback, incorrectfeedback')) {
+            foreach ($multichoices as $multichoice) {
+                $correctfeedback = restore_decode_content_links_worker($multichoice->correctfeedback, $restore);
+                $partiallycorrectfeedback = restore_decode_content_links_worker($multichoice->partiallycorrectfeedback, $restore);
+                $incorrectfeedback = restore_decode_content_links_worker($multichoice->incorrectfeedback, $restore);
+                if ($correctfeedback != $multichoice->correctfeedback || $partiallycorrectfeedback != $multichoice->partiallycorrectfeedback || $incorrectfeedback != $multichoice->incorrectfeedback) {
+                    $subquestion->correctfeedback = addslashes($correctfeedback);
+                    $subquestion->partiallycorrectfeedback = addslashes($partiallycorrectfeedback);
+                    $subquestion->incorrectfeedback = addslashes($incorrectfeedback);
+                    if (!update_record('question_turprove', $multichoice)) {
+                        $status = false;
+                    }
+                }
+
+                // Do some output.
+                if (++$i % 5 == 0 && !defined('RESTORE_SILENTLY')) {
+                    echo ".";
+                    if ($i % 100 == 0) {
+                        echo "<br />";
+                    }
+                    backup_flush(300);
+                }
+            }
+        }
+
+        return $status;
+    }
+
+    function export_to_xml($question, $format, $extra = null) {
+        debugging('export to xml in questiontype ');
+
+        $expout = '';
+        $expout .= "    <questionsound>" . $question->options->questionsound . "</questionsound>\n";
+        $expout .= "    <correctfeedback>" . $format->writetext($question->options->correctfeedback, 3) . "</correctfeedback>\n";
+        $expout .= "    <partiallycorrectfeedback>" . $format->writetext($question->options->partiallycorrectfeedback, 3) . "</partiallycorrectfeedback>\n";
+        $expout .= "    <incorrectfeedback>" . $format->writetext($question->options->incorrectfeedback, 3) . "</incorrectfeedback>\n";
+        $expout .= "    <answernumbering>{$question->options->answernumbering}</answernumbering>\n";
+
+        // find the number of correct answers
+        $correctcount = 0;
+        foreach ($question->options->answers as $answer) {
+            if ($answer->tur_answer_truefalse != 0) {
+                $correctcount++;
+            }
+        }
+
+        foreach ($question->options->answers as $answer) {
+            // calculate the answer fraction
+            if ($answer->tur_answer_truefalse != 0) {
+                $percent = ((1 / $correctcount) * 100);
+            } else {
+                $percent = 0;
+            }
+
+            //$percent = $answer->fraction * 100;
+            $expout .= "      <answer fraction=\"$percent\">\n";
+            $expout .= "      <answerstatus>" . $answer->tur_answer_truefalse . "</answerstatus>\n";
+            $expout .= $format->writetext($answer->answer, 4, false);
+            $expout .= "      <answersound>" . $answer->answersound . "</answersound>\n";
+            $expout .= "      <feedback>\n";
+            $expout .= $format->writetext($answer->feedback, 5, false);
+            $expout .= "          <feedbacksound>" . $answer->feedbacksound . "</feedbacksound>\n";
+            $expout .= "      </feedback>\n";
+            $expout .= "    </answer>\n";
+        }
+        return $expout;
+    }
+
+    function import_from_xml($data, $question, $format, $extra = null) {
+        $qtype = $data['@']['type'];
+        if ($qtype != 'turprove') {
+            return false;
+        }
+
+        // get common parts
+        $qo = $format->import_headers($data);
+
+        // 'header' parts particular to multichoice
+        $qo->qtype = 'turprove';
+        $qo->single = 0;
+        $qo->answernumbering = $format->getpath($data, array('#', 'answernumbering', 0, '#'), 'abc');
+        $qo->correctfeedback = $format->getpath($data, array('#', 'correctfeedback', 0, '#', 'text', 0, '#'), '', true);
+        $qo->partiallycorrectfeedback = $format->getpath($data, array('#', 'partiallycorrectfeedback', 0, '#', 'text', 0, '#'), '', true);
+        $qo->incorrectfeedback = $format->getpath($data, array('#', 'incorrectfeedback', 0, '#', 'text', 0, '#'), '', true);
+
+        // Custom fields
+        $autoplay = $format->getpath($data, array('#', 'autoplay', 0, '#'), '', true);
+        $qo->autoplay = $autoplay;
+
+        $qdifficulty = $format->getpath($data, array('#', 'qdifficulty', 0, '#'), '', true);
+        $qo->qdifficulty = $qdifficulty;
+
+
+        $questionsound = $format->getpath($data, array('#', 'questionsound', 0, '#'), '', true);
+        $qo->questionsound = $questionsound;
+
+        // run through the answers
+        $answers = $data['#']['answer'];
+        $a_count = 0;
+        foreach ($answers as $answer) {
+            $ans = $format->import_answer($answer);
+
+            $feedbacksound = $format->getpath($answer, array('#', 'feedback', 0, '#', 'feedbacksound', 0, '#'), '', true);
+            $answersound = $format->getpath($answer, array('#', 'answersound', 0, '#'), '', true);
+            $answerstatus = $format->getpath($answer, array('#', 'answerstatus', 0, '#'), '', true);
+
+            $qo->answer[$a_count] = $ans->answer;
+            $qo->tur_answer_truefalse[$a_count] = $answerstatus;
+            $qo->fraction[$a_count] = $ans->fraction;
+            $qo->feedback[$a_count] = $ans->feedback;
+            $qo->feedbacksound[$a_count] = $feedbacksound;
+            $qo->answersound[$a_count] = $answersound;
+            ++$a_count;
+        }
+
+        return $qo;
+    }
+
+    function get_numbering_styles() {
         return array('abc', 'ABCD', '123', 'none');
     }
 
 }
 
+//// END OF CLASS ////
+//////////////////////////////////////////////////////////////////////////
+//// INITIATION - Without this line the question type is not in use... ///
+//////////////////////////////////////////////////////////////////////////
+question_register_questiontype(new question_turprove_qtype());
 ?>
