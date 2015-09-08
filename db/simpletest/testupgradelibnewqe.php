@@ -16,10 +16,10 @@
 
 /**
  * Tests of the upgrade to the new Moodle question engine for attempts at
- * turmultiplechoice questions.
+ * turprove questions.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
@@ -29,12 +29,12 @@ require_once($CFG->dirroot . '/question/engine/upgrade/simpletest/helper.php');
 
 
 /**
- * Testing the upgrade of turmultiplechoice question attempts.
+ * Testing the upgrade of turprove question attempts.
  *
  */
-class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upgrader_test_base {
+class qtype_turprove_attempt_upgrader_test extends question_attempt_upgrader_test_base {
 
-    public function test_turmultiplechoice_deferredfeedback_history960() {
+    public function test_turprove_deferredfeedback_history960() {
         $quiz = (object) array(
             'id' => '1',
             'course' => '3',
@@ -100,7 +100,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
             'questiontextformat' => '1',
             'generalfeedback' => '',
             'generalfeedbackformat' => '1',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'tjh238.vledev.open.ac.uk+100708154547+JrHygi',
             'version' => 'tjh238.vledev.open.ac.uk+100708154548+a3zh8v',
@@ -273,7 +273,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
         $this->compare_qas($expectedqa, $qa);
     }
 
-    public function test_turmultiplechoice_deferredfeedback_history0() {
+    public function test_turprove_deferredfeedback_history0() {
         $quiz = (object) array(
             'id' => '8',
             'course' => '1095',
@@ -329,7 +329,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
             'questiontextformat' => '1',
             'defaultmark' => '1',
             'penalty' => '0.1',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'learn.open.ac.uk+060612113403+Fz0GGO',
             'version' => 'learn.open.ac.uk+060612160802+I6ctMQ',
@@ -433,7 +433,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
         $this->compare_qas($expectedqa, $qa);
     }
 
-    public function test_turmultiplechoice_deferredfeedback_history60() {
+    public function test_turprove_deferredfeedback_history60() {
         $quiz = (object) array(
             'id' => '13',
             'course' => '1416',
@@ -497,7 +497,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
             'questiontextformat' => '1',
             'defaultmark' => '1',
             'penalty' => '0',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'learn.open.ac.uk+060822084343+5JvlNr',
             'version' => 'learn.open.ac.uk+060822084343+CQPfhb',
@@ -636,7 +636,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
         $this->compare_qas($expectedqa, $qa);
     }
 
-    public function test_turmultiplechoice_deferredfeedback_history6220() {
+    public function test_turprove_deferredfeedback_history6220() {
         $quiz = (object) array(
             'id' => '95',
             'course' => '1181',
@@ -692,7 +692,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
             'questiontextformat' => '1',
             'defaultmark' => '1',
             'penalty' => '0',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'learn.open.ac.uk+061221143845+nohATp',
             'version' => 'learn.open.ac.uk+070131102906+bviJOZ',
@@ -875,7 +875,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
         $this->compare_qas($expectedqa, $qa);
     }
 
-    public function test_turmultiplechoice_deferredfeedback_missing() {
+    public function test_turprove_deferredfeedback_missing() {
         $quiz = (object) array(
             'id' => '8',
             'course' => '1095',
@@ -931,7 +931,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
             'questiontextformat' => '1',
             'defaultmark' => '1',
             'penalty' => '0.1',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'learn.open.ac.uk+060612113403+Fz0GGO',
             'version' => 'learn.open.ac.uk+060612160802+I6ctMQ',
@@ -1009,7 +1009,7 @@ class qtype_turmultiplechoice_attempt_upgrader_test extends question_attempt_upg
         $this->compare_qas($expectedqa, $qa);
     }
 
-public function test_turmultiplechoice_deferredfeedback_qsession140() {
+public function test_turprove_deferredfeedback_qsession140() {
         $quiz = (object) array(
             'id' => '58',
             'course' => '3420',
@@ -1066,7 +1066,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
             'questiontextformat' => '1',
             'defaultmark' => '1',
             'penalty' => '0.1',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'openlearn.open.ac.uk+071210172238+HpCRWO',
             'version' => 'openlearn.open.ac.uk+071211115640+SZulvf',
@@ -1211,7 +1211,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $this->compare_qas($expectedqa, $qa);
     }
 
-    public function test_turmultiplechoice_deferredfeedback_qsession2018195() {
+    public function test_turprove_deferredfeedback_qsession2018195() {
         $quiz = (object) array(
             'id' => '1832',
             'course' => '4912',
@@ -1270,7 +1270,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
             'questiontextformat' => '1',
             'defaultmark' => '1',
             'penalty' => '0.1',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'learn.open.ac.uk+080529101041+d4XuNI',
             'version' => 'learn.open.ac.uk+100725192556+KIetVC',
@@ -1457,7 +1457,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $this->compare_qas($expectedqa, $qa);
     }
 
-    public function test_turmultiplechoice_deferredfeedback_qsession2653368() {
+    public function test_turprove_deferredfeedback_qsession2653368() {
         $quiz = (object) array(
             'id' => '3273',
             'course' => '5862',
@@ -1515,7 +1515,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
             'questiontextformat' => '1',
             'defaultmark' => '1',
             'penalty' => '0.1',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'learn.open.ac.uk+080811153454+BMEq1t',
             'version' => 'learn.open.ac.uk+081010072800+oSu1g3',
@@ -1681,7 +1681,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $this->compare_qas($expectedqa, $qa);
     }
 
-    public function test_turmultiplechoice_deferredfeedback_qsession3131() {
+    public function test_turprove_deferredfeedback_qsession3131() {
         $quiz = (object) array(
             'id' => '10',
             'course' => '608',
@@ -1746,7 +1746,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
             'questiontextformat' => '1',
             'defaultmark' => '1',
             'penalty' => '1',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'learn.open.ac.uk+060614160624+gkAYii',
             'version' => 'learn.open.ac.uk+060614160624+LYm8Rl',
@@ -1926,7 +1926,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $this->compare_qas($expectedqa, $qa);
     }
 
-    public function test_turmultiplechoice_deferredfeedback_qsession4307870 () {
+    public function test_turprove_deferredfeedback_qsession4307870 () {
         $quiz = (object) array(
             'id' => '4070',
             'course' => '5139',
@@ -1985,7 +1985,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
             'questiontextformat' => '1',
             'defaultmark' => '1',
             'penalty' => '0.33',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'learn.open.ac.uk+100204101142+Bygd63',
             'version' => 'learn.open.ac.uk+100204101142+exBG6F',
@@ -2131,7 +2131,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $this->compare_qas($expectedqa, $qa);
     }
 
-    public function test_turmultiplechoice_deferredfeedback_qsession49446() {
+    public function test_turprove_deferredfeedback_qsession49446() {
         $quiz = (object) array(
             'id' => '203',
             'course' => '2359',
@@ -2187,7 +2187,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
             'questiontextformat' => '1',
             'defaultmark' => '1',
             'penalty' => '0',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'learn.open.ac.uk+070404142540+CpseAv',
             'version' => 'learn.open.ac.uk+070405112519+qNb2kt',
@@ -2346,7 +2346,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $this->compare_qas($expectedqa, $qa);
     }
 
-    public function test_turmultiplechoice_deferredfeedback_qsession591() {
+    public function test_turprove_deferredfeedback_qsession591() {
         $quiz = (object) array(
             'id' => '22',
             'course' => '272',
@@ -2409,7 +2409,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
             'questiontextformat' => '1',
             'defaultmark' => '0',
             'penalty' => '0',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'learn.open.ac.uk+070321164105+qIeJ9g',
             'hidden' => '0',
@@ -2555,7 +2555,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
         $this->compare_qas($expectedqa, $qa);
     }
 
-    public function test_turmultiplechoice_deferredfeedback_qsession594() {
+    public function test_turprove_deferredfeedback_qsession594() {
         $quiz = (object) array(
             'id' => '22',
             'course' => '272',
@@ -2620,7 +2620,7 @@ public function test_turmultiplechoice_deferredfeedback_qsession140() {
             'questiontextformat' => '1',
             'defaultmark' => '0',
             'penalty' => '0',
-            'qtype' => 'turmultiplechoice',
+            'qtype' => 'turprove',
             'length' => '1',
             'stamp' => 'learn.open.ac.uk+070321161800+WlAJ5D',
             'hidden' => '0',

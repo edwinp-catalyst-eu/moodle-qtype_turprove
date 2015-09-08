@@ -18,7 +18,7 @@
  * Multiple choice question type upgrade code.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
@@ -29,15 +29,15 @@ defined('MOODLE_INTERNAL') || die();
  * Upgrade code for the multiple choice question type.
  * @param int $oldversion the version we are upgrading from.
  */
-function xmldb_qtype_turmultiplechoice_upgrade($oldversion) {
+function xmldb_qtype_turprove_upgrade($oldversion) {
     global $CFG, $DB;
 
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2009021801) {
 
-        // Define field correctfeedbackformat to be added to question_turmultiplechoice
-        $table = new xmldb_table('question_turmultiplechoice');
+        // Define field correctfeedbackformat to be added to question_turprove
+        $table = new xmldb_table('question_turprove');
         $field = new xmldb_field('correctfeedbackformat', XMLDB_TYPE_INTEGER, '2', null,
                 XMLDB_NOTNULL, null, '0', 'correctfeedback');
 
@@ -46,7 +46,7 @@ function xmldb_qtype_turmultiplechoice_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Define field partiallycorrectfeedbackformat to be added to question_turmultiplechoice
+        // Define field partiallycorrectfeedbackformat to be added to question_turprove
         $field = new xmldb_field('partiallycorrectfeedbackformat', XMLDB_TYPE_INTEGER, '2', null,
                 XMLDB_NOTNULL, null, '0', 'partiallycorrectfeedback');
 
@@ -55,7 +55,7 @@ function xmldb_qtype_turmultiplechoice_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Define field incorrectfeedbackformat to be added to question_turmultiplechoice
+        // Define field incorrectfeedbackformat to be added to question_turprove
         $field = new xmldb_field('incorrectfeedbackformat', XMLDB_TYPE_INTEGER, '2', null,
                 XMLDB_NOTNULL, null, '0', 'incorrectfeedback');
 
@@ -69,7 +69,7 @@ function xmldb_qtype_turmultiplechoice_upgrade($oldversion) {
         // form as questiontextformat. If we are using the HTML editor, then
         // convert FORMAT_MOODLE content to FORMAT_HTML.
         $sql = "SELECT qtm.*, q.oldquestiontextformat
-                  FROM {question_turmultiplechoice} qtm
+                  FROM {question_turprove} qtm
                   JOIN {question} q ON qtm.question = q.id";
         $rs = $DB->get_recordset_sql($sql);
 
@@ -90,13 +90,13 @@ function xmldb_qtype_turmultiplechoice_upgrade($oldversion) {
                 $record->partiallycorrectfeedbackformat = $record->oldquestiontextformat;
                 $record->incorrectfeedbackformat = $record->oldquestiontextformat;
             }
-            $DB->update_record('question_turmultiplechoice', $record);
+            $DB->update_record('question_turprove', $record);
         }
 
         $rs->close();
 
-        // turmultiplechoice savepoint reached
-        upgrade_plugin_savepoint(true, 2009021801, 'qtype', 'turmultiplechoice');
+        // turprove savepoint reached
+        upgrade_plugin_savepoint(true, 2009021801, 'qtype', 'turprove');
     }
 
     // Add new shownumcorrect field. If this is true, then when the user gets a
@@ -104,8 +104,8 @@ function xmldb_qtype_turmultiplechoice_upgrade($oldversion) {
     // they got correct alongside the feedback.
     if ($oldversion < 2011011200) {
 
-        // Define field shownumcorrect to be added to question_turmultiplechoice
-        $table = new xmldb_table('question_turmultiplechoice');
+        // Define field shownumcorrect to be added to question_turprove
+        $table = new xmldb_table('question_turprove');
         $field = new xmldb_field('shownumcorrect', XMLDB_TYPE_INTEGER, '2', null,
                 XMLDB_NOTNULL, null, '0', 'qdifficulty');
 
@@ -114,8 +114,8 @@ function xmldb_qtype_turmultiplechoice_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // turmultiplechoice savepoint reached
-        upgrade_plugin_savepoint(true, 2011011200, 'qtype', 'turmultiplechoice');
+        // turprove savepoint reached
+        upgrade_plugin_savepoint(true, 2011011200, 'qtype', 'turprove');
     }
 
     // Moodle v2.1.0 release upgrade line
@@ -138,9 +138,9 @@ function xmldb_qtype_turmultiplechoice_upgrade($oldversion) {
 
         $sql = "SELECT q.id, qtm.questionsound
                   FROM {question} q
-                  JOIN {question_turmultiplechoice} qtm ON qtm.question = q.id
+                  JOIN {question_turprove} qtm ON qtm.question = q.id
                  WHERE q.qtype = ?";
-        $params = array('turmultiplechoice');
+        $params = array('turprove');
         $questions = $DB->get_records_sql($sql, $params);
 
         foreach ($questions as $question) {
@@ -159,7 +159,7 @@ function xmldb_qtype_turmultiplechoice_upgrade($oldversion) {
                   FROM {question_answers} qa
                   JOIN {question} q ON q.id = qa.question
                  WHERE q.qtype = ?";
-        $params = array('turmultiplechoice');
+        $params = array('turprove');
         $answers = $DB->get_records_sql($sql, $params);
 
         foreach ($answers as $answer) {
@@ -181,8 +181,8 @@ function xmldb_qtype_turmultiplechoice_upgrade($oldversion) {
             $fs->create_file_from_pathname($file_record, $audiofolder . $filename);
         }
 
-        // turmultiplechoice savepoint reached
-        upgrade_plugin_savepoint(true, 2013010101, 'qtype', 'turmultiplechoice');
+        // turprove savepoint reached
+        upgrade_plugin_savepoint(true, 2013010101, 'qtype', 'turprove');
     }
 
     if ($oldversion < 2013010102) {
@@ -204,8 +204,8 @@ function xmldb_qtype_turmultiplechoice_upgrade($oldversion) {
             $dbman->drop_field($table, $field);
         }
 
-        // turmultiplechoice savepoint reached
-        upgrade_plugin_savepoint(true, 2013010102, 'qtype', 'turmultiplechoice');
+        // turprove savepoint reached
+        upgrade_plugin_savepoint(true, 2013010102, 'qtype', 'turprove');
     }
 
     return true;

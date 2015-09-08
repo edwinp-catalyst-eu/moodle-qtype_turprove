@@ -1,18 +1,18 @@
-.que.turmultiplechoice .answer .specificfeedback {
+.que.turprove .answer .specificfeedback {
     padding: 0 0.7em;
     background: #FFF3BF;
 }
-.que.turmultiplechoice .answer .specificfeedback * {
+.que.turprove .answer .specificfeedback * {
     display: inline;
     background: #FFF3BF;
 }
-.que.turmultiplechoice .answer .specificfeedback script {
+.que.turprove .answer .specificfeedback script {
     display: none;
 }
-.que.turmultiplechoice .answer div.r0,
-.que.turmultiplechoice .answer div.r1 {
+.que.turprove .answer div.r0,
+.que.turprove .answer div.r1 {
     padding: 0.3em;
 }
-.que.turmultiplechoice .feedback .rightanswer * {
+.que.turprove .feedback .rightanswer * {
     display: inline;
 }

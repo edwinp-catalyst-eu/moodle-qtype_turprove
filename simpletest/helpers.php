@@ -6,21 +6,21 @@
  * and open the template in the editor.
  */
 
-class test_turmultiplechoice_question_maker extends test_question_maker {
+class test_turprove_question_maker extends test_question_maker {
 
     /**
-     * Makes a turmultiplechoice question with choices 'A', 'B' and 'C' shuffled. 'A'
+     * Makes a turprove question with choices 'A', 'B' and 'C' shuffled. 'A'
      * is correct, defaultmark 1.
-     * @return qtype_turmultiplechoice_single_question
+     * @return qtype_turprove_single_question
      */
-    public static function make_a_turmultiplechoice_single_question() {
-        question_bank::load_question_definition_classes('turmultiplechoice');
-        $mc = new qtype_turmultiplechoice_single_question();
+    public static function make_a_turprove_single_question() {
+        question_bank::load_question_definition_classes('turprove');
+        $mc = new qtype_turprove_single_question();
         self::initialise_a_question($mc);
         $mc->name = 'Multi-choice question, single response';
         $mc->questiontext = 'The answer is A.';
         $mc->generalfeedback = 'You should have selected A.';
-        $mc->qtype = question_bank::get_qtype('turmultiplechoice');
+        $mc->qtype = question_bank::get_qtype('turprove');
 
         $mc->shuffleanswers = 1;
         $mc->qdifficulty = '0';
@@ -35,18 +35,18 @@ class test_turmultiplechoice_question_maker extends test_question_maker {
     }
 
     /**
-     * Makes a turmultiplechoice question with choices 'A', 'B', 'C' and 'D' shuffled.
+     * Makes a turprove question with choices 'A', 'B', 'C' and 'D' shuffled.
      * 'A' and 'C' is correct, defaultmark 1.
-     * @return qtype_turmultiplechoice_multi_question
+     * @return qtype_turprove_multi_question
      */
-    public static function make_a_turmultiplechoice_multi_question() {
-        question_bank::load_question_definition_classes('turmultiplechoice');
-        $mc = new qtype_turmultiplechoice_multi_question();
+    public static function make_a_turprove_multi_question() {
+        question_bank::load_question_definition_classes('turprove');
+        $mc = new qtype_turprove_multi_question();
         self::initialise_a_question($mc);
         $mc->name = 'Multi-choice question, multiple response';
         $mc->questiontext = 'The answer is A and C.';
         $mc->generalfeedback = 'You should have selected A and C.';
-        $mc->qtype = question_bank::get_qtype('turmultiplechoice');
+        $mc->qtype = question_bank::get_qtype('turprove');
 
         $mc->shuffleanswers = 1;
         $mc->qdifficulty = '0';

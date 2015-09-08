@@ -25,10 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * restore plugin class that provides the necessary information
- * needed to restore one turmultiplechoice qtype plugin
+ * needed to restore one turprove qtype plugin
  *
  */
-class restore_qtype_turmultiplechoice_plugin extends restore_qtype_plugin {
+class restore_qtype_turprove_plugin extends restore_qtype_plugin {
 
     /**
      * Returns the paths to be handled by the plugin at question level
@@ -41,18 +41,18 @@ class restore_qtype_turmultiplechoice_plugin extends restore_qtype_plugin {
         $this->add_question_question_answers($paths);
 
         // Add own qtype stuff
-        $elename = 'turmultiplechoice';
+        $elename = 'turprove';
         // we used get_recommended_name() so this works
-        $elepath = $this->get_pathfor('/turmultiplechoice');
+        $elepath = $this->get_pathfor('/turprove');
         $paths[] = new restore_path_element($elename, $elepath);
 
         return $paths; // And we return the interesting paths
     }
 
     /**
-     * Process the qtype/turmultiplechoice element
+     * Process the qtype/turprove element
      */
-    public function process_turmultiplechoice($data) {
+    public function process_turprove($data) {
         global $DB;
 
         $data = (object)$data;
@@ -64,7 +64,7 @@ class restore_qtype_turmultiplechoice_plugin extends restore_qtype_plugin {
         $questioncreated = (bool) $this->get_mappingid('question_created', $oldquestionid);
 
         // If the question has been created by restore, we need to create its
-        // question_turmultiplechoice too
+        // question_turprove too
         if ($questioncreated) {
             // Adjust some columns
             $data->question = $newquestionid;
@@ -79,9 +79,9 @@ class restore_qtype_turmultiplechoice_plugin extends restore_qtype_plugin {
             }
             $data->answers = implode(',', $answersarr);
             // Insert record
-            $newitemid = $DB->insert_record('question_turmultiplechoice', $data);
+            $newitemid = $DB->insert_record('question_turprove', $data);
             // Create mapping (needed for decoding links)
-            $this->set_mapping('question_turmultiplechoice', $oldid, $newitemid);
+            $this->set_mapping('question_turprove', $oldid, $newitemid);
         }
     }
 
@@ -109,7 +109,7 @@ class restore_qtype_turmultiplechoice_plugin extends restore_qtype_plugin {
 
     /**
      * Given one question_states record, return the answer
-     * recoded pointing to all the restored stuff for turmultiplechoice questions
+     * recoded pointing to all the restored stuff for turprove questions
      *
      * answer are two (hypen speparated) lists of comma separated question_answers
      * the first to specify the order of the answers and the second to specify the
@@ -159,8 +159,8 @@ class restore_qtype_turmultiplechoice_plugin extends restore_qtype_plugin {
         $contents = array();
 
         $fields = array('correctfeedback', 'partiallycorrectfeedback', 'incorrectfeedback');
-        $contents[] = new restore_decode_content('question_turmultiplechoice',
-                $fields, 'question_turmultiplechoice');
+        $contents[] = new restore_decode_content('question_turprove',
+                $fields, 'question_turprove');
 
         return $contents;
     }

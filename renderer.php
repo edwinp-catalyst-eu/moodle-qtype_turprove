@@ -18,7 +18,7 @@
  * Multiple choice question renderer classes.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  * single and multiple questions.
  *
  */
-abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined_feedback_renderer {
+abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback_renderer {
     protected abstract function get_input_type();
 
     protected abstract function get_input_name(question_attempt $qa, $value);
@@ -157,7 +157,7 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
  * single questions.
  *
  */
-class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_renderer_base {
+class qtype_turprove_single_renderer extends qtype_turprove_renderer_base {
     protected function get_input_type() {
         return 'radio';
     }
@@ -179,7 +179,7 @@ class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_re
     }
 
     protected function prompt() {
-        return get_string('selectone', 'qtype_turmultiplechoice');
+        return get_string('selectone', 'qtype_turprove');
     }
 
     public function correct_response(question_attempt $qa) {
@@ -188,7 +188,7 @@ class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_re
         foreach ($question->answers as $ansid => $ans) {
             if (question_state::graded_state_for_fraction($ans->fraction) ==
                     question_state::$gradedright) {
-                return get_string('correctansweris', 'qtype_turmultiplechoice',
+                return get_string('correctansweris', 'qtype_turprove',
                         $question->format_text($ans->answer, $ans->answerformat,
                                 $qa, 'question', 'answer', $ansid));
             }
@@ -203,7 +203,7 @@ class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_re
  * multi=select questions.
  *
  */
-class qtype_turmultiplechoice_multi_renderer extends qtype_turmultiplechoice_renderer_base {
+class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
     protected function get_input_type() {
         return 'checkbox';
     }
@@ -229,7 +229,7 @@ class qtype_turmultiplechoice_multi_renderer extends qtype_turmultiplechoice_ren
     }
 
     protected function prompt() {
-        return get_string('selectmulti', 'qtype_turmultiplechoice');
+        return get_string('selectmulti', 'qtype_turprove');
     }
 
     public function correct_response(question_attempt $qa) {
@@ -244,7 +244,7 @@ class qtype_turmultiplechoice_multi_renderer extends qtype_turmultiplechoice_ren
         }
 
         if (!empty($right)) {
-                return get_string('correctansweris', 'qtype_turmultiplechoice',
+                return get_string('correctansweris', 'qtype_turprove',
                         implode(', ', $right));
         }
         return '';
@@ -253,7 +253,7 @@ class qtype_turmultiplechoice_multi_renderer extends qtype_turmultiplechoice_ren
     protected function num_parts_correct(question_attempt $qa) {
         if ($qa->get_question()->get_num_selected_choices($qa->get_last_qt_data()) >
                 $qa->get_question()->get_num_correct_choices()) {
-            return get_string('toomanyselected', 'qtype_turmultiplechoice');
+            return get_string('toomanyselected', 'qtype_turprove');
         }
 
         return parent::num_parts_correct($qa);

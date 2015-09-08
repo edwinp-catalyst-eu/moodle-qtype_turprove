@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'qtype_turmultiplechoice', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'qtype_turprove', language 'en', branch 'MOODLE_20_STABLE'
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 $string['addmorechoiceblanks'] = 'Blanks for {no} more choices';
@@ -57,7 +57,7 @@ $string['pleaseselectananswer'] = 'Please select an answer.';
 $string['pleaseselectatleastoneanswer'] = 'Please select at least one answer.';
 $string['pluginname'] = 'TUR Multiple choice';
 $string['pluginname_help'] = 'In response to a question (that may include a image) the respondent chooses from multiple answers. There are two types of TUR Multiple choice questions - one answer and multiple answer.';
-$string['pluginname_link'] = 'question/type/turmultiplechoice';
+$string['pluginname_link'] = 'question/type/turprove';
 $string['pluginnameadding'] = 'Adding a TUR Multiple choice question';
 $string['pluginnameediting'] = 'Editing a TUR Multiple choice question';
 $string['pluginnamesummary'] = 'Allows the selection of a single or multiple responses from a pre-defined list.';

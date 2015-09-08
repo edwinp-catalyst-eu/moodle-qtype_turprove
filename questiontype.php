@@ -18,7 +18,7 @@
  * The questiontype class for the multiple choice question type.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
@@ -29,10 +29,10 @@ defined('MOODLE_INTERNAL') || die();
  * The multiple choice question type.
  *
  */
-class qtype_turmultiplechoice extends default_questiontype {
+class qtype_turprove extends default_questiontype {
     public function get_question_options($question) {
         global $DB, $OUTPUT;
-        $question->options = $DB->get_record('question_turmultiplechoice',
+        $question->options = $DB->get_record('question_turprove',
                 array('question' => $question->id), '*', MUST_EXIST);
         parent::get_question_options($question);
     }
@@ -53,7 +53,7 @@ class qtype_turmultiplechoice extends default_questiontype {
             }
         }
         if ($answercount < 2) { // check there are at lest 2 answers for multiple choice
-            $result->notice = get_string('notenoughanswers', 'qtype_turmultiplechoice', '2');
+            $result->notice = get_string('notenoughanswers', 'qtype_turprove', '2');
             return $result;
         }
 
@@ -112,14 +112,14 @@ class qtype_turmultiplechoice extends default_questiontype {
             $DB->delete_records('question_answers', array('id' => $oldanswer->id));
         }
 
-        $options = $DB->get_record('question_turmultiplechoice', array('question' => $question->id));
+        $options = $DB->get_record('question_turprove', array('question' => $question->id));
         if (!$options) {
             $options = new stdClass();
             $options->question = $question->id;
             $options->correctfeedback = '';
             $options->partiallycorrectfeedback = '';
             $options->incorrectfeedback = '';
-            $options->id = $DB->insert_record('question_turmultiplechoice', $options);
+            $options->id = $DB->insert_record('question_turprove', $options);
         }
 
         $options->answers = implode(',', $answers);
@@ -130,7 +130,7 @@ class qtype_turmultiplechoice extends default_questiontype {
         $options->qdifficulty = $question->qdifficulty;
         $options->shuffleanswers = $question->shuffleanswers;
         $options = $this->save_combined_feedback_helper($options, $question, $context, true);
-        $DB->update_record('question_turmultiplechoice', $options);
+        $DB->update_record('question_turprove', $options);
 
         $this->save_hints($question, true);
 
@@ -145,14 +145,14 @@ class qtype_turmultiplechoice extends default_questiontype {
         // Perform sanity checks on fractional grades
         if ($options->single) {
             if ($maxfraction != 1) {
-                $result->noticeyesno = get_string('fractionsnomax', 'qtype_turmultiplechoice',
+                $result->noticeyesno = get_string('fractionsnomax', 'qtype_turprove',
                         $maxfraction * 100);
                 return $result;
             }
         } else {
             $totalfraction = round($totalfraction, 2);
             if ($totalfraction != 1) {
-                $result->noticeyesno = get_string('fractionsaddwrong', 'qtype_turmultiplechoice',
+                $result->noticeyesno = get_string('fractionsaddwrong', 'qtype_turprove',
                         $totalfraction * 100);
                 return $result;
             }
@@ -162,9 +162,9 @@ class qtype_turmultiplechoice extends default_questiontype {
     protected function make_question_instance($questiondata) {
         question_bank::load_question_definition_classes($this->name());
         if ($questiondata->options->single) {
-            $class = 'qtype_turmultiplechoice_single_question';
+            $class = 'qtype_turprove_single_question';
         } else {
-            $class = 'qtype_turmultiplechoice_multi_question';
+            $class = 'qtype_turprove_multi_question';
         }
         return new $class();
     }
@@ -180,7 +180,7 @@ class qtype_turmultiplechoice extends default_questiontype {
         if (!empty($questiondata->options->layout)) {
             $question->layout = $questiondata->options->layout;
         } else {
-            $question->layout = qtype_turmultiplechoice_single_question::LAYOUT_VERTICAL;
+            $question->layout = qtype_turprove_single_question::LAYOUT_VERTICAL;
         }
         $this->initialise_combined_feedback($question, $questiondata, true);
 
@@ -189,7 +189,7 @@ class qtype_turmultiplechoice extends default_questiontype {
 
     public function delete_question($questionid, $contextid) {
         global $DB;
-        $DB->delete_records('question_turmultiplechoice', array('question' => $questionid));
+        $DB->delete_records('question_turprove', array('question' => $questionid));
 
         parent::delete_question($questionid, $contextid);
     }

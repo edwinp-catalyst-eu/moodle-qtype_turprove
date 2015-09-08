@@ -18,28 +18,28 @@
  * Unit tests for the multiple choice question definition classes.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/engine/simpletest/helpers.php');
-require_once($CFG->dirroot . '/question/type/turmultiplechoice/simpletest/helpers.php');
+require_once($CFG->dirroot . '/question/type/turprove/simpletest/helpers.php');
 
 /**
  * Unit tests for the multiple choice, multiple response question definition class.
  *
  */
-class qtype_turmultiplechoice_single_question_test extends UnitTestCase {
+class qtype_turprove_single_question_test extends UnitTestCase {
 
     public function test_get_expected_data() {
-        $question = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_single_question();
+        $question = test_turprove_question_maker::make_a_turprove_single_question();
         $this->assertEqual(array('answer' => PARAM_INT), $question->get_expected_data());
     }
 
     public function test_is_complete_response() {
-        $question = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_single_question();
+        $question = test_turprove_question_maker::make_a_turprove_single_question();
 
         $this->assertFalse($question->is_complete_response(array()));
         $this->assertTrue($question->is_complete_response(array('answer' => '0')));
@@ -47,7 +47,7 @@ class qtype_turmultiplechoice_single_question_test extends UnitTestCase {
     }
 
     public function test_is_gradable_response() {
-        $question = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_single_question();
+        $question = test_turprove_question_maker::make_a_turprove_single_question();
 
         $this->assertFalse($question->is_gradable_response(array()));
         $this->assertTrue($question->is_gradable_response(array('answer' => '0')));
@@ -55,7 +55,7 @@ class qtype_turmultiplechoice_single_question_test extends UnitTestCase {
     }
 
     public function test_grading() {
-        $question = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_single_question();
+        $question = test_turprove_question_maker::make_a_turprove_single_question();
         $question->shuffleanswers = false;
         $question->start_attempt(new question_attempt_step(), 1);
 
@@ -68,18 +68,18 @@ class qtype_turmultiplechoice_single_question_test extends UnitTestCase {
     }
 
     public function test_grading_rounding_three_right() {
-        question_bank::load_question_definition_classes('turmultiplechoice');
-        $mc = new qtype_turmultiplechoice_multi_question();
-        test_turmultiplechoice_question_maker::initialise_a_question($mc);
+        question_bank::load_question_definition_classes('turprove');
+        $mc = new qtype_turprove_multi_question();
+        test_turprove_question_maker::initialise_a_question($mc);
         $mc->name = 'Odd numbers';
         $mc->questiontext = 'Which are the odd numbers?';
         $mc->generalfeedback = '1, 3 and 5 are the odd numbers.';
-        $mc->qtype = question_bank::get_qtype('turmultiplechoice');
+        $mc->qtype = question_bank::get_qtype('turprove');
 
         $mc->shuffleanswers = 0;
         $mc->qdifficulty = '0';
 
-        test_turmultiplechoice_question_maker::set_standard_combined_feedback_fields($mc);
+        test_turprove_question_maker::set_standard_combined_feedback_fields($mc);
 
         $mc->answers = array(
             11 => new question_answer(11, '1', 0.3333333, '', FORMAT_HTML),
@@ -99,7 +99,7 @@ class qtype_turmultiplechoice_single_question_test extends UnitTestCase {
     }
 
     public function test_get_correct_response() {
-        $question = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_single_question();
+        $question = test_turprove_question_maker::make_a_turprove_single_question();
         $question->shuffleanswers = false;
         $question->start_attempt(new question_attempt_step(), 1);
 
@@ -108,18 +108,18 @@ class qtype_turmultiplechoice_single_question_test extends UnitTestCase {
     }
 
     public function test_summarise_response() {
-        $mc = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_single_question();
+        $mc = test_turprove_question_maker::make_a_turprove_single_question();
         $mc->shuffleanswers = false;
         $mc->start_attempt(new question_attempt_step(), 1);
 
         $summary = $mc->summarise_response(array('answer' => 0),
-                test_turmultiplechoice_question_maker::get_a_qa($mc));
+                test_turprove_question_maker::get_a_qa($mc));
 
         $this->assertEqual('A', $summary);
     }
 
     public function test_classify_response() {
-        $mc = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_single_question();
+        $mc = test_turprove_question_maker::make_a_turprove_single_question();
         $mc->shuffleanswers = false;
         $mc->start_attempt(new question_attempt_step(), 1);
 
@@ -133,7 +133,7 @@ class qtype_turmultiplechoice_single_question_test extends UnitTestCase {
     }
 
     public function test_make_html_inline() {
-        $mc = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_single_question();
+        $mc = test_turprove_question_maker::make_a_turprove_single_question();
         $this->assertEqual('Frog', $mc->make_html_inline('<p>Frog</p>'));
         $this->assertEqual('Frog<br />Toad', $mc->make_html_inline("<p>Frog</p>\n<p>Toad</p>"));
         $this->assertEqual('<img src="http://example.com/pic.png" alt="Graph" />',
@@ -150,10 +150,10 @@ class qtype_turmultiplechoice_single_question_test extends UnitTestCase {
  * Unit tests for the multiple choice, single response question definition class.
  *
  */
-class qtype_turmultiplechoice_multi_question_test extends UnitTestCase {
+class qtype_turprove_multi_question_test extends UnitTestCase {
 
     public function test_get_expected_data() {
-        $question = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_multi_question();
+        $question = test_turprove_question_maker::make_a_turprove_multi_question();
         $question->start_attempt(new question_attempt_step(), 1);
 
         $this->assertEqual(array('choice0' => PARAM_BOOL, 'choice1' => PARAM_BOOL,
@@ -161,7 +161,7 @@ class qtype_turmultiplechoice_multi_question_test extends UnitTestCase {
     }
 
     public function test_is_complete_response() {
-        $question = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_multi_question();
+        $question = test_turprove_question_maker::make_a_turprove_multi_question();
         $question->start_attempt(new question_attempt_step(), 1);
 
         $this->assertFalse($question->is_complete_response(array()));
@@ -173,7 +173,7 @@ class qtype_turmultiplechoice_multi_question_test extends UnitTestCase {
     }
 
     public function test_is_gradable_response() {
-        $question = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_multi_question();
+        $question = test_turprove_question_maker::make_a_turprove_multi_question();
         $question->start_attempt(new question_attempt_step(), 1);
 
         $this->assertFalse($question->is_gradable_response(array()));
@@ -185,7 +185,7 @@ class qtype_turmultiplechoice_multi_question_test extends UnitTestCase {
     }
 
     public function test_grading() {
-        $question = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_multi_question();
+        $question = test_turprove_question_maker::make_a_turprove_multi_question();
         $question->shuffleanswers = false;
         $question->start_attempt(new question_attempt_step(), 1);
 
@@ -201,7 +201,7 @@ class qtype_turmultiplechoice_multi_question_test extends UnitTestCase {
     }
 
     public function test_get_correct_response() {
-        $question = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_multi_question();
+        $question = test_turprove_question_maker::make_a_turprove_multi_question();
         $question->shuffleanswers = false;
         $question->start_attempt(new question_attempt_step(), 1);
 
@@ -210,7 +210,7 @@ class qtype_turmultiplechoice_multi_question_test extends UnitTestCase {
     }
 
     public function test_get_question_summary() {
-        $mc = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_single_question();
+        $mc = test_turprove_question_maker::make_a_turprove_single_question();
         $mc->start_attempt(new question_attempt_step(), 1);
 
         $qsummary = $mc->get_question_summary();
@@ -222,18 +222,18 @@ class qtype_turmultiplechoice_multi_question_test extends UnitTestCase {
     }
 
     public function test_summarise_response() {
-        $mc = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_multi_question();
+        $mc = test_turprove_question_maker::make_a_turprove_multi_question();
         $mc->shuffleanswers = false;
         $mc->start_attempt(new question_attempt_step(), 1);
 
         $summary = $mc->summarise_response(array('choice1' => 1, 'choice2' => 1),
-                test_turmultiplechoice_question_maker::get_a_qa($mc));
+                test_turprove_question_maker::get_a_qa($mc));
 
         $this->assertEqual('B; C', $summary);
     }
 
     public function test_classify_response() {
-        $mc = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_multi_question();
+        $mc = test_turprove_question_maker::make_a_turprove_multi_question();
         $mc->shuffleanswers = false;
         $mc->start_attempt(new question_attempt_step(), 1);
 

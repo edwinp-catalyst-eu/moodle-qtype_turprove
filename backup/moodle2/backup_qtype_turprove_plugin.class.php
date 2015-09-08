@@ -24,10 +24,10 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Provides the information to backup turmultiplechoice questions
+ * Provides the information to backup turprove questions
  *
  */
-class backup_qtype_turmultiplechoice_plugin extends backup_qtype_plugin {
+class backup_qtype_turprove_plugin extends backup_qtype_plugin {
 
     /**
      * Returns the qtype information to attach to question element
@@ -35,7 +35,7 @@ class backup_qtype_turmultiplechoice_plugin extends backup_qtype_plugin {
     protected function define_question_plugin_structure() {
 
         // Define the virtual plugin element with the condition to fulfill
-        $plugin = $this->get_plugin_element(null, '../../qtype', 'turmultiplechoice');
+        $plugin = $this->get_plugin_element(null, '../../qtype', 'turprove');
 
         // Create one standard named plugin element (the visible container)
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
@@ -48,17 +48,17 @@ class backup_qtype_turmultiplechoice_plugin extends backup_qtype_plugin {
         $this->add_question_question_answers($pluginwrapper);
 
         // Now create the qtype own structures
-        $turmultiplechoice = new backup_nested_element('turmultiplechoice', array('id'), array(
+        $turprove = new backup_nested_element('turprove', array('id'), array(
             'layout', 'single', 'shuffleanswers',
             'correctfeedback', 'correctfeedbackformat',
             'partiallycorrectfeedback', 'partiallycorrectfeedbackformat',
             'incorrectfeedback', 'incorrectfeedbackformat', 'qdifficulty', 'shownumcorrect', 'autoplay'));
 
         // Now the own qtype tree
-        $pluginwrapper->add_child($turmultiplechoice);
+        $pluginwrapper->add_child($turprove);
 
         // set source to populate the data
-        $turmultiplechoice->set_source_table('question_turmultiplechoice',
+        $turprove->set_source_table('question_turprove',
                 array('question' => backup::VAR_PARENTID));
 
         // don't need to annotate ids nor files

@@ -18,12 +18,12 @@
  * Version information for the multiple choice question type.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'qtype_turmultiplechoice';
+$plugin->component = 'qtype_turprove';
 $plugin->version   = 2015090400;
 $plugin->requires  = 2011102700;
 $plugin->maturity  = MATURITY_BETA;

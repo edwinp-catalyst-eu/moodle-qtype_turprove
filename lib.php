@@ -19,7 +19,7 @@
  *
  * @since      2.0
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
@@ -29,8 +29,8 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Checks file access for multiple choice questions.
  */
-function qtype_turmultiplechoice_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
+function qtype_turprove_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
     global $CFG;
     require_once($CFG->libdir . '/questionlib.php');
-    question_pluginfile($course, $context, 'qtype_turmultiplechoice', $filearea, $args, $forcedownload);
+    question_pluginfile($course, $context, 'qtype_turprove', $filearea, $args, $forcedownload);
 }

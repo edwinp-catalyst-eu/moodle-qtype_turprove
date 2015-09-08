@@ -18,24 +18,24 @@
  * Unit tests for the mulitple choice question definition class.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/question/type/turmultiplechoice/questiontype.php');
+require_once($CFG->dirroot . '/question/type/turprove/questiontype.php');
 
 
 /**
  * Unit tests for the TUR Multiple choice question definition class.
  *
  */
-class qtype_turmultiplechoice_test extends UnitTestCase {
+class qtype_turprove_test extends UnitTestCase {
     protected $qtype;
 
     public function setUp() {
-        $this->qtype = new qtype_turmultiplechoice();
+        $this->qtype = new qtype_turprove();
     }
 
     public function tearDown() {
@@ -43,7 +43,7 @@ class qtype_turmultiplechoice_test extends UnitTestCase {
     }
 
     public function test_name() {
-        $this->assertEqual($this->qtype->name(), 'turmultiplechoice');
+        $this->assertEqual($this->qtype->name(), 'turprove');
     }
 
     protected function get_test_question_data() {

@@ -18,7 +18,7 @@
  * Multiple choice question definition classes.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  * single select and multiple select.
  *
  */
-abstract class qtype_turmultiplechoice_base extends question_graded_automatically {
+abstract class qtype_turprove_base extends question_graded_automatically {
     const LAYOUT_DROPDOWN = 0;
     const LAYOUT_VERTICAL = 1;
     const LAYOUT_HORIZONTAL = 2;
@@ -135,9 +135,9 @@ abstract class qtype_turmultiplechoice_base extends question_graded_automaticall
  * Represents a multiple choice question where only one choice should be selected.
  *
  */
-class qtype_turmultiplechoice_single_question extends qtype_turmultiplechoice_base {
+class qtype_turprove_single_question extends qtype_turprove_base {
     public function get_renderer(moodle_page $page) {
-        return $page->get_renderer('qtype_turmultiplechoice', 'single');
+        return $page->get_renderer('qtype_turprove', 'single');
     }
 
     public function get_min_fraction() {
@@ -215,7 +215,7 @@ class qtype_turmultiplechoice_single_question extends qtype_turmultiplechoice_ba
         if ($this->is_gradable_response($response)) {
             return '';
         }
-        return get_string('pleaseselectananswer', 'qtype_turmultiplechoice');
+        return get_string('pleaseselectananswer', 'qtype_turprove');
     }
 
     public function get_response(question_attempt $qa) {
@@ -232,9 +232,9 @@ class qtype_turmultiplechoice_single_question extends qtype_turmultiplechoice_ba
  * Represents a multiple choice question where multiple choices can be selected.
  *
  */
-class qtype_turmultiplechoice_multi_question extends qtype_turmultiplechoice_base {
+class qtype_turprove_multi_question extends qtype_turprove_base {
     public function get_renderer(moodle_page $page) {
-        return $page->get_renderer('qtype_turmultiplechoice', 'multi');
+        return $page->get_renderer('qtype_turprove', 'multi');
     }
 
     public function get_min_fraction() {
@@ -394,7 +394,7 @@ class qtype_turmultiplechoice_multi_question extends qtype_turmultiplechoice_bas
         if ($this->is_gradable_response($response)) {
             return '';
         }
-        return get_string('pleaseselectatleastoneanswer', 'qtype_turmultiplechoice');
+        return get_string('pleaseselectatleastoneanswer', 'qtype_turprove');
     }
 
     /**

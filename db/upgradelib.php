@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Upgrade library code for the turmultiplechoice question type.
+ * Upgrade library code for the turprove question type.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
@@ -26,17 +26,17 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Class for converting attempt data for turmultiplechoice questions when upgrading
+ * Class for converting attempt data for turprove questions when upgrading
  * attempts to the new question engine.
  *
  * This class is used by the code in question/engine/upgrade/upgradelib.php.
  *
  */
-class qtype_turmultiplechoice_qe2_attempt_updater extends question_qtype_attempt_updater {
+class qtype_turprove_qe2_attempt_updater extends question_qtype_attempt_updater {
     protected $order;
 
     public function is_blank_answer($state) {
-        // blank turmultiplechoice answers are not empty strings, they rather end in a colon
+        // blank turprove answers are not empty strings, they rather end in a colon
         return empty($state->answer) || substr($state->answer, -1) == ':';
     }
 

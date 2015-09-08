@@ -17,12 +17,12 @@
 /**
  * This file contains tests that walk mutichoice questions through various behaviours.
  *
- * Note, there are already lots of tests of the turmultiplechoice type in the behaviour
- * tests. (Search for test_turmultiplechoice_question_maker::make_a_turmultiplechoice.) This file only
+ * Note, there are already lots of tests of the turprove type in the behaviour
+ * tests. (Search for test_turprove_question_maker::make_a_turprove.) This file only
  * contains a few additional tests for problems that were found during testing.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
@@ -30,17 +30,17 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/engine/lib.php');
 require_once($CFG->dirroot . '/question/engine/simpletest/helpers.php');
-require_once($CFG->dirroot . '/question/type/turmultiplechoice/simpletest/helpers.php');
+require_once($CFG->dirroot . '/question/type/turprove/simpletest/helpers.php');
 
 /**
  * Unit tests for the mutiple choice question type.
  *
  */
-class qtype_turmultiplechoice_walkthrough_test extends qbehaviour_walkthrough_test_base {
-    public function test_deferredfeedback_feedback_turmultiplechoice_single() {
+class qtype_turprove_walkthrough_test extends qbehaviour_walkthrough_test_base {
+    public function test_deferredfeedback_feedback_turprove_single() {
 
-        // Create a turmultiplechoice, single question.
-        $mc = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_single_question();
+        // Create a turprove, single question.
+        $mc = test_turprove_question_maker::make_a_turprove_single_question();
         $mc->shuffleanswers = false;
         $mc->answers[14]->fraction = 0.1; // Make one of the choices partially right.
         $rightindex = 0;
@@ -71,9 +71,9 @@ class qtype_turmultiplechoice_walkthrough_test extends qbehaviour_walkthrough_te
                 new PatternExpectation('/class="r1"/'));
     }
 
-    public function test_deferredfeedback_feedback_turmultiplechoice_multi() {
-        // Create a turmultiplechoice, multi question.
-        $mc = test_turmultiplechoice_question_maker::make_a_turmultiplechoice_multi_question();
+    public function test_deferredfeedback_feedback_turprove_multi() {
+        // Create a turprove, multi question.
+        $mc = test_turprove_question_maker::make_a_turprove_multi_question();
         $mc->shuffleanswers = false;
 
         $this->start_attempt_at_question($mc, 'deferredfeedback', 2);

@@ -20,7 +20,7 @@ $file_record = array(
 $sql = "SELECT q.id, q.image AS questionimage
           FROM {question} q
          WHERE q.qtype = ?";
-$params = array('turmultiplechoice');
+$params = array('turprove');
 $questions = $DB->get_records_sql($sql, $params);
 
 foreach ($questions as $question) {

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="question/type/turmultiplechoice/db" VERSION="20150904" COMMENT="XMLDB file for Moodle question/type/turmultiplechoice"
+<XMLDB PATH="question/type/turprove/db" VERSION="20150908" COMMENT="XMLDB file for Moodle question/type/turprove"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="question_turmultiplechoice" COMMENT="Options for TUR Multiple choice questions">
+    <TABLE NAME="question_turprove" COMMENT="Options for TUR Multiple choice questions">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="question"/>
         <FIELD NAME="question" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references question.id" NEXT="layout" PREVIOUS="id"/>

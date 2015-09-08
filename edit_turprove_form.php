@@ -18,7 +18,7 @@
  * Defines the editing form for the multiple choice question type.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Multiple choice editing form definition.
  */
-class qtype_turmultiplechoice_edit_form extends question_edit_form {
+class qtype_turprove_edit_form extends question_edit_form {
     /**
      * Add question-type specific form fields.
      *
@@ -41,16 +41,16 @@ class qtype_turmultiplechoice_edit_form extends question_edit_form {
         $mform->removeElement('generalfeedback');
 
         $mform->addElement('advcheckbox', 'autoplay',
-                get_string('autoplay', 'qtype_turmultiplechoice'), null, null, array(0, 1));
-        $mform->addHelpButton('autoplay', 'autoplay', 'qtype_turmultiplechoice');
+                get_string('autoplay', 'qtype_turprove'), null, null, array(0, 1));
+        $mform->addHelpButton('autoplay', 'autoplay', 'qtype_turprove');
         $mform->setDefault('autoplay', 0);
 
         $menu = array(
-            get_string('answersingleno', 'qtype_turmultiplechoice'),
-            get_string('answersingleyes', 'qtype_turmultiplechoice'),
+            get_string('answersingleno', 'qtype_turprove'),
+            get_string('answersingleyes', 'qtype_turprove'),
         );
         $mform->addElement('select', 'single',
-                get_string('answerhowmany', 'qtype_turmultiplechoice'), $menu);
+                get_string('answerhowmany', 'qtype_turprove'), $menu);
         $mform->setDefault('single', 0);
 
         // 'Image to display' filemanager
@@ -62,22 +62,22 @@ class qtype_turmultiplechoice_edit_form extends question_edit_form {
             array('maxfiles' => 1, 'accepted_types' => array('.mp3'))); // TODO: Use lang string
 
         $question_difficulties = array();
-        $question_difficulties[0] = get_string('q_easy1', 'qtype_turmultiplechoice');
-        $question_difficulties[1] = get_string('q_easy2', 'qtype_turmultiplechoice');
-        $question_difficulties[2] = get_string('q_easy3', 'qtype_turmultiplechoice');
-        $question_difficulties[3] = get_string('q_medium1', 'qtype_turmultiplechoice');
-        $question_difficulties[4] = get_string('q_medium2', 'qtype_turmultiplechoice');
-        $question_difficulties[5] = get_string('q_medium3', 'qtype_turmultiplechoice');
-        $question_difficulties[6] = get_string('q_hard1', 'qtype_turmultiplechoice');
-        $question_difficulties[7] = get_string('q_hard2', 'qtype_turmultiplechoice');
-        $question_difficulties[8] = get_string('q_hard3', 'qtype_turmultiplechoice');
+        $question_difficulties[0] = get_string('q_easy1', 'qtype_turprove');
+        $question_difficulties[1] = get_string('q_easy2', 'qtype_turprove');
+        $question_difficulties[2] = get_string('q_easy3', 'qtype_turprove');
+        $question_difficulties[3] = get_string('q_medium1', 'qtype_turprove');
+        $question_difficulties[4] = get_string('q_medium2', 'qtype_turprove');
+        $question_difficulties[5] = get_string('q_medium3', 'qtype_turprove');
+        $question_difficulties[6] = get_string('q_hard1', 'qtype_turprove');
+        $question_difficulties[7] = get_string('q_hard2', 'qtype_turprove');
+        $question_difficulties[8] = get_string('q_hard3', 'qtype_turprove');
         $mform->addElement('select', 'qdifficulty',
-                get_string('qdifficulty', 'qtype_turmultiplechoice'), $question_difficulties);
+                get_string('qdifficulty', 'qtype_turprove'), $question_difficulties);
         $mform->setDefault('qdifficulty', 0);
 
         $mform->addElement('hidden', 'shuffleanswers', 1);
 
-        $this->add_per_answer_fields($mform, get_string('choiceno', 'qtype_turmultiplechoice', '{no}'),
+        $this->add_per_answer_fields($mform, get_string('choiceno', 'qtype_turprove', '{no}'),
                 question_bank::fraction_options_full(), max(4, QUESTION_NUMANS_START), 4);
 
         $this->add_combined_feedback_fields(true);
@@ -209,7 +209,7 @@ class qtype_turmultiplechoice_edit_form extends question_edit_form {
                 continue;
             }
             if ($trimmedanswer === '') {
-                $errors['fraction['.$key.']'] = get_string('errgradesetanswerblank', 'qtype_turmultiplechoice');
+                $errors['fraction['.$key.']'] = get_string('errgradesetanswerblank', 'qtype_turprove');
             }
 
             $answercount++;
@@ -224,23 +224,23 @@ class qtype_turmultiplechoice_edit_form extends question_edit_form {
         }
 
         if ($answercount == 0) {
-            $errors['answer[0]'] = get_string('notenoughanswers', 'qtype_turmultiplechoice', 2);
-            $errors['answer[1]'] = get_string('notenoughanswers', 'qtype_turmultiplechoice', 2);
+            $errors['answer[0]'] = get_string('notenoughanswers', 'qtype_turprove', 2);
+            $errors['answer[1]'] = get_string('notenoughanswers', 'qtype_turprove', 2);
         } else if ($answercount == 1) {
-            $errors['answer[1]'] = get_string('notenoughanswers', 'qtype_turmultiplechoice', 2);
+            $errors['answer[1]'] = get_string('notenoughanswers', 'qtype_turprove', 2);
 
         }
 
         /// Perform sanity checks on fractional grades
         if ($data['single']) {
             if ($maxfraction != 1) {
-                $errors['fraction[0]'] = get_string('errfractionsnomax', 'qtype_turmultiplechoice',
+                $errors['fraction[0]'] = get_string('errfractionsnomax', 'qtype_turprove',
                         $maxfraction * 100);
             }
         } else {
             $totalfraction = round($totalfraction, 2);
             if ($totalfraction != 1) {
-                $errors['fraction[0]'] = get_string('errfractionsaddwrong', 'qtype_turmultiplechoice',
+                $errors['fraction[0]'] = get_string('errfractionsaddwrong', 'qtype_turprove',
                         $totalfraction * 100);
             }
         }
@@ -248,14 +248,14 @@ class qtype_turmultiplechoice_edit_form extends question_edit_form {
     }
 
     public function qtype() {
-        return 'turmultiplechoice';
+        return 'turprove';
     }
 
     /**
      * Language string to use for 'Add {no} more {whatever we call answers}'.
      */
     protected function get_more_choices_string() {
-        return get_string('addmorechoiceblanks', 'qtype_turmultiplechoice');
+        return get_string('addmorechoiceblanks', 'qtype_turprove');
     }
 
     function repeat_elements($elementobjs, $repeats, $options, $repeathiddenname,
