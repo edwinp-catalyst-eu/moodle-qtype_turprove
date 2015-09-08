@@ -1,20 +1,20 @@
-input[name=finishattempt] {
-    display: none;
-}
 td#customtimer {
     display: none;
+}
+h2.main {display: none;}
+
+div.pagingbar{ 
+    display: none;}
+
+div.quizanswertext{
+    width: 280px;
+    display: inline;
 }
 #mcq {
     margin: 20px;
     padding: 0;
     margin-right: 20px;
     background-color: #fff;
-}
-div.history {
-    display: none;
-}
-label.quiztext {
-    width: 50px;
 }
 .grading {
     display: none;
@@ -26,6 +26,7 @@ tr{
     background-color: #fff;
 }
 td{
+    /*border: 1px solid red;*/
     margin: 0;
     padding: 0;
 }
@@ -34,17 +35,18 @@ td.img{
 }
 td.img img{
     margin: 0;
-    padding: 0;
-    border-width: 1px;
-    border-color: #666666;
-    border-style: solid;
+    padding: 2;
+    border: 1px solid #666;
     vertical-align: text-top;
 }
 .answeras {
+    /*  margin: 20px; */
+    text-align: bottom;
     position: relative;
     bottom: 0px;
     padding: 0;
     padding-left: 6px;
+    margin-top: 10px;
     background-color: #fff;
 }
 td .incorrect {
@@ -55,11 +57,13 @@ td .correct {
     background-color: #fff;
     color: #336633;
 }
+
 .que .feedback {
     border-color: #DDD;
 }
 .que .incorrect {
 }
+
 .que.multianswer .incorrect {
     background-color: #faa;
 }
@@ -74,6 +78,7 @@ td .correct {
 }
 td.qnum{
     background-color: #e0f0ff;
+    margin: 0;
     margin-left: 12px;
     padding-top: 0px;
     padding-bottom: 0px;
@@ -83,15 +88,14 @@ td.qnum{
     font-weight: bold;
     color: #666;
 }
+
 #answers td {
     vertical-align: top;
-}
-input.submit.btn {
-    margin: 20px;
 }
 td label {
     padding-right: 20px;
 }
+
 label {
     width: 100px;
 }
@@ -118,15 +122,12 @@ label {
     display: block;
     font-weight: bold;
     color: #666;
-    padding-bottom: 54px;
+    padding-bottom: 24px;
 }
 .q_container {
-    width: 700px;
-    background-color: #fff;
     margin-left: 10px;
     margin-top: 10px;
-    margin-bottom: 9px;
-
+    /*margin-bottom: 10px;*/
 }
 .paddingleft {
     margin-left: 20px;
@@ -135,35 +136,34 @@ label {
 .questionline{
     border-top: 2px solid #336633;
 }
-input {
-    margin-left: 3px;
+td .qtext {
+    font-family: "Arial";
+    color: #336633;
+    font-size: 14px;
+    font-weight: bold;
+    padding-top: 12px;
+    /*padding-left: 6px;*/
+    padding-right: 10px;
+    vertical-align: text-top;
 }
-.submitbtns {
-    margin: 0;
-    padding: 0;
+label {
+    margin-left: 6px;
 }
-#markall,
-#saveattempt,
-#startsound,
-#pausesound,
-#movenext,
-#moveback,
-body#mod-quiz-review div.tabtree {
+
+.content {
+    background-color: #fff;
+}
+
+input#markall,
+input#saveattempt {
     display: none;
 }
-#finishattempt {
-    text-align: left;
-}
-/* SVARMULIGHEDER*/
-label.correct {
-    margin: 0;
-    padding: 0;
-    font-size: 16px;
+.spacer {
+    width: 30px;
 }
 a img.zoom {
     border: none;
 }
-
-
-
-
+input[name=finishattempt] {
+    display: none;
+}

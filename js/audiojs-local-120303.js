@@ -6,16 +6,16 @@
 
 jQuery(document).ready(function($) {
     
-    if (quizShowAudioControls) {
-        $('div.audioplay').show();
-    }
-    
-    
     // detect ios, do not autoplay (as ios does not support)
     var deviceAgent = navigator.userAgent.toLowerCase();
-    var agentID = deviceAgent.match(/(iphone|ipod|ipad)/);
-    if (agentID) {
-        soundAutoPlay = false;    
+    if (deviceAgent.match(/(iphone|ipod|ipad)/)) {
+        soundAutoPlay = false;  
+        quizShowAudioControls = true;
+    }
+    
+    // show controls
+    if (quizShowAudioControls) {
+        $('div.audioplay').show();
     }
     
     // setup the audio player
@@ -36,7 +36,7 @@ jQuery(document).ready(function($) {
     });
     
     // initialize autoplay
-    var player = a[0];
+    player = a[0];
     $(player).data('playlist', $('div.audioplay'))
     
     // start autoplay
@@ -56,8 +56,8 @@ jQuery(document).ready(function($) {
             player.pause();
         } else {
             // play the audio 
-            $('div.audioplay').removeClass('playing');
             player.load($(this).attr('data-src'));
+            $('div.audioplay').removeClass('playing');
             $(this).addClass('playing');
             player.play();
         }

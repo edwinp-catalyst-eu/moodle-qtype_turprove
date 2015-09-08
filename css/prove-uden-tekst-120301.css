@@ -1,0 +1,167 @@
+.audiojs .pause {
+  display: none;
+}
+.audiojs .play {
+  display: none;
+}
+
+
+div#mainlayout {
+    margin-top: 30px;
+}
+
+div#leftcolumn {
+    float: left;
+    width: 313px;
+    padding-left: 20px;
+}
+
+div#centercolumn {
+    float: right;
+    width: 533px;
+    padding-right: 75px;
+}
+
+td.question_rightcolmn {
+    width: 48px;
+}
+td.question_leftcolmn {
+    width: 30px;
+}
+
+div#mainlayout {
+    height: 475px;
+}
+
+.proeve_chbx {
+    width: 15px;
+}
+
+/* ------------------------------- */
+
+
+.question_midcolmn {
+	width: 230px;
+}
+
+.question_leftcolmn {
+	width: 25px;
+	vertical-align: top;
+
+}
+td.question_sound {
+        padding-top: 10px;
+}
+
+td.question_sound.question_text {
+        padding-top: 5px;
+}
+
+.question_rightcolmn {
+	vertical-align: top;
+}
+
+.question_deftext {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+.que {
+	border: none;
+	margin: 0 0 0 0;
+}
+
+.que .content {
+	float: none;
+	margin: 0 0 0 0;
+	width: 100%;
+}
+
+.prevnextquestion {
+	position:relative;
+	left:375px;
+        width: 553px;
+}
+
+input#menunavigate {
+    float: right;
+}
+
+.swfsound {
+        width:1px;
+        height: 1px;
+}
+
+.navbar .navbutton, .navbar .menu {
+	margin-top: 0px;
+}
+
+.anwsertext, .feedbacktext {
+	height: 66px;
+	vertical-align: top;
+}
+
+td.anwsertext span {
+	font-size: 2.75em;
+        font-weight: bold;
+	color: #555555;
+}
+
+td.turbottomborder {
+	border-bottom: 2px solid #c5d5c4
+}
+
+tr.cellspacer-top {
+	height: 9px;
+}
+
+tr.cellspacer-center {
+	height: 0px;
+}
+
+div.submitbtns {
+	margin-left:48px;
+	margin-right:0;
+	position:relative;
+	top:-42px;
+	width:360px;
+	text-align: left;
+}
+
+/* gem elementer fra quiz review */
+h2.main {
+	display: none;
+	}
+	
+form {
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+}
+
+table.quizreviewsummary {
+	display: none;
+}
+
+#mod-quiz-review #page .controls {
+	display: none;
+}
+
+.paging,
+.controls {
+	display: none;
+}
+
+#page { 
+margin-left:auto;
+margin-right:auto;
+}
+
+input[name="saveattempt"] {
+	display: none;
+}
+
+
+img.qimage {
+	border: 1px solid #666666;
+}

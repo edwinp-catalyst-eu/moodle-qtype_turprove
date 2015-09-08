@@ -1,7 +1,7 @@
 <?php  //$Id: upgrade.php,v 1.1 2007/09/11 09:37:13 thepurpleblob Exp $
 
 // This file keeps track of upgrades to 
-// the multichoice qtype plugin
+// the turprove qtype plugin
 //
 // Sometimes, changes between versions involve
 // alterations to database structures and other
@@ -17,7 +17,7 @@
 // The commands in here will all be database-neutral,
 // using the functions defined in lib/ddllib.php
 
-function xmldb_qtype_turmultiplechoice_upgrade($oldversion=0) {
+function xmldb_qtype_turprove_upgrade($oldversion=0) {
 
     global $CFG, $THEME, $db;
 

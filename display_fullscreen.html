@@ -1,0 +1,44 @@
+<div class="q_container">
+    <!-- Must be present for future implementation of timer/clock -->
+    <div id="timer"></div>
+    <table class='qtable'>
+        <tr>
+            <td class='fullscreen_nav'><input type="button" name="previousquestion" value="<?php echo $back; ?>" onclick="navigateprev()"/></td>
+            <td width="<?php echo $thumb_w;?>"><img width="<?php echo $thumb_w; ?>" height="<?php echo $thumb_h; ?>" class="qimage" src="<?php echo $image; ?>" alt="" /></td>
+            <td class='fullscreen_nav'><input type="button" name="nextquestion" value="<?php echo $forward; ?>" onclick="navigatenext()"/></td>
+        </tr>
+    </table>
+    <div class='qtext'>Spørgsmål <?php echo($qnumbering); ?></div>
+    <div class='flashsounds'>
+        <?php echo $questionspeak; ?>
+    </div>
+    <?php $i = 0; $row = 1; $tc = 1; foreach ($anss as $answer) { $i++; ?>
+    <div class='hidden_ctrls'>
+        <?php echo $answer->control; ?>
+    </div>
+    <div class='flashsounds'><?php echo $answer->answersound; ?></div>
+    <?php $tc++; } ?>
+</div>
+
+<script type="text/javascript">
+    function confirmclose(e) {
+        if (!(window.confirm("<?php echo addslashes(get_string('confirmclose', 'quiz')); ?>"))) {
+            e.returnValue = false;
+            return false;
+        } else {
+            e.returnValue = true;
+            return true;
+        }
+    }
+    function navigatemenu() {
+        if(window.location.href.indexOf("review.php?attempt") != -1) {
+            window.location = "<?php echo $CFG->wwwroot . '/course/view.php?id=' . $COURSE->id; ?>";
+        } else {
+            var btnFinish = document.getElementsByName('finishattempt');
+            btnFinish[0].click();
+        }
+     }
+</script>
+
+<!--Add the audio controller-->
+<audio type="audio/mp3" preload="auto" src=""></audio>

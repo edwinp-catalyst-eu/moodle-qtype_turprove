@@ -1,10 +1,24 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Multiple choice question renderer classes.
  *
  * @package    qtype
- * @subpackage turmultiplechoice
+ * @subpackage turprove
  */
 
 
@@ -18,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2009 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined_feedback_renderer {
+abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback_renderer {
     protected abstract function get_input_type();
 
     protected abstract function get_input_name(question_attempt $qa, $value);
@@ -138,7 +152,7 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
     /**
      * @param int $num The number, starting at 0.
      * @param string $style The style to render the number in. One of the
-     * options returned by {@link qtype_turmultiplechoice:;get_numbering_styles()}.
+     * options returned by {@link qtype_turprove:;get_numbering_styles()}.
      * @return string the number $num in the requested style.
      */
     protected function number_in_style($num, $style) {
@@ -179,7 +193,7 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
  * @copyright  2009 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_renderer_base {
+class qtype_turprove_single_renderer extends qtype_turprove_renderer_base {
     protected function get_input_type() {
         return 'radio';
     }
@@ -201,7 +215,7 @@ class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_re
     }
 
     protected function prompt() {
-        return get_string('selectone', 'qtype_turmultiplechoice');
+        return get_string('selectone', 'qtype_turprove');
     }
 
     public function correct_response(question_attempt $qa) {
@@ -210,7 +224,7 @@ class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_re
         foreach ($question->answers as $ansid => $ans) {
             if (question_state::graded_state_for_fraction($ans->fraction) ==
                     question_state::$gradedright) {
-                return get_string('correctansweris', 'qtype_turmultiplechoice',
+                return get_string('correctansweris', 'qtype_turprove',
                         $question->make_html_inline($question->format_text($ans->answer, $ans->answerformat,
                                 $qa, 'question', 'answer', $ansid)));
             }
@@ -227,7 +241,7 @@ class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_re
  * @copyright  2009 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_turmultiplechoice_multi_renderer extends qtype_turmultiplechoice_renderer_base {
+class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
     protected function get_input_type() {
         return 'checkbox';
     }
@@ -253,7 +267,7 @@ class qtype_turmultiplechoice_multi_renderer extends qtype_turmultiplechoice_ren
     }
 
     protected function prompt() {
-        return get_string('selectmulti', 'qtype_turmultiplechoice');
+        return get_string('choose_yesno', 'qtype_turprove');
     }
 
     public function correct_response(question_attempt $qa) {
@@ -268,7 +282,7 @@ class qtype_turmultiplechoice_multi_renderer extends qtype_turmultiplechoice_ren
         }
 
         if (!empty($right)) {
-                return get_string('correctansweris', 'qtype_turmultiplechoice',
+                return get_string('correctansweris', 'qtype_turprove',
                         implode(', ', $right));
         }
         return '';
@@ -277,7 +291,7 @@ class qtype_turmultiplechoice_multi_renderer extends qtype_turmultiplechoice_ren
     protected function num_parts_correct(question_attempt $qa) {
         if ($qa->get_question()->get_num_selected_choices($qa->get_last_qt_data()) >
                 $qa->get_question()->get_num_correct_choices()) {
-            return get_string('toomanyselected', 'qtype_turmultiplechoice');
+            return get_string('toomanyselected', 'qtype_turprove');
         }
 
         return parent::num_parts_correct($qa);
