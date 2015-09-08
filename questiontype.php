@@ -571,7 +571,7 @@ class question_turprove_qtype extends default_questiontype {
         return array_values($QsT);
     }
 
-    function returnQnumber($qid) {
+    function returnQnumber(&$qid) {
         $qnumbers = array();
         $qnumbers = $this->question_numbering();
         $key = array_search($qid, $qnumbers);
@@ -659,7 +659,7 @@ class question_turprove_qtype extends default_questiontype {
             }
         }
 
-        $qnumbering = $this->returnQnumber(&$question->id);
+        $qnumbering = $this->returnQnumber($question->id);
         $isreview = $this->isreview();
         $zoom = $this->plugin_baseurl() . '/images/speaker.jpg';
 
