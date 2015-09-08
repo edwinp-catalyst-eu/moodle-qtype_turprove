@@ -1,59 +1,52 @@
-div.turmultiplechoice div.content div.formulation:before,
-div.turmultiplechoice div.content div.formulation:after {
+div.turprove div.content div.formulation:before,
+div.turprove div.content div.formulation:after {
     content: "";
     display: table;
     line-height: 0;
 }
 
-div.turmultiplechoice div.content div.formulation:after {
+div.turprove div.content div.formulation:after {
     clear: both;
 }
 
-div.turmultiplechoice div.content div.formulation:before,
-div.turmultiplechoice div.content div.formulation:after {
+div.turprove div.content div.formulation:before,
+div.turprove div.content div.formulation:after {
     content: "";
     display: table;
     line-height: 0;
 }
 
-div.turmultiplechoice div.content div.formulation div.ablock div.prompt {
+div.turprove div.content div.formulation div.ablock div.prompt {
     min-height: 30px;
 }
 
-div.turmultiplechoice div.content div.formulation div.ablock div.answer {
+div.turprove div.content div.formulation div.ablock div.answer {
     float: left;
     width: 50%;
 }
 
-div.turmultiplechoice div.content div.formulation div.ablock div.questionimage {
+div.turprove div.content div.formulation div.ablock div.questionimage {
     float: right;
     width: 50%;
 }
 
-div.turmultiplechoice div.content div.formulation div.ablock div.answer div.r0,
-div.turmultiplechoice div.content div.formulation div.ablock div.answer div.r1 {
+div.turprove div.content div.formulation div.ablock div.answer div.r0,
+div.turprove div.content div.formulation div.ablock div.answer div.r1 {
     min-height: 30px;
 }
 
-div.turmultiplechoice div.content div.formulation div.ablock div.answer div.r0 label,
-div.turmultiplechoice div.content div.formulation div.ablock div.answer div.r1 label {
+div.turprove div.content div.formulation div.ablock div.answer div.r0 label,
+div.turprove div.content div.formulation div.ablock div.answer div.r1 label {
     display: inline-block;
     width: 30%;
 }
 
-div.turmultiplechoice div.content div.formulation div.audioplay {
-    background-image: url('/question/type/turmultiplechoice/pix/icon_play.png');
+div.turprove div.content div.formulation div.audioplay {
+    background-image: url('/question/type/turprove/pix/icon_play.png');
     background-position: left top;
     cursor: pointer;
     height: 20px;
     width: 20px;
     margin-top: 2px;
     float: left;
-}
-
-div.turmultiplechoice div.content div.formulation div.audioplay.playing {
-    background-image: url('/question/type/turmultiplechoice/pix/icon_pause.png');
-    background-position: left top;
-    height: 20px;
-    width: 20px;
 }

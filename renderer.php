@@ -2,7 +2,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined_feedback_renderer {
+abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback_renderer {
 
     protected abstract function get_input_type();
 
@@ -15,40 +15,35 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
     protected function get_answersound(question_answer $ans, $contextid, $slot, $usageid) {
 
         $fs = get_file_storage();
-        $files = $fs->get_area_files(1, 'question', 'answersound', $ans->id);
-        if ($file = end($files)) {
-            $filename = $file->get_filename();
-            if ($filename != '.') {
-                return moodle_url::make_file_url('/pluginfile.php',
-                        "/1/question/answersound/$usageid/$slot/$ans->id/$filename");
-            }
-        }
+        $files = $fs->get_area_files($contextid, 'question', 'answersound', $ans->id);
+        $file = end($files);
+        $filename = $file->get_filename();
+
+        return moodle_url::make_file_url('/pluginfile.php',
+                "/$contextid/question/answersound/$usageid/$slot/$ans->id/$filename");
     }
 
     protected function get_questionimage($questionid, $contextid, $slot, $usageid) {
 
         $fs = get_file_storage();
-        $files = $fs->get_area_files(1, 'question', 'questionimage', $questionid);
-        if ($file = end($files)) {
-            $filename = $file->get_filename();
-            if ($filename != '.') {
-                return moodle_url::make_file_url('/pluginfile.php',
-                        "/1/question/questionimage/$usageid/$slot/$questionid/$filename");
-            }
-        }
+        $files = $fs->get_area_files($contextid, 'question', 'questionimage', $questionid);
+        $file = end($files);
+        $filename = $file->get_filename();
+
+        return moodle_url::make_file_url('/pluginfile.php',
+                "/$contextid/question/questionimage/$usageid/$slot/$questionid/$filename");
     }
+
 
     protected function get_questionsound($questionid, $contextid, $slot, $usageid) {
 
         $fs = get_file_storage();
-        $files = $fs->get_area_files(1, 'question', 'questionsound', $questionid);
-        if ($file = end($files)) {
-            $filename = $file->get_filename();
-            if ($filename != '.') {
-                return moodle_url::make_file_url('/pluginfile.php',
-                        "/1/question/questionsound/$usageid/$slot/$questionid/$filename");
-            }
-        }
+        $files = $fs->get_area_files($contextid, 'question', 'questionsound', $questionid);
+        $file = end($files);
+        $filename = $file->get_filename();
+
+        return moodle_url::make_file_url('/pluginfile.php',
+                "/$contextid/question/questionsound/$usageid/$slot/$questionid/$filename");
     }
 
     /**
@@ -91,9 +86,9 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
                 unset($inputattributes['checked']);
             }
 
-            $answersound = ($answersoundurl = $this->get_answersound($ans,
-                    $question->contextid, $qa->get_slot(), $qa->get_usage_id())) ?
-                        html_writer::div('', 'audioplay', array('data-src' => $answersoundurl)) : '';
+            $answersound = html_writer::div('', 'audioplay',
+                    array('data-src' => $this->get_answersound($ans,
+                            $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
 
             $hidden = '';
             if (!$options->readonly && $this->get_input_type() == 'checkbox') {
@@ -141,18 +136,9 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
         }
 
         $result = '';
-
-        $questionsoundurl = $this->get_questionsound($question->id,
-                $question->contextid, $qa->get_slot(), $qa->get_usage_id());
-        $audiosource = html_writer::tag('source', '',
-                array('type' => 'audio/mpeg', 'src' => $questionsoundurl));
-        $audiosource .= 'Your browser does not support the audio tag.'; // TODO: Lang string
-        $audioelement = html_writer::tag('audio', $audiosource,
-                array('id' => 'audiodiv'));
-        $result .= $audioelement;
-
         $result .= html_writer::div('', 'audioplay',
-                array('data-src' => $questionsoundurl));
+                array('data-src' => $this->get_questionsound($question->id,
+                        $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
         $result .= html_writer::tag('div', $question->format_questiontext($qa),
                 array('class' => 'qtext'));
 
@@ -178,26 +164,18 @@ abstract class qtype_turmultiplechoice_renderer_base extends qtype_with_combined
                     array('class' => 'validationerror'));
         }
 
-        $this->page->requires->js_init_call(
-                    'M.qtype_turmultiplechoice.init',
-                    array(
-                        '#q' . $qa->get_slot(),
-                        $options->readonly,
-                        $question->autoplay
-                    ),
-                    false,
-                    array(
-                        'name'     => 'qtype_turmultiplechoice',
-                        'fullpath' => '/question/type/turmultiplechoice/module.js',
-                        'requires' => array('base', 'node', 'event', 'overlay'),
-                    )
-                );
+        $this->page->requires->js_init_call('M.qtype_turprove.init',
+                array('#q' . $qa->get_slot()), false, array(
+                    'name'     => 'qtype_turprove',
+                    'fullpath' => '/question/type/turprove/module.js',
+                    'requires' => array('base', 'node', 'event', 'overlay'),
+                ));
 
         return $result;
     }
 }
 
-class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_renderer_base {
+class qtype_turprove_single_renderer extends qtype_turprove_renderer_base {
 
     protected function get_input_type() {
         return 'radio';
@@ -220,11 +198,11 @@ class qtype_turmultiplechoice_single_renderer extends qtype_turmultiplechoice_re
     }
 
     protected function prompt() {
-        return get_string('selectone', 'qtype_turmultiplechoice');
+        return get_string('selectone', 'qtype_turprove');
     }
 }
 
-class qtype_turmultiplechoice_multi_renderer extends qtype_turmultiplechoice_renderer_base {
+class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
 
     protected function get_input_type() {
         return 'checkbox';
@@ -247,6 +225,6 @@ class qtype_turmultiplechoice_multi_renderer extends qtype_turmultiplechoice_ren
     }
 
     protected function prompt() {
-        return get_string('selectmultiple', 'qtype_turmultiplechoice');
+        return get_string('selectmultiple', 'qtype_turprove');
     }
 }
