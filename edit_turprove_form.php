@@ -77,8 +77,12 @@ class qtype_turprove_edit_form extends question_edit_form {
 
         $mform->addElement('hidden', 'shuffleanswers', 1);
 
+        $gradeoptions = array(
+                0 => 'Nej', // TODO: Use lang string
+                1 => 'Ja' // TODO: Use lang string
+            );
         $this->add_per_answer_fields($mform, get_string('choiceno', 'qtype_turprove', '{no}'),
-                question_bank::fraction_options_full(), max(4, QUESTION_NUMANS_START), 4);
+                $gradeoptions, max(4, QUESTION_NUMANS_START), 4);
 
         $this->add_combined_feedback_fields(true);
         $mform->disabledIf('shownumcorrect', 'single', 'eq', 1);
@@ -95,12 +99,12 @@ class qtype_turprove_edit_form extends question_edit_form {
         $repeated[] = $mform->createElement('header', 'answerhdr', $label);
         $repeated[] = $mform->createElement('editor', 'answer',
                 get_string('answer', 'question'), array('rows' => 1), $this->editoroptions);
-        $repeated[] = $mform->createElement('filemanager', 'answersound',
-            'Choose soundfile for answer', null, $filemanageroptions); // TODO: use lang string
         $repeated[] = $mform->createElement('select', 'fraction',
                 get_string('grade'), $gradeoptions);
         $repeated[] = $mform->createElement('editor', 'feedback',
                 get_string('feedback', 'question'), array('rows' => 1), $this->editoroptions);
+        $repeated[] = $mform->createElement('filemanager', 'answersound',
+            'Choose soundfile for answer', null, $filemanageroptions); // TODO: use lang string
         $repeated[] = $mform->createElement('filemanager', 'feedbacksound',
             'Choose soundfile for answerfeedback', null, $filemanageroptions); // TODO: use lang string
         $repeatedoptions['answer']['type'] = PARAM_RAW;
