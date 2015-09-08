@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
  * The multiple choice question type.
  *
  */
-class qtype_turprove extends default_questiontype {
+class qtype_turprove extends question_type {
     public function get_question_options($question) {
         global $DB, $OUTPUT;
         $question->options = $DB->get_record('question_turprove',
