@@ -164,12 +164,20 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                     array('class' => 'validationerror'));
         }
 
-        $this->page->requires->js_init_call('M.qtype_turprove.init',
-                array('#q' . $qa->get_slot()), false, array(
-                    'name'     => 'qtype_turprove',
-                    'fullpath' => '/question/type/turprove/module.js',
-                    'requires' => array('base', 'node', 'event', 'overlay'),
-                ));
+        $this->page->requires->js_init_call(
+                    'M.qtype_turprove.init',
+                    array(
+                        '#q' . $qa->get_slot(),
+                        $options->readonly,
+                        $question->autoplay
+                    ),
+                    false,
+                    array(
+                        'name'     => 'qtype_turprove',
+                        'fullpath' => '/question/type/turprove/module.js',
+                        'requires' => array('base', 'node', 'event', 'overlay'),
+                    )
+                );
 
         return $result;
     }

@@ -1,11 +1,11 @@
 <?php
 
-$string['pluginname'] = 'TUR Prove';
+$string['pluginname'] = 'TUR Prøve';
 $string['pluginname_help'] = 'Question type purely for testing and development';
 $string['pluginname_link'] = 'question/type/turprove';
-$string['pluginnameadding'] = 'Adding a TUR Prove question';
-$string['pluginnameediting'] = 'Editing a TUR Prove question';
-$string['pluginnamesummary'] = 'A TUR Prove question type which...'; // TODO.
+$string['pluginnameadding'] = 'Adding a TUR Prøve question';
+$string['pluginnameediting'] = 'Editing a TUR Prøve question';
+$string['pluginnamesummary'] = 'A TUR Prøve question type which...'; // TODO.
 
 $string['answerhowmany'] = 'One or multiple answers?';
 

@@ -7,7 +7,13 @@ abstract class qtype_turprove_base extends question_graded_automatically {
     const LAYOUT_VERTICAL = 1;
     const LAYOUT_HORIZONTAL = 2;
 
+    public $answers;
+
     public $shuffleanswers;
+    public $qdifficulty;
+    public $autoplay;
+    public $layout = self::LAYOUT_VERTICAL;
+
     public $correctfeedback;
     public $correctfeedbackformat;
     public $partiallycorrectfeedback;
