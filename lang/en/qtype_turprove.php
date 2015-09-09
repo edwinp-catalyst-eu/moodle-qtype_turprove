@@ -26,7 +26,7 @@ $string['notenoughanswers'] = 'This type of question requires at least {$a} choi
 $string['pleaseselectananswer'] = 'Please select an answer.';
 $string['pleaseselectatleastoneanswer'] = 'Please select at least one answer.';
 
-$string['qdifficulty'] = 'Difficulty';
+$string['qdifficulty'] = 'Question difficulty';
 $string['q_easy1'] = 'Difficulty 1';
 $string['q_easy2'] = 'Difficulty 2';
 $string['q_easy3'] = 'Difficulty 3';

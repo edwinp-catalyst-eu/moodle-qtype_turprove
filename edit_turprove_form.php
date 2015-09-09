@@ -44,11 +44,9 @@ class qtype_turprove_edit_form extends question_edit_form {
         $question_difficulties[8] = get_string('q_hard3', 'qtype_turprove');
         $mform->addElement('select', 'qdifficulty', get_string('qdifficulty', 'qtype_turprove'), $question_difficulties);
 
-        // 'Shuffle the choices?' checkbox
-        $mform->addElement('advcheckbox', 'shuffleanswers',
-                get_string('shuffleanswers', 'qtype_turprove'), null, null, array(0, 1));
-        $mform->addHelpButton('shuffleanswers', 'shuffleanswers', 'qtype_turprove');
-        $mform->setDefault('shuffleanswers', 1); // TODO: Use constant
+        $mform->addElement('hidden', 'shuffleanswers', 1);
+        $mform->setType('shuffleanswers', PARAM_INT);
+
         $this->add_per_answer_fields($mform, get_string('choiceno', 'qtype_turprove', '{no}'),
                 question_bank::fraction_options_full(), max(4, QUESTION_NUMANS_START)); // TODO: Set as a constant the number of answers (4 here)
 
