@@ -24,7 +24,7 @@
 
 M.qtype_turprove = M.qtype_turprove || {};
 
-M.qtype_turprove.init = function (Y, questiondiv) {
+M.qtype_turprove.init = function (Y, questiondiv, quiet, autoplay) {
 
     var initialplaythroughcomplete = false;
     var current = 0;

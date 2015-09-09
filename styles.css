@@ -50,3 +50,10 @@ div.turprove div.content div.formulation div.audioplay {
     margin-top: 2px;
     float: left;
 }
+
+div.turprove div.content div.formulation div.audioplay.playing {
+    background-image: url('/question/type/turprove/pix/icon_pause.png');
+    background-position: left top;
+    height: 20px;
+    width: 20px;
+}
