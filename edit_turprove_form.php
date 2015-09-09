@@ -55,7 +55,6 @@ class qtype_turprove_edit_form extends question_edit_form {
                 $gradeoptions, max(4, QUESTION_NUMANS_START), 4);
 
         $this->add_combined_feedback_fields(true);
-        $this->add_interactive_settings(true, true);
     }
 
     protected function get_per_answer_fields($mform, $label, $gradeoptions,
