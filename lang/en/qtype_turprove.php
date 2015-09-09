@@ -16,6 +16,9 @@ $string['autoplay'] = 'Autoplay';
 
 $string['choiceno'] = 'Choice {$a}';
 
+$string['correctanswer'] = 'Correct answer';
+
+
 $string['errgradesetanswerblank'] = 'Grade set, but the Answer is blank';
 $string['errfractionsaddwrong'] = 'The positive grades you have chosen do not add up to 100%<br />Instead, they add up to {$a}%';
 

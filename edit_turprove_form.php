@@ -47,8 +47,12 @@ class qtype_turprove_edit_form extends question_edit_form {
         $mform->addElement('hidden', 'shuffleanswers', 1);
         $mform->setType('shuffleanswers', PARAM_INT);
 
+        $gradeoptions = array(
+                0 => 'Nej', // TODO: Use lang string
+                1 => 'Ja' // TODO: Use lang string
+            );
         $this->add_per_answer_fields($mform, get_string('choiceno', 'qtype_turprove', '{no}'),
-                question_bank::fraction_options_full(), max(4, QUESTION_NUMANS_START)); // TODO: Set as a constant the number of answers (4 here)
+                $gradeoptions, max(4, QUESTION_NUMANS_START), 4);
 
         $this->add_combined_feedback_fields(true);
         $this->add_interactive_settings(true, true);
@@ -67,12 +71,15 @@ class qtype_turprove_edit_form extends question_edit_form {
         $repeated[] = $mform->createElement('editor', 'answer', $label,
             array('rows' => 1), $this->editoroptions);
 
-        $repeated[] = $mform->createElement('filemanager', 'answersound',
-            'Choose soundfile for answer', null, $filemanageroptions); // TODO: use lang string
         $repeated[] = $mform->createElement('select', 'fraction',
-                get_string('grade'), $gradeoptions);
+                get_string('correctanswer', 'qtype_turprove'), $gradeoptions);
+
         $repeated[] = $mform->createElement('editor', 'feedback',
                 get_string('feedback', 'question'), array('rows' => 1), $this->editoroptions);
+
+        $repeated[] = $mform->createElement('filemanager', 'answersound',
+            'Choose soundfile for answer', null, $filemanageroptions); // TODO: use lang string
+
         $repeated[] = $mform->createElement('filemanager', 'feedbacksound',
             'Choose soundfile for answerfeedback', null, $filemanageroptions); // TODO: use lang string
 
@@ -147,11 +154,6 @@ class qtype_turprove_edit_form extends question_edit_form {
         return $question;
     }
 
-    protected function data_preprocessing_combined_feedback($question, $withshownumcorrect = false) {
-
-        return $question;
-    }
-
     /**
      * Perform the necessary preprocessing for the fields added by
      * {@link add_per_answer_fields()}.
@@ -160,80 +162,26 @@ class qtype_turprove_edit_form extends question_edit_form {
      */
     protected function data_preprocessing_answers($question, $withanswerfiles = false) {
 
-        if (empty($question->options->answers)) {
-            return $question;
-        }
+        parent::data_preprocessing_answers($question, $withanswerfiles);
 
-        $key = 0;
-        foreach ($question->options->answers as $answer) {
-            if ($withanswerfiles) {
-                // Prepare the feedback editor to display files in draft area.
-                $draftitemid = file_get_submitted_draft_itemid('answer['.$key.']');
-                $question->answer[$key]['text'] = file_prepare_draft_area(
-                    $draftitemid,          // Draftid
-                    $this->context->id,    // context
-                    'question',            // component
-                    'answer',              // filarea
-                    !empty($answer->id) ? (int) $answer->id : null, // itemid
-                    $this->fileoptions,    // options
-                    $answer->answer        // text.
-                );
-                $question->answer[$key]['itemid'] = $draftitemid;
-                $question->answer[$key]['format'] = $answer->answerformat;
+        if (isset($question->options->answers) && $question->options->answers) {
+            $key = 0;
+            foreach ($question->options->answers as $answer) {
 
-            } else {
-                $question->answer[$key] = $answer->answer;
+                // Prepare the answersound filemanager to display files in draft area.
+                $draftitemid = file_get_submitted_draft_itemid('answersound['.$key.']');
+                file_prepare_draft_area($draftitemid, 1,
+                        'question', 'answersound', $answer->id);
+                $question->answersound[$key] = $draftitemid;
+
+                // Prepare the feedbacksound filemanager to display files in draft area.
+                $draftitemid = file_get_submitted_draft_itemid('feedbacksound['.$key.']');
+                file_prepare_draft_area($draftitemid, 1,
+                        'question', 'feedbacksound', $answer->id);
+                $question->feedbacksound[$key] = $draftitemid;
+
+                $key++;
             }
-
-            $question->fraction[$key] = 0 + $answer->fraction;
-            $question->feedback[$key] = array();
-
-            // Evil hack alert. Formslib can store defaults in two ways for
-            // repeat elements:
-            //   ->_defaultValues['fraction[0]'] and
-            //   ->_defaultValues['fraction'][0].
-            // The $repeatedoptions['fraction']['default'] = 0 bit above means
-            // that ->_defaultValues['fraction[0]'] has already been set, but we
-            // are using object notation here, so we will be setting
-            // ->_defaultValues['fraction'][0]. That does not work, so we have
-            // to unset ->_defaultValues['fraction[0]'].
-            unset($this->_form->_defaultValues["fraction[$key]"]);
-
-            // Prepare the feedback editor to display files in draft area.
-            $draftitemid = file_get_submitted_draft_itemid('feedback['.$key.']');
-            $question->feedback[$key]['text'] = file_prepare_draft_area(
-                $draftitemid,          // Draftid
-                $this->context->id,    // context
-                'question',            // component
-                'answerfeedback',      // filarea
-                !empty($answer->id) ? (int) $answer->id : null, // itemid
-                $this->fileoptions,    // options
-                $answer->feedback      // text.
-            );
-            $question->feedback[$key]['itemid'] = $draftitemid;
-            $question->feedback[$key]['format'] = $answer->feedbackformat;
-
-            // Prepare the answersound filemanager to display files in draft area.
-            $draftitemid = file_get_submitted_draft_itemid('answersound['.$key.']');
-            file_prepare_draft_area($draftitemid, $this->context->id,
-                    'question', 'answersound', $answer->id);
-            $question->answersound[$key] = $draftitemid;
-
-            // Prepare the feedbacksound filemanager to display files in draft area.
-            $draftitemid = file_get_submitted_draft_itemid('feedbacksound['.$key.']');
-            file_prepare_draft_area($draftitemid, $this->context->id,
-                    'question', 'feedbacksound', $answer->id);
-            $question->feedbacksound[$key] = $draftitemid;
-
-            $key++;
-        }
-
-        // Now process extra answer fields.
-        $extraanswerfields = question_bank::get_qtype($question->qtype)->extra_answer_fields();
-        if (is_array($extraanswerfields)) {
-            // Omit table name.
-            array_shift($extraanswerfields);
-            $question = $this->data_preprocessing_extra_answer_fields($question, $extraanswerfields);
         }
 
         return $question;
@@ -296,7 +244,69 @@ class qtype_turprove_edit_form extends question_edit_form {
         return 'turprove';
     }
 
-    public function set_data($question) {
-        parent::set_data($question);
+    /**
+     * Language string to use for 'Add {no} more {whatever we call answers}'.
+     */
+    protected function get_more_choices_string() {
+        return get_string('addmorechoiceblanks', 'qtype_turmultiplechoice');
+    }
+
+    function repeat_elements($elementobjs, $repeats, $options, $repeathiddenname,
+            $addfieldsname, $addfieldsno=5, $addstring=null, $addbuttoninside=false){
+
+        $addstring = str_ireplace('{no}', $addfieldsno, $addstring);
+        $repeats = optional_param($repeathiddenname, $repeats, PARAM_INT);
+        $addfields = optional_param($addfieldsname, '', PARAM_TEXT);
+        if (!empty($addfields)){
+            $repeats += $addfieldsno;
+        }
+        $mform =& $this->_form;
+        $mform->registerNoSubmitButton($addfieldsname);
+        $mform->addElement('hidden', $repeathiddenname, $repeats);
+        $mform->setType($repeathiddenname, PARAM_INT);
+        //value not to be overridden by submitted value
+        $mform->setConstants(array($repeathiddenname=>$repeats));
+        $namecloned = array();
+        for ($i = 0; $i < $repeats; $i++) {
+            foreach ($elementobjs as $elementobj){
+                $elementclone = fullclone($elementobj);
+                $this->repeat_elements_fix_clone($i, $elementclone, $namecloned);
+
+                if ($elementclone instanceof HTML_QuickForm_group && !$elementclone->_appendName) {
+                    foreach ($elementclone->getElements() as $el) {
+                        $this->repeat_elements_fix_clone($i, $el, $namecloned);
+                    }
+                    $elementclone->setLabel(str_replace('{no}', $i + 1, $elementclone->getLabel()));
+                }
+
+                $mform->addElement($elementclone);
+            }
+        }
+        for ($i=0; $i<$repeats; $i++) {
+            foreach ($options as $elementname => $elementoptions){
+                $pos=strpos($elementname, '[');
+                if ($pos!==FALSE){
+                    $realelementname = substr($elementname, 0, $pos)."[$i]";
+                    $realelementname .= substr($elementname, $pos);
+                }else {
+                    $realelementname = $elementname."[$i]";
+                }
+                foreach ($elementoptions as  $option => $params){
+                    switch ($option){
+                        case 'default' :
+                            $mform->setDefault($realelementname, $params);
+                            break;
+                        case 'type' :
+                            //Type should be set only once
+                            if (!isset($mform->_types[$elementname])) {
+                                $mform->setType($elementname, $params);
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        return $repeats;
     }
 }
