@@ -19,9 +19,9 @@ class qtype_turprove_edit_form extends question_edit_form {
             get_string('answersingleno', 'qtype_turprove'),
             get_string('answersingleyes', 'qtype_turprove'),
         );
-        $mform->addElement('select', 'single',
-                get_string('answerhowmany', 'qtype_turprove'), $menu);
-        $mform->setDefault('single', 0); // TODO: Use constant
+
+        $mform->addElement('hidden', 'single', 0);
+        $mform->setType('single', PARAM_INT);
 
         // 'Image to display' filemanager
         $mform->addElement('filemanager', 'questionimage', 'Image to display', null,
