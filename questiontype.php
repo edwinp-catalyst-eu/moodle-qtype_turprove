@@ -16,7 +16,7 @@ class qtype_turprove extends question_type {
         global $DB;
 
         $question->options = $DB->get_record('question_turprove',
-                array('question' => $question->id), '*', MUST_EXIST);
+                array('questionid' => $question->id), '*', MUST_EXIST);
 
         parent::get_question_options($question);
     }
@@ -60,7 +60,7 @@ class qtype_turprove extends question_type {
             $answer->answerformat = $answerdata['format'];
 
             // Save answer 'answersound'
-            file_save_draft_area_files($question->answersound[$key], $context->id,
+            file_save_draft_area_files($question->answersound[$key], 1,
                     'question', 'answersound', $answer->id, $this->fileoptions);
 
             $answer->fraction = $question->fraction[$key];
@@ -69,7 +69,7 @@ class qtype_turprove extends question_type {
             $answer->feedbackformat = $question->feedback[$key]['format'];
 
             // Save answer 'feedbacksound'
-            file_save_draft_area_files($question->feedbacksound[$key], $context->id,
+            file_save_draft_area_files($question->feedbacksound[$key], 1,
                     'question', 'feedbacksound', $answer->id, $this->fileoptions);
 
             $DB->update_record('question_answers', $answer);
@@ -89,10 +89,10 @@ class qtype_turprove extends question_type {
             $DB->delete_records('question_answers', array('id' => $oldanswer->id));
         }
 
-        $options = $DB->get_record('question_turprove', array('question' => $question->id));
+        $options = $DB->get_record('question_turprove', array('questionid' => $question->id));
         if (!$options) {
             $options = new stdClass();
-            $options->question = $question->id;
+            $options->questionid = $question->id;
             $options->correctfeedback = '';
             $options->partiallycorrectfeedback = '';
             $options->incorrectfeedback = '';
@@ -114,11 +114,11 @@ class qtype_turprove extends question_type {
         $this->save_hints($question, true);
 
         // Save question 'questionimage'
-        file_save_draft_area_files($question->questionimage, $context->id,
+        file_save_draft_area_files($question->questionimage, 1,
                 'question', 'questionimage', $question->id, $this->fileoptions);
 
         // Save question 'questionsound'
-        file_save_draft_area_files($question->questionsound, $context->id,
+        file_save_draft_area_files($question->questionsound, 1,
                 'question', 'questionsound', $question->id, $this->fileoptions);
 
         // Perform sanity checks on fractional grades.
@@ -194,17 +194,7 @@ class qtype_turprove extends question_type {
     public function delete_question($questionid, $contextid) {
         global $DB;
 
-        $DB->delete_records('question_turprove', array('question' => $questionid));
+        $DB->delete_records('question_turprove', array('questionid' => $questionid));
         parent::delete_question($questionid, $contextid);
-    }
-
-    public function get_random_guess_score($questiondata) {
-        // TODO.
-        return 0;
-    }
-
-    public function get_possible_responses($questiondata) {
-        // TODO.
-        return array();
     }
 }
