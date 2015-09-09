@@ -121,45 +121,29 @@ class qtype_turprove_edit_form extends question_edit_form {
      * @return object $question the modified data.
      */
     protected function data_preprocessing($question) {
-
-        if (!isset($question->options)) {
-            $question->options = new stdClass();
-            $question->options->single = 0; // TODO: Use constant defined above
-            $question->options->shuffleanswers = 1; // TODO: Use constant defined above
-            $question->options->qdifficulty = 0;
-            $question->options->autoplay = 1;
-            $question->options->correctfeedbackformat = 1;
-            $question->options->partiallycorrectfeedbackformat = 1;
-            $question->options->incorrectfeedbackformat = 1;
-            $question->options->shownumcorrect = 1;
-        }
-
         $question = parent::data_preprocessing($question);
         $question = $this->data_preprocessing_answers($question, true);
         $question = $this->data_preprocessing_combined_feedback($question, true);
         $question = $this->data_preprocessing_hints($question, true, true);
 
-        if (!empty($question->options)) {  // Warnings/notices when creating new question type
+        if (!empty($question->options)) {
             $question->single = $question->options->single;
             $question->shuffleanswers = $question->options->shuffleanswers;
             $question->qdifficulty = $question->options->qdifficulty;
-            $question->autoplay = $question->options->autoplay;
         }
 
         if (isset($question->id)) {
-
             // Prepare the questionimage filemanager to display files in draft area.
             $draftitemid = file_get_submitted_draft_itemid('questionimage');
-            file_prepare_draft_area($draftitemid, $this->context->id,
+            file_prepare_draft_area($draftitemid, 1,
                     'question', 'questionimage', $question->id);
             $question->questionimage = $draftitemid;
 
             // Prepare the questionsound filemanager to display files in draft area.
             $draftitemid = file_get_submitted_draft_itemid('questionsound');
-            file_prepare_draft_area($draftitemid, $this->context->id,
+            file_prepare_draft_area($draftitemid, 1,
                     'question', 'questionsound', $question->id);
             $question->questionsound = $draftitemid;
-
         }
 
         return $question;
