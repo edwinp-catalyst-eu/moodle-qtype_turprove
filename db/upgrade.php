@@ -135,7 +135,7 @@ function xmldb_qtype_turprove_upgrade($oldversion) {
             'filepath' => '/'
         );
 
-        $sql = "SELECT q.id, qtm.questionsound
+        $sql = "SELECT q.id, qtp.questionsound
                   FROM {question} q
                   JOIN {question_turprove} qtp ON qtp.question = q.id
                  WHERE q.qtype = ?";
