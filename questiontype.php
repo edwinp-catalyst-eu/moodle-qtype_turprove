@@ -259,6 +259,9 @@ class question_turprove_qtype extends default_questiontype {
         $options->qdifficulty = $question->qdifficulty;
         $options->answernumbering = $question->answernumbering;
         $options->shuffleanswers = $question->shuffleanswers;
+        $options->correctfeedback = trim($question->correctfeedback);
+        $options->partiallycorrectfeedback = trim($question->partiallycorrectfeedback);
+        $options->incorrectfeedback = trim($question->incorrectfeedback);
 
         if ($update) {
             if (!update_record("question_turprove", $options)) {
