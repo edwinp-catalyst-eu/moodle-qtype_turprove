@@ -124,5 +124,41 @@ function xmldb_qtype_turprove_upgrade($oldversion) {
     // Moodle v2.2.0 release upgrade line
     // Put any upgrade step following this
 
+    // Migrate question sounds (answer sounds are dealt with in turmultiplechoice upgrade)
+    if ($oldversion < 2011011201) {
+
+        $audiofolder = $CFG->olddataroot . '/' . $CFG->tursound . '/audio/';
+        $fs = get_file_storage();
+        $file_record = array(
+            'contextid' => 1,
+            'component' => 'question',
+            'filepath' => '/'
+        );
+
+        $sql = "SELECT q.id, qtm.questionsound
+                  FROM {question} q
+                  JOIN {question_turprove} qtp ON qtp.question = q.id
+                 WHERE q.qtype = ?";
+        $params = array('turprove');
+        $questions = $DB->get_records_sql($sql, $params);
+
+        foreach ($questions as $question) {
+
+            $file_record['itemid'] = $question->id;
+
+            $filename = substr($question->questionsound, 6);
+            if (file_exists($audiofolder . $filename)) {
+                $file_record['filearea'] = 'questionsound';
+                $file_record['filename'] = $filename;
+                $file_record['timecreated'] = time();
+                $file_record['timemodified'] = time();
+                $fs->create_file_from_pathname($file_record, $audiofolder . $filename);
+            }
+        }
+
+        // turprove savepoint reached
+        upgrade_plugin_savepoint(true, 2011011201, 'qtype', 'turprove');
+    }
+
     return true;
 }
