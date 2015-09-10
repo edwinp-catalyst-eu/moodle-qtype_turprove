@@ -24,6 +24,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_turprove';
-$plugin->version   = 2015090400;
-$plugin->requires  = 2011102700;
+$plugin->version   = 2011011200;
+$plugin->requires  = 2011033010;
 $plugin->maturity  = MATURITY_BETA;
