@@ -138,7 +138,8 @@ function xmldb_qtype_turprove_upgrade($oldversion) {
         $sql = "SELECT q.id, qtp.questionsound
                   FROM {question} q
                   JOIN {question_turprove} qtp ON qtp.question = q.id
-                 WHERE q.qtype = ?";
+                 WHERE q.qtype = ?
+                   AND qtp.questionsound <> ''";
         $params = array('turprove');
         $questions = $DB->get_records_sql($sql, $params);
 
