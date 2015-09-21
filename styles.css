@@ -22,23 +22,35 @@ div.turprove div.content div.formulation div.ablock div.prompt {
 
 div.turprove div.content div.formulation div.ablock div.answer {
     float: left;
-    width: 50%;
+    width: 40%;
 }
 
 div.turprove div.content div.formulation div.ablock div.questionimage {
     float: right;
-    width: 50%;
+    width: 60%;
+}
+
+div.turprove div.content div.formulation div.ablock div.questionimage img {
+    max-width: 100%;
 }
 
 div.turprove div.content div.formulation div.ablock div.answer div.r0,
 div.turprove div.content div.formulation div.ablock div.answer div.r1 {
+    margin-bottom: 20px;
     min-height: 30px;
 }
 
 div.turprove div.content div.formulation div.ablock div.answer div.r0 label,
 div.turprove div.content div.formulation div.ablock div.answer div.r1 label {
     display: inline-block;
-    width: 30%;
+    width: 80%;
+}
+
+div.turprove div.content div.formulation div.ablock div.answer div.r0 input[type="checkbox"],
+div.turprove div.content div.formulation div.ablock div.answer div.r1 input[type="checkbox"],
+div.turprove div.content div.formulation div.ablock div.answer div.r0 input[type="radio"],
+div.turprove div.content div.formulation div.ablock div.answer div.r1 input[type="radio"] {
+    float: right;
 }
 
 div.turprove div.content div.formulation div.audioplay {
