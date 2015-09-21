@@ -65,7 +65,14 @@ function xmldb_qtype_turprove_upgrade($oldversion) {
 
     if ($oldversion < 2015092102) {
 
-        upgrade_plugin_savepoint(true, 2015092101, 'qtype', 'turprove');
+        // Define key questionid (foreign-unique) to be added to qtype_multichoice_options.
+        $table = new xmldb_table('qtype_turprove_options');
+        $key = new xmldb_key('questionid', XMLDB_KEY_FOREIGN_UNIQUE, array('questionid'), 'question', array('id'));
+
+        // Launch add key questionid.
+        $dbman->add_key($table, $key);
+
+        upgrade_plugin_savepoint(true, 2015092102, 'qtype', 'turprove');
     }
 
     if ($oldversion < 2015092103) {
