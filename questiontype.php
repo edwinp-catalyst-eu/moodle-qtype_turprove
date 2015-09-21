@@ -15,7 +15,7 @@ class qtype_turprove extends question_type {
     public function get_question_options($question) {
         global $DB;
 
-        $question->options = $DB->get_record('question_turprove',
+        $question->options = $DB->get_record('qtype_turprove_options',
                 array('questionid' => $question->id), '*', MUST_EXIST);
 
         parent::get_question_options($question);
@@ -89,14 +89,14 @@ class qtype_turprove extends question_type {
             $DB->delete_records('question_answers', array('id' => $oldanswer->id));
         }
 
-        $options = $DB->get_record('question_turprove', array('questionid' => $question->id));
+        $options = $DB->get_record('qtype_turprove_options', array('questionid' => $question->id));
         if (!$options) {
             $options = new stdClass();
             $options->questionid = $question->id;
             $options->correctfeedback = '';
             $options->partiallycorrectfeedback = '';
             $options->incorrectfeedback = '';
-            $options->id = $DB->insert_record('question_turprove', $options);
+            $options->id = $DB->insert_record('qtype_turprove_options', $options);
         }
 
         $options->single = $question->single;
@@ -109,7 +109,7 @@ class qtype_turprove extends question_type {
         }
 
         $options = $this->save_combined_feedback_helper($options, $question, $context, true);
-        $DB->update_record('question_turprove', $options);
+        $DB->update_record('qtype_turprove_options', $options);
 
         $this->save_hints($question, true);
 
@@ -194,7 +194,7 @@ class qtype_turprove extends question_type {
     public function delete_question($questionid, $contextid) {
         global $DB;
 
-        $DB->delete_records('question_turprove', array('questionid' => $questionid));
+        $DB->delete_records('qtype_turprove_options', array('questionid' => $questionid));
         parent::delete_question($questionid, $contextid);
     }
 }
