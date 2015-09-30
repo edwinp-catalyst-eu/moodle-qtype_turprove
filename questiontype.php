@@ -1,7 +1,38 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * The questiontype class for the turprove question type.
+ *
+ * @package    qtype
+ * @subpackage turprove
+ * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+require_once($CFG->libdir . '/questionlib.php');
+
+/**
+ * The turprove question type.
+ *
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class qtype_turprove extends question_type {
 
     public function find_standard_scripts() {
@@ -31,7 +62,13 @@ class qtype_turprove extends question_type {
                 array('question' => $question->id), 'id ASC');
 
         // Following hack to check at least two answers exist
-        if (count($question->answer) < 2) { // Check there are at lest 2 answers for multiple choice.
+        $answercount = 0;
+        foreach ($question->answer as $key => $answer) {
+            if ($answer != '') {
+                $answercount++;
+            }
+        }
+        if ($answercount < 2) { // Check there are at lest 2 answers for turprove.
             $result->notice = get_string('notenoughanswers', 'qtype_turprove', '2');
             return $result;
         }
@@ -55,6 +92,7 @@ class qtype_turprove extends question_type {
                 $answer->id = $DB->insert_record('question_answers', $answer);
             }
 
+            // Doing an import.
             $answer->answer = $this->import_or_save_files($answerdata,
                     $context, 'question', 'answer', $answer->id);
             $answer->answerformat = $answerdata['format'];
@@ -102,12 +140,11 @@ class qtype_turprove extends question_type {
         $options->single = $question->single;
         $options->autoplay = $question->autoplay;
         $options->qdifficulty = $question->qdifficulty;
-        $options->shuffleanswers = $question->shuffleanswers;
 
         if (isset($question->layout)) {
             $options->layout = $question->layout;
         }
-
+        $options->shuffleanswers = $question->shuffleanswers;
         $options = $this->save_combined_feedback_helper($options, $question, $context, true);
         $DB->update_record('qtype_turprove_options', $options);
 
@@ -124,35 +161,18 @@ class qtype_turprove extends question_type {
         // Perform sanity checks on fractional grades.
         if ($options->single) {
             if ($maxfraction != 1) {
-                // $result->noticeyesno = get_string('fractionsnomax', 'qtype_turprove', $maxfraction * 100);
-                //$result->notice = get_string('fractionsnomax', 'qtype_turprove', $maxfraction * 100);
-                //return $result;
+                $result->noticeyesno = get_string('fractionsnomax', 'qtype_turprove',
+                        $maxfraction * 100);
+                return $result;
             }
         } else {
             $totalfraction = round($totalfraction, 2);
             if ($totalfraction != 1) {
-                // $result->noticeyesno = get_string('fractionsaddwrong', 'qtype_turprove', $totalfraction * 100);
-                //$result->notice = get_string('fractionsaddwrong', 'qtype_turprove', $totalfraction * 100);
-                //return $result;
+                $result->noticeyesno = get_string('fractionsaddwrong', 'qtype_turprove',
+                        $totalfraction * 100);
+                return $result;
             }
         }
-    }
-
-    public function save_question($question, $form) {
-
-        return parent::save_question($question, $form);
-    }
-
-    public function move_files($questionid, $oldcontextid, $newcontextid) {
-
-        parent::move_files($questionid, $oldcontextid, $newcontextid);
-        $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
-    }
-
-    protected function delete_files($questionid, $contextid) {
-
-        parent::delete_files($questionid, $contextid);
-        $this->delete_files_in_hints($questionid, $contextid);
     }
 
     protected function make_question_instance($questiondata) {
@@ -166,6 +186,10 @@ class qtype_turprove extends question_type {
         }
 
         return new $class();
+    }
+
+    protected function make_hint($hint) {
+        return question_hint_with_parts::load_from_record($hint);
     }
 
     protected function initialise_question_instance(question_definition $question, $questiondata) {
@@ -196,5 +220,58 @@ class qtype_turprove extends question_type {
 
         $DB->delete_records('qtype_turprove_options', array('questionid' => $questionid));
         parent::delete_question($questionid, $contextid);
+    }
+
+    public function get_random_guess_score($questiondata) {
+        if (!$questiondata->options->single) {
+            // Pretty much impossible to compute for _multi questions. Don't try.
+            return null;
+        }
+
+        // Single choice questions - average choice fraction.
+        $totalfraction = 0;
+        foreach ($questiondata->options->answers as $answer) {
+            $totalfraction += $answer->fraction;
+        }
+        return $totalfraction / count($questiondata->options->answers);
+    }
+
+    public function get_possible_responses($questiondata) {
+        if ($questiondata->options->single) {
+            $responses = array();
+
+            foreach ($questiondata->options->answers as $aid => $answer) {
+                $responses[$aid] = new question_possible_response(
+                        question_utils::to_plain_text($answer->answer, $answer->answerformat),
+                        $answer->fraction);
+            }
+
+            $responses[null] = question_possible_response::no_response();
+            return array($questiondata->id => $responses);
+        } else {
+            $parts = array();
+
+            foreach ($questiondata->options->answers as $aid => $answer) {
+                $parts[$aid] = array($aid => new question_possible_response(
+                        question_utils::to_plain_text($answer->answer, $answer->answerformat),
+                        $answer->fraction));
+            }
+
+            return $parts;
+        }
+    }
+
+    public function move_files($questionid, $oldcontextid, $newcontextid) {
+        parent::move_files($questionid, $oldcontextid, $newcontextid);
+        $this->move_files_in_answers($questionid, $oldcontextid, $newcontextid, true);
+        $this->move_files_in_combined_feedback($questionid, $oldcontextid, $newcontextid);
+        $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
+    }
+
+    protected function delete_files($questionid, $contextid) {
+        parent::delete_files($questionid, $contextid);
+        $this->delete_files_in_answers($questionid, $contextid, true);
+        $this->delete_files_in_combined_feedback($questionid, $contextid);
+        $this->delete_files_in_hints($questionid, $contextid);
     }
 }

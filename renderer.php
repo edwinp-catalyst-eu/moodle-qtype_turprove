@@ -1,7 +1,35 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Multiple choice question renderer classes.
+ *
+ * @package    qtype
+ * @subpackage turprove
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Base class for generating the bits of output common to turprove
+ * single and multiple questions.
+ *
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback_renderer {
 
     protected abstract function get_input_type();
@@ -60,7 +88,8 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
 
     protected abstract function prompt();
 
-    public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
+    public function formulation_and_controls(question_attempt $qa,
+            question_display_options $options) {
 
         $question = $qa->get_question();
         $response = $question->get_response($qa);
@@ -197,6 +226,12 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
     }
 }
 
+/**
+ * Subclass for generating the bits of output specific to turprove
+ * single questions.
+ *
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class qtype_turprove_single_renderer extends qtype_turprove_renderer_base {
 
     protected function get_input_type() {
@@ -222,8 +257,29 @@ class qtype_turprove_single_renderer extends qtype_turprove_renderer_base {
     protected function prompt() {
         return get_string('selectone', 'qtype_turprove');
     }
+
+    public function correct_response(question_attempt $qa) {
+        $question = $qa->get_question();
+
+        foreach ($question->answers as $ansid => $ans) {
+            if (question_state::graded_state_for_fraction($ans->fraction) ==
+                    question_state::$gradedright) {
+                return get_string('correctansweris', 'qtype_turprove',
+                        $question->make_html_inline($question->format_text($ans->answer, $ans->answerformat,
+                                $qa, 'question', 'answer', $ansid)));
+            }
+        }
+
+        return '';
+    }
 }
 
+/**
+ * Subclass for generating the bits of output specific to turprove
+ * multi=select questions.
+ *
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
 
     protected function get_input_type() {
@@ -231,22 +287,53 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
     }
 
     protected function get_input_name(question_attempt $qa, $value) {
-        return $qa->get_qt_field_name('answer');
+        return $qa->get_qt_field_name('choice' . $value);
     }
 
     protected function get_input_value($value) {
-        return $value;
+        return 1;
     }
 
     protected function get_input_id(question_attempt $qa, $value) {
-        return $qa->get_qt_field_name('answer' . $value);
+        return $this->get_input_name($qa, $value);
     }
 
     protected function is_right(question_answer $ans) {
-        return $ans->fraction;
+        if ($ans->fraction > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     protected function prompt() {
         return get_string('selectmultiple', 'qtype_turprove');
+    }
+
+    public function correct_response(question_attempt $qa) {
+        $question = $qa->get_question();
+
+        $right = array();
+        foreach ($question->answers as $ansid => $ans) {
+            if ($ans->fraction > 0) {
+                $right[] = $question->make_html_inline($question->format_text($ans->answer, $ans->answerformat,
+                        $qa, 'question', 'answer', $ansid));
+            }
+        }
+
+        if (!empty($right)) {
+                return get_string('correctansweris', 'qtype_turprove',
+                        implode(', ', $right));
+        }
+        return '';
+    }
+
+    protected function num_parts_correct(question_attempt $qa) {
+        if ($qa->get_question()->get_num_selected_choices($qa->get_last_qt_data()) >
+                $qa->get_question()->get_num_correct_choices()) {
+            return get_string('toomanyselected', 'qtype_turprove');
+        }
+
+        return parent::num_parts_correct($qa);
     }
 }
