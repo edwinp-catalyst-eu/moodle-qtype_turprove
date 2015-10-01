@@ -33,18 +33,11 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_turprove_qe2_attempt_updater extends question_qtype_attempt_updater {
+    protected $order;
 
-    public function set_first_step_data_elements($state, &$data) {
-        if (!$state->answer) {
-            return;
-        }
-        list($order, $responses) = explode(':', $state->answer);
-        $data['_order'] = $order;
-        $this->order = explode(',', $order);
-    }
-
-    public function supply_missing_first_step_data(&$data) {
-        $data['_order'] = implode(',', array_keys($this->question->options->answers));
+    public function is_blank_answer($state) {
+        // Blank TUR Prove answers are not empty strings, they rather end in a colon.
+        return empty($state->answer) || substr($state->answer, -1) == ':';
     }
 
     public function right_answer() {
@@ -66,12 +59,16 @@ class qtype_turprove_qe2_attempt_updater extends question_qtype_attempt_updater 
         }
     }
 
-    public function was_answered($state) {
-        $responses = $this->explode_answer($state->answer);
-        if ($this->question->options->single) {
-            return is_numeric($responses);
+    protected function explode_answer($answer) {
+        if (strpos($answer, ':') !== false) {
+            list($order, $responses) = explode(':', $answer);
+            return $responses;
         } else {
-            return !empty($responses);
+            // Sometimes, a bug means that a state is missing the <order>: bit,
+            // We need to deal with that.
+            $this->logger->log_assumption("Dealing with missing order information
+                    in attempt at TUR Prove question {$this->question->id}");
+            return $answer;
         }
     }
 
@@ -84,7 +81,7 @@ class qtype_turprove_qe2_attempt_updater extends question_qtype_attempt_updater 
                 } else {
                     $this->logger->log_assumption("Dealing with a place where the
                             student selected a choice that was later deleted for
-                            multiple choice question {$this->question->id}");
+                            TUR Prove question {$this->question->id}");
                     return '[CHOICE THAT WAS LATER DELETED]';
                 }
             } else {
@@ -102,7 +99,7 @@ class qtype_turprove_qe2_attempt_updater extends question_qtype_attempt_updater 
                     } else {
                         $this->logger->log_assumption("Dealing with a place where the
                                 student selected a choice that was later deleted for
-                                multiple choice question {$this->question->id}");
+                                TUR Prove question {$this->question->id}");
                         $bits[] = '[CHOICE THAT WAS LATER DELETED]';
                     }
                 }
@@ -111,6 +108,28 @@ class qtype_turprove_qe2_attempt_updater extends question_qtype_attempt_updater 
                 return null;
             }
         }
+    }
+
+    public function was_answered($state) {
+        $responses = $this->explode_answer($state->answer);
+        if ($this->question->options->single) {
+            return is_numeric($responses);
+        } else {
+            return !empty($responses);
+        }
+    }
+
+    public function set_first_step_data_elements($state, &$data) {
+        if (!$state->answer) {
+            return;
+        }
+        list($order, $responses) = explode(':', $state->answer);
+        $data['_order'] = $order;
+        $this->order = explode(',', $order);
+    }
+
+    public function supply_missing_first_step_data(&$data) {
+        $data['_order'] = implode(',', array_keys($this->question->options->answers));
     }
 
     public function set_data_elements_for_step($state, &$data) {

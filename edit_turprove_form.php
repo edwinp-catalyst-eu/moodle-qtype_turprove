@@ -230,10 +230,13 @@ class qtype_turprove_edit_form extends question_edit_form {
                 $errors['fraction[0]'] = get_string('errfractionsnomax', 'qtype_turprove', $maxfraction * 100);
             }
         } else {
+            // Remove 100% grade validation for form as these are multiple graded
+            /*
             $totalfraction = round($totalfraction, 2);
             if ($totalfraction != 1) {
                 $errors['fraction[0]'] = get_string('errfractionsaddwrong', 'qtype_turprove', $totalfraction * 100);
             }
+             */
         }
 
         return $errors;

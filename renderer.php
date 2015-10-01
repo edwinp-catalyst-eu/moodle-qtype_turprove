@@ -228,54 +228,6 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
 
 /**
  * Subclass for generating the bits of output specific to turprove
- * single questions.
- *
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class qtype_turprove_single_renderer extends qtype_turprove_renderer_base {
-
-    protected function get_input_type() {
-        return 'radio';
-    }
-
-    protected function get_input_name(question_attempt $qa, $value) {
-        return $qa->get_qt_field_name('answer');
-    }
-
-    protected function get_input_value($value) {
-        return $value;
-    }
-
-    protected function get_input_id(question_attempt $qa, $value) {
-        return $qa->get_qt_field_name('answer' . $value);
-    }
-
-    protected function is_right(question_answer $ans) {
-        return $ans->fraction;
-    }
-
-    protected function prompt() {
-        return get_string('selectone', 'qtype_turprove');
-    }
-
-    public function correct_response(question_attempt $qa) {
-        $question = $qa->get_question();
-
-        foreach ($question->answers as $ansid => $ans) {
-            if (question_state::graded_state_for_fraction($ans->fraction) ==
-                    question_state::$gradedright) {
-                return get_string('correctansweris', 'qtype_turprove',
-                        $question->make_html_inline($question->format_text($ans->answer, $ans->answerformat,
-                                $qa, 'question', 'answer', $ansid)));
-            }
-        }
-
-        return '';
-    }
-}
-
-/**
- * Subclass for generating the bits of output specific to turprove
  * multi=select questions.
  *
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -283,7 +235,7 @@ class qtype_turprove_single_renderer extends qtype_turprove_renderer_base {
 class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
 
     protected function get_input_type() {
-        return 'checkbox';
+        return 'radio';
     }
 
     protected function get_input_name(question_attempt $qa, $value) {
@@ -291,7 +243,7 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
     }
 
     protected function get_input_value($value) {
-        return 1;
+        return 1; // @TODO Set as either 1 or 0 depending whether it is the 'correct' answer
     }
 
     protected function get_input_id(question_attempt $qa, $value) {

@@ -5,7 +5,7 @@ $string['pluginname_help'] = 'Question type purely for testing and development';
 $string['pluginname_link'] = 'question/type/turprove';
 $string['pluginnameadding'] = 'Adding a TUR Prøve question';
 $string['pluginnameediting'] = 'Editing a TUR Prøve question';
-$string['pluginnamesummary'] = 'A TUR Prøve question type which...'; // TODO.
+$string['pluginnamesummary'] = 'A TUR Prøve question type. Up to 4 yes/no graded answers per question';
 
 $string['answerhowmany'] = 'One or multiple answers?';
 

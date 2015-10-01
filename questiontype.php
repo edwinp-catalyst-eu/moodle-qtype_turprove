@@ -161,9 +161,13 @@ class qtype_turprove extends question_type {
         // Perform sanity checks on fractional grades.
         if ($options->single) {
             if ($maxfraction != 1) {
-                $result->noticeyesno = get_string('fractionsnomax', 'qtype_turprove',
-                        $maxfraction * 100);
-                return $result;
+
+                $errors['fraction[0]'] = get_string('errfractionsnomax', 'qtype_turprove', $maxfraction * 100);
+
+
+                //$result->noticeyesno = get_string('fractionsnomax', 'qtype_turprove',
+                //        $maxfraction * 100);
+                //return $result;
             }
         } else {
             $totalfraction = round($totalfraction, 2);
