@@ -86,143 +86,128 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
      */
     protected abstract function is_right(question_answer $ans);
 
-    protected abstract function prompt();
-
-    public function formulation_and_controls(question_attempt $qa,
-            question_display_options $options) {
+    /**
+     * 
+     * @param question_attempt $qa
+     * @param question_display_options $options
+     * @return type
+     */
+    public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
 
         $question = $qa->get_question();
-        $response = $question->get_response($qa);
+        $html = '';
 
-        $inputname = $qa->get_qt_field_name('answer');
-        $inputattributes = array(
-            'type' => $this->get_input_type(),
-            'name' => $inputname,
-        );
-
-        if ($options->readonly) {
-            $inputattributes['disabled'] = 'disabled';
-        }
-
-        $radiobuttons = array();
-        $feedbackimg = array();
-        $feedback = array();
-        $classes = array();
-        foreach ($question->get_order($qa) as $value => $ansid) {
-            $ans = $question->answers[$ansid];
-            $inputattributes['name'] = $this->get_input_name($qa, $value);
-            $inputattributes['value'] = $this->get_input_value($value);
-            $inputattributes['id'] = $this->get_input_id($qa, $value);
-            $isselected = $question->is_choice_selected($response, $value);
-            if ($isselected) {
-                $inputattributes['checked'] = 'checked';
-            } else {
-                unset($inputattributes['checked']);
-            }
-
-            $answersound = html_writer::div('', 'audioplay',
-                    array('data-src' => $this->get_answersound($ans,
-                            $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
-
-            $hidden = '';
-            if (!$options->readonly && $this->get_input_type() == 'checkbox') {
-                $hidden = html_writer::empty_tag('input', array(
-                    'type' => 'hidden',
-                    'name' => $inputattributes['name'],
-                    'value' => 0,
-                ));
-            }
-            $radiobuttons[] = $answersound . $hidden .
-                    html_writer::tag('label',
-                        $question->make_html_inline(
-                                        $question->format_text(
-                                            $ans->answer,
-                                            $ans->answerformat,
-                                            $qa,
-                                            'question',
-                                            'answer',
-                                            $ansid
-                                        )
-                                    ),
-                    array('for' => $inputattributes['id'])) . html_writer::empty_tag('input', $inputattributes);
-
-            // Param $options->suppresschoicefeedback is a hack specific to the
-            // oumultiresponse question type. It would be good to refactor to
-            // avoid refering to it here.
-            if ($options->feedback && empty($options->suppresschoicefeedback) &&
-                    $isselected && trim($ans->feedback)) {
-                $feedback[] = html_writer::tag('div',
-                        $question->make_html_inline($question->format_text(
-                                $ans->feedback, $ans->feedbackformat,
-                                $qa, 'question', 'answerfeedback', $ansid)),
-                        array('class' => 'specificfeedback'));
-            } else {
-                $feedback[] = '';
-            }
-            $class = 'r' . ($value % 2);
-            if ($options->correctness && $isselected) {
-                $feedbackimg[] = $this->feedback_image($this->is_right($ans));
-                $class .= ' ' . $this->feedback_class($this->is_right($ans));
-            } else {
-                $feedbackimg[] = '';
-            }
-            $classes[] = $class;
-        }
-
-        $result = '';
+        $html .= html_writer::start_div('', array('id' => 'turprove_wrapper'));
+        $html .= html_writer::start_div('', array('id' => 'turprove_leftcolumn'));
+        $html .= html_writer::start_div('', array('id' => 'turprove_question'));
 
         $questionsoundurl = $this->get_questionsound($question->id,
                 $question->contextid, $qa->get_slot(), $qa->get_usage_id());
         $audiosource = html_writer::tag('source', '',
                 array('type' => 'audio/mpeg', 'src' => $questionsoundurl));
         $audiosource .= 'Your browser does not support the audio tag.'; // TODO: Lang string
-        $audioelement = html_writer::tag('audio', $audiosource,
-                array('id' => 'audiodiv'));
-        $result .= $audioelement;
 
-        $result .= html_writer::div('', 'audioplay',
-                array('data-src' => $questionsoundurl));
-        $result .= html_writer::tag('div', $question->format_questiontext($qa),
-                array('class' => 'qtext'));
+        $html .= html_writer::tag('audio', $audiosource, array('id' => 'audiodiv'));
 
-        $result .= html_writer::start_tag('div', array('class' => 'ablock'));
-        $result .= html_writer::tag('div', $this->prompt(), array('class' => 'prompt'));
+        $turprovequestionaudiodiv = html_writer::div('', 'audioplay', array('data-src' => $questionsoundurl));
+        $html .= html_writer::div($turprovequestionaudiodiv, 'turprove_leftblock');
 
-        $result .= html_writer::start_tag('div', array('class' => 'answer'));
-        foreach ($radiobuttons as $key => $radio) {
-            $result .= html_writer::tag('div', $radio . ' ' . $feedbackimg[$key] . $feedback[$key],
-                    array('class' => $classes[$key])) . "\n";
+        $turprovequestiontextspan = html_writer::span($question->format_questiontext($qa));
+        $html .= html_writer::div($turprovequestiontextspan, 'turprove_contentblock');
+
+        $html .= html_writer::end_div(); // #turprove_question
+
+        $html .= html_writer::start_div('', array('id' => 'turprove_yn'));
+
+        $html .= html_writer::div('', 'turprove_leftblock');
+
+        $html .= html_writer::div('', 'turprove_contentblock');
+
+        $turproveyntextspan = html_writer::span('JA / NEJ'); // TODO: Lang string
+        $html .= html_writer::div($turproveyntextspan, 'turprove_rightblock');
+
+        $html .= html_writer::end_div(); // #turprove_yn
+
+        $response = $question->get_response($qa);
+
+        foreach ($question->get_order($qa) as $value => $ansid) {
+
+            $ans = $question->answers[$ansid];
+            $isselected = $question->is_choice_selected($response, $value);
+
+            $html .= html_writer::start_div('turprove_answer');
+
+            $turproveansweraudiodiv = html_writer::div('', 'audioplay',
+                    array('data-src' => $this->get_answersound($ans, $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
+            $html .= html_writer::div($turproveansweraudiodiv, 'turprove_leftblock');
+
+            $turproveanswertextlabel = html_writer::label(
+                    $question->make_html_inline(
+                        $question->format_text($ans->answer, $ans->answerformat, $qa, 'question', 'answer', $ansid)
+                    ),
+                    $this->get_input_id($qa, $value)
+                    );
+            $html .= html_writer::div($turproveanswertextlabel, 'turprove_contentblock');
+
+            $turproveanswerinputfields = array(
+                array(
+                    'type' => $this->get_input_type(),
+                    'id' => $this->get_input_id($qa, $value),
+                    'value' => $this->get_input_value($value), // 1?
+                    'name' => $qa->get_qt_field_name('answer')
+                ),
+                array(
+                    'type' => $this->get_input_type(),
+                    'id' => $this->get_input_id($qa, $value),
+                    'value' => $this->get_input_value($value), // 1?
+                    'name' => $qa->get_qt_field_name('answer')
+                )
+            );
+            if ($isselected) {
+                $turproveanswerinputfields[0]['checked'] = 'checked';
+                $turproveanswerinputfields[1]['checked'] = 'checked';
+            } else {
+                unset($turproveanswerinputfields[0]['checked']);
+                unset($turproveanswerinputfields[1]['checked']);
+            }
+            $turproveanswerfields = '';
+            foreach ($turproveanswerinputfields as $turproveanswerinputfield) {
+                $turproveanswerfields .= html_writer::empty_tag('input', $turproveanswerinputfield);
+            }
+            $html .= html_writer::div($turproveanswerfields, 'turprove_rightblock');
+
+            $html .= html_writer::end_div(); // .turprove_answer
         }
-        $result .= html_writer::end_tag('div'); // Answer.
 
-        $questionimage = html_writer::empty_tag('img', array(
-            'src' => $this->get_questionimage($question->id, $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
-        $result .= html_writer::div($questionimage, 'questionimage');
+        $html .= html_writer::end_div(); // #turprove_leftcolumn
 
-        $result .= html_writer::end_tag('div'); // Ablock.
+        $turprovequestionimage = html_writer::img(
+                $this->get_questionimage($question->id, $question->contextid, $qa->get_slot(), $qa->get_usage_id()),
+                '', array('class' => '', 'width' => '', 'height' => ''));
+        $html .= html_writer::div($turprovequestionimage, '', array('id' => 'turprove_rightcolumn'));
+
+        $html .= html_writer::end_div(); // #turprove_wrapper
 
         if ($qa->get_state() == question_state::$invalid) {
-            $result .= html_writer::nonempty_tag('div',
-                    $question->get_validation_error($qa->get_last_qt_data()),
-                    array('class' => 'validationerror'));
+            $html .= html_writer::div($question->get_validation_error($qa->get_last_qt_data()), 'validationerror');
         }
 
         $this->page->requires->js_init_call(
-                    'M.qtype_turprove.init',
-                    array(
-                        '#q' . $qa->get_slot(),
-                        $options->readonly,
-                        $question->autoplay
-                    ),
-                    false,
-                    array(
-                        'name'     => 'qtype_turprove',
-                        'fullpath' => '/question/type/turprove/module.js',
-                        'requires' => array('base', 'node', 'event', 'overlay'),
-                    )
-                );
+            'M.qtype_turprove.init',
+            array(
+                '#q' . $qa->get_slot(),
+                $options->readonly,
+                $question->autoplay
+            ),
+            false,
+            array(
+                'name'     => 'qtype_turprove',
+                'fullpath' => '/question/type/turprove/module.js',
+                'requires' => array('base', 'node', 'event', 'overlay'),
+            )
+        );
 
-        return $result;
+        return $html;
     }
 }
 
@@ -256,10 +241,6 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
         } else {
             return 0;
         }
-    }
-
-    protected function prompt() {
-        return get_string('selectmultiple', 'qtype_turprove');
     }
 
     public function correct_response(question_attempt $qa) {

@@ -24,6 +24,10 @@ $string['errfractionsaddwrong'] = 'The positive grades you have chosen do not ad
 
 $string['fractionsaddwrong'] = 'The positive grades you have chosen do not add up to 100%<br />Instead, they add up to {$a}%<br />Do you want to go back and fix this question?';
 
+
+$string[''] = '';
+
+
 $string['notenoughanswers'] = 'This type of question requires at least {$a} choices';
 
 $string['pleaseselectananswer'] = 'Please select an answer.';

@@ -35,6 +35,10 @@ require_once($CFG->libdir . '/questionlib.php');
  */
 class qtype_turprove extends question_type {
 
+    /**
+     * 
+     * @global type $PAGE
+     */
     public function find_standard_scripts() {
         global $PAGE;
 
@@ -43,6 +47,11 @@ class qtype_turprove extends question_type {
         parent::find_standard_scripts();
     }
 
+    /**
+     * 
+     * @global type $DB
+     * @param type $question
+     */
     public function get_question_options($question) {
         global $DB;
 
@@ -52,8 +61,18 @@ class qtype_turprove extends question_type {
         parent::get_question_options($question);
     }
 
+    /**
+     * This function writes to the question_answers table
+     * 
+     * 
+     * @global type $DB
+     * @param type $question
+     * @return \stdClass
+     */
     public function save_question_options($question) {
         global $DB;
+
+        $numAnswers = 0;
 
         $context = $question->context;
         $result = new stdClass();
@@ -71,6 +90,14 @@ class qtype_turprove extends question_type {
         if ($answercount < 2) { // Check there are at lest 2 answers for turprove.
             $result->notice = get_string('notenoughanswers', 'qtype_turprove', '2');
             return $result;
+        }
+
+        /* DMD */
+        foreach ($question->answer as $key => $answer) {
+            $trimmedanswer = trim($answer['text']);
+            if (!empty($trimmedanswer)) {
+                $numAnswers++;
+            }
         }
 
         // Insert all the new answers.
@@ -95,15 +122,20 @@ class qtype_turprove extends question_type {
             // Doing an import.
             $answer->answer = $this->import_or_save_files($answerdata,
                     $context, 'question', 'answer', $answer->id);
+
             $answer->answerformat = $answerdata['format'];
 
             // Save answer 'answersound'
             file_save_draft_area_files($question->answersound[$key], 1,
                     'question', 'answersound', $answer->id, $this->fileoptions);
 
-            $answer->fraction = $question->fraction[$key];
+            $answer->fraction =  $this->tur_setcustomfraction($numAnswers);
+
+            $answer->tur_answer_truefalse = $question->tur_answer_truefalse[$key];
+
             $answer->feedback = $this->import_or_save_files($question->feedback[$key],
                     $context, 'question', 'answerfeedback', $answer->id);
+
             $answer->feedbackformat = $question->feedback[$key]['format'];
 
             // Save answer 'feedbacksound'
@@ -128,6 +160,7 @@ class qtype_turprove extends question_type {
         }
 
         $options = $DB->get_record('qtype_turprove_options', array('questionid' => $question->id));
+
         if (!$options) {
             $options = new stdClass();
             $options->questionid = $question->id;
@@ -144,8 +177,11 @@ class qtype_turprove extends question_type {
         if (isset($question->layout)) {
             $options->layout = $question->layout;
         }
+
         $options->shuffleanswers = $question->shuffleanswers;
+
         $options = $this->save_combined_feedback_helper($options, $question, $context, true);
+
         $DB->update_record('qtype_turprove_options', $options);
 
         $this->save_hints($question, true);
@@ -157,39 +193,19 @@ class qtype_turprove extends question_type {
         // Save question 'questionsound'
         file_save_draft_area_files($question->questionsound, 1,
                 'question', 'questionsound', $question->id, $this->fileoptions);
-
-        // Perform sanity checks on fractional grades.
-        if ($options->single) {
-            if ($maxfraction != 1) {
-
-                $errors['fraction[0]'] = get_string('errfractionsnomax', 'qtype_turprove', $maxfraction * 100);
-
-
-                //$result->noticeyesno = get_string('fractionsnomax', 'qtype_turprove',
-                //        $maxfraction * 100);
-                //return $result;
-            }
-        } else {
-            $totalfraction = round($totalfraction, 2);
-            if ($totalfraction != 1) {
-                $result->noticeyesno = get_string('fractionsaddwrong', 'qtype_turprove',
-                        $totalfraction * 100);
-                return $result;
-            }
-        }
     }
+
+    /*
+    public function save_question($question, $form) {
+
+        return parent::save_question($question, $form);
+    }
+    */
 
     protected function make_question_instance($questiondata) {
 
         question_bank::load_question_definition_classes($this->name());
-
-        if ($questiondata->options->single) {
-            $class = 'qtype_turprove_single_question';
-        } else {
-            $class = 'qtype_turprove_multi_question';
-        }
-
-        return new $class();
+        return new qtype_turprove_multi_question();
     }
 
     protected function make_hint($hint) {
@@ -212,12 +228,33 @@ class qtype_turprove extends question_type {
         if (!empty($questiondata->options->layout)) {
             $question->layout = $questiondata->options->layout;
         } else {
-            $question->layout = qtype_turprove_single_question::LAYOUT_VERTICAL;
+            $question->layout = qtype_turprove_multi_question::LAYOUT_VERTICAL;
         }
 
         $this->initialise_combined_feedback($question, $questiondata, true);
         $this->initialise_question_answers($question, $questiondata, false);
     }
+
+    /**
+     * Initialise question_definition::answers field.
+     * @param question_definition $question the question_definition we are creating.
+     * @param object $questiondata the question data loaded from the database.
+     * @param bool $forceplaintextanswers most qtypes assume that answers are
+     *      FORMAT_PLAIN, and dont use the answerformat DB column (it contains
+     *      the default 0 = FORMAT_MOODLE). Therefore, by default this method
+     *      ingores answerformat. Pass false here to use answerformat. For example
+     *      multichoice does this.
+     */
+    /*
+    protected function initialise_question_answers(question_definition $question,
+            $questiondata, $forceplaintextanswers = true) {
+
+        // Functon doesn't load with the form
+        print_object($question);die;
+
+        parent::initialise_question_answers($question, $questiondata);
+    }
+     */
 
     public function delete_question($questionid, $contextid) {
         global $DB;
@@ -277,5 +314,33 @@ class qtype_turprove extends question_type {
         $this->delete_files_in_answers($questionid, $contextid, true);
         $this->delete_files_in_combined_feedback($questionid, $contextid);
         $this->delete_files_in_hints($questionid, $contextid);
+    }
+
+    function tur_setcustomfraction($numAnswers) {
+        $turfraction = 0;
+        switch ($numAnswers) {
+            case 1:
+                $turfraction = 1;
+                break;
+            case 2:
+                $turfraction = 0.5;
+                break;
+            case 3:
+                $turfraction = 0.33333;
+                break;
+            case 4:
+                $turfraction = 0.25;
+                break;
+            case 5:
+                $turfraction = 0.20;
+                break;
+            case 10:
+                $turfraction = 0.1;
+                break;
+            default:
+                print($numAnswers . '-> Illegal number!');
+        }
+
+        return $turfraction;
     }
 }

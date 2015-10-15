@@ -1,9 +1,34 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Defines the editing form for the multiple choice question type.
+ *
+ * @package    qtype
+ * @subpackage turprove
+ */
 
 defined('MOODLE_INTERNAL') || die();
 
 class qtype_turprove_edit_form extends question_edit_form {
 
+    /**
+     *
+     * @param type $mform
+     */
     protected function definition_inner($mform) {
 
         // Remove 'Default mark'
@@ -47,51 +72,54 @@ class qtype_turprove_edit_form extends question_edit_form {
         $mform->addElement('hidden', 'shuffleanswers', 1);
         $mform->setType('shuffleanswers', PARAM_INT);
 
-        $gradeoptions = array(
-                0 => 'Nej', // TODO: Use lang string
-                1 => 'Ja' // TODO: Use lang string
-            );
-        $this->add_per_answer_fields($mform, get_string('choiceno', 'qtype_turprove', '{no}'),
-                $gradeoptions, max(4, QUESTION_NUMANS_START), 4);
+        $this->add_per_answer_fields(
+            $mform,
+            get_string('choiceno', 'qtype_turprove', '{no}'),
+            '0.25', //question_bank::fraction_options_full(),
+            max(4, QUESTION_NUMANS_START),
+            4
+        );
 
         $this->add_combined_feedback_fields(true);
     }
 
-    protected function get_per_answer_fields($mform, $label, $gradeoptions,
-            &$repeatedoptions, &$answersoption) {
+    /**
+     *
+     * @param type $numAnswers
+     * @return real
+     */
+    function tur_setcustomfraction($numAnswers) {
 
-        $filemanageroptions = $this->editoroptions;
-        $filemanageroptions['maxfiles'] = 1;
-        $filemanageroptions['accepted_types'] = array('mp3');
-        $filemanageroptions['return_types'] = FILE_INTERNAL | FILE_EXTERNAL;
+        switch ($numAnswers) {
+            case 1:
+                $turfraction = 1;
+                break;
+            case 2:
+                $turfraction = 0.5;
+                break;
+            case 3:
+                $turfraction = 0.33333;
+                break;
+            case 4:
+                $turfraction = 0.25;
+                break;
+            case 5:
+                $turfraction = 0.20;
+                break;
+            case 10:
+                $turfraction = 0.1;
+                break;
+            default:
+                print ($numAnswers . '-> Illegal number!');
+        }
 
-        $repeated = array();
-        $repeated[] = $mform->createElement('header', 'choicehdr', $label);
-        $repeated[] = $mform->createElement('editor', 'answer', $label,
-            array('rows' => 1), $this->editoroptions);
-
-        $repeated[] = $mform->createElement('select', 'fraction',
-                get_string('correctanswer', 'qtype_turprove'), $gradeoptions);
-
-        $repeated[] = $mform->createElement('editor', 'feedback',
-                get_string('feedback', 'question'), array('rows' => 1), $this->editoroptions);
-
-        $repeated[] = $mform->createElement('filemanager', 'answersound',
-            'Choose soundfile for answer', null, $filemanageroptions); // TODO: use lang string
-
-        $repeated[] = $mform->createElement('filemanager', 'feedbacksound',
-            'Choose soundfile for answerfeedback', null, $filemanageroptions); // TODO: use lang string
-
-        $repeatedoptions['answer']['type'] = PARAM_RAW;
-        $repeatedoptions['fraction']['default'] = 0;
-        $answersoption = 'answers';
-
-        return $repeated;
+        return $turfraction;
     }
 
     /**
      * Add a set of form fields, obtained from get_per_answer_fields, to the form,
      * one for each existing answer, with some blanks for some new ones.
+     *
      * @param object $mform the form being built.
      * @param $label the label to use for each option.
      * @param $gradeoptions the possible grades for each answer.
@@ -104,7 +132,8 @@ class qtype_turprove_edit_form extends question_edit_form {
 
         $answersoption = '';
         $repeatedoptions = array();
-        $repeated = $this->get_per_answer_fields($mform, $label, $gradeoptions, $repeatedoptions, $answersoption);
+        $repeated = $this->get_per_answer_fields($mform, $label, $gradeoptions,
+                $repeatedoptions, $answersoption);
 
         if (isset($this->question->options)) {
             $repeatsatstart = count($this->question->options->$answersoption);
@@ -117,10 +146,61 @@ class qtype_turprove_edit_form extends question_edit_form {
                 $this->get_more_choices_string(), true);
     }
 
+    /**
+     *
+     * @param type $mform
+     * @param type $label
+     * @param type $gradeoptions
+     * @param type $repeatedoptions
+     * @param string $answersoption
+     * @return type
+     */
+    protected function get_per_answer_fields($mform, $label, $gradeoptions,
+            &$repeatedoptions, &$answersoption) {
+
+        $filemanageroptions = $this->editoroptions;
+        $filemanageroptions['maxfiles'] = 1;
+        $filemanageroptions['accepted_types'] = array('mp3');
+        $filemanageroptions['return_types'] = FILE_INTERNAL | FILE_EXTERNAL;
+
+        $repeated = array();
+        $repeated[] = $mform->createElement('header', 'choicehdr', $label);
+
+        $repeated[] = $mform->createElement('editor', 'answer', $label,
+            array('rows' => 1), $this->editoroptions);
+
+        $truefalseoptions = array(
+            0 => get_string('no'),
+            1 => get_string('yes')
+        );
+
+        $repeated[] = $mform->createElement('select', 'tur_answer_truefalse',
+                get_string('correctanswer', 'qtype_turprove'), $truefalseoptions);
+
+        $repeated[] = $mform->createElement('hidden', 'fraction', '0.25');
+
+        $repeated[] = $mform->createElement('editor', 'feedback',
+                get_string('feedback', 'question'), array('rows' => 1), $this->editoroptions);
+
+        $repeated[] = $mform->createElement('filemanager', 'answersound',
+            'Choose soundfile for answer', null, $filemanageroptions); // TODO: use lang string
+
+        $repeated[] = $mform->createElement('filemanager', 'feedbacksound',
+            'Choose soundfile for answerfeedback', null, $filemanageroptions); // TODO: use lang string
+
+        $repeatedoptions['answer']['type'] = PARAM_RAW;
+        $repeatedoptions['fraction']['type'] = PARAM_RAW;
+        //$repeatedoptions['tur_answer_truefalse']['default'] = 0;
+
+        $answersoption = 'answers';
+
+        return $repeated;
+    }
 
     /**
      * Perform preprocessing needed on the data passed to {@link set_data()}
      * before it is used to initialise the form.
+     *
      * @param object $question the data being passed to the form.
      * @return object $question the modified data.
      */
@@ -156,6 +236,7 @@ class qtype_turprove_edit_form extends question_edit_form {
     /**
      * Perform the necessary preprocessing for the fields added by
      * {@link add_per_answer_fields()}.
+     *
      * @param object $question the data being passed to the form.
      * @return object $question the modified data.
      */
@@ -163,6 +244,7 @@ class qtype_turprove_edit_form extends question_edit_form {
 
         parent::data_preprocessing_answers($question, $withanswerfiles);
 
+        // Prepare filemanagers to display files in draft area.
         if (isset($question->options->answers) && $question->options->answers) {
             $key = 0;
             foreach ($question->options->answers as $answer) {
@@ -186,15 +268,45 @@ class qtype_turprove_edit_form extends question_edit_form {
         return $question;
     }
 
+    public function set_data($question) {
+
+        if (isset($question->options)) {
+            $answers = $question->options->answers;
+            if (count($answers)) {
+                $key = 0;
+                foreach ($answers as $answer) {
+                    $default_values['fraction[' . $key . ']'] = $this->tur_setcustomfraction(count($answers));
+                    $default_values['tur_answer_truefalse[' . $key . ']'] = $answer->tur_answer_truefalse;
+                    $key++;
+                }
+            }
+            $question = (object) ((array) $question + $default_values);
+        }
+
+        parent::set_data($question);
+    }
+
+    /**
+     *
+     * @param type $data
+     * @param type $files
+     * @return type
+     */
     public function validation($data, $files) {
+
         $errors = parent::validation($data, $files);
+
         $answers = $data['answer'];
         $answercount = 0;
 
         $totalfraction = 0;
         $maxfraction = -1;
 
+        /*
+         * Review/rewrite following as necessary
+         *
         foreach ($answers as $key => $answer) {
+
             // Check no of choices.
             $trimmedanswer = trim($answer['text']);
             $fraction = (float) $data['fraction'][$key];
@@ -231,13 +343,13 @@ class qtype_turprove_edit_form extends question_edit_form {
             }
         } else {
             // Remove 100% grade validation for form as these are multiple graded
-            /*
             $totalfraction = round($totalfraction, 2);
             if ($totalfraction != 1) {
                 $errors['fraction[0]'] = get_string('errfractionsaddwrong', 'qtype_turprove', $totalfraction * 100);
             }
-             */
         }
+         *
+         */
 
         return $errors;
     }
