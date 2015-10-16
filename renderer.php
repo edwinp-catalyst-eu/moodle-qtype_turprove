@@ -108,39 +108,30 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         $audiosource .= 'Your browser does not support the audio tag.'; // TODO: Lang string
 
         $html .= html_writer::tag('audio', $audiosource, array('id' => 'audiodiv'));
-
         $turprovequestionaudiodiv = html_writer::div('', 'audioplay', array('data-src' => $questionsoundurl));
         $html .= html_writer::div($turprovequestionaudiodiv, 'turprove_leftblock');
-
         $turprovequestiontextspan = html_writer::span($question->format_questiontext($qa));
         $html .= html_writer::div($turprovequestiontextspan, 'turprove_contentblock');
-
         $html .= html_writer::end_div(); // #turprove_question
-
         $html .= html_writer::start_div('', array('id' => 'turprove_yn'));
-
         $html .= html_writer::div('', 'turprove_leftblock');
-
         $html .= html_writer::div('', 'turprove_contentblock');
-
         $turproveyntextspan = html_writer::span('JA / NEJ'); // TODO: Lang string
         $html .= html_writer::div($turproveyntextspan, 'turprove_rightblock');
-
         $html .= html_writer::end_div(); // #turprove_yn
 
         $response = $question->get_response($qa);
 
         foreach ($question->get_order($qa) as $value => $ansid) {
-
             $ans = $question->answers[$ansid];
-            $isselected = $question->is_choice_selected($response, $value);
+
+            // Comment out temporarily
+            //$isselected = $question->is_choice_selected($response, $value);
 
             $html .= html_writer::start_div('turprove_answer');
-
             $turproveansweraudiodiv = html_writer::div('', 'audioplay',
                     array('data-src' => $this->get_answersound($ans, $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
             $html .= html_writer::div($turproveansweraudiodiv, 'turprove_leftblock');
-
             $turproveanswertextlabel = html_writer::label(
                     $question->make_html_inline(
                         $question->format_text($ans->answer, $ans->answerformat, $qa, 'question', 'answer', $ansid)
@@ -148,44 +139,40 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                     $this->get_input_id($qa, $value)
                     );
             $html .= html_writer::div($turproveanswertextlabel, 'turprove_contentblock');
-
             $turproveanswerinputfields = array(
-                array(
+                array( // yes
                     'type' => $this->get_input_type(),
-                    'id' => $this->get_input_id($qa, $value),
-                    'value' => $this->get_input_value($value), // 1?
-                    'name' => $qa->get_qt_field_name('answer')
+                    'id' => $this->get_input_id($qa, $value . '_yes'),
+                    'value' => $this->get_turprove_input_value($ansid, 1),
+                    'name' => $this->get_turprove_field_name($qa, 'choice' . $value)
                 ),
-                array(
+                array( // no
                     'type' => $this->get_input_type(),
-                    'id' => $this->get_input_id($qa, $value),
-                    'value' => $this->get_input_value($value), // 1?
-                    'name' => $qa->get_qt_field_name('answer')
+                    'id' => $this->get_input_id($qa, $value . '_no'),
+                    'value' => $this->get_turprove_input_value($ansid, 0),
+                    'name' => $this->get_turprove_field_name($qa, 'choice' . $value)
                 )
             );
-            if ($isselected) {
-                $turproveanswerinputfields[0]['checked'] = 'checked';
-                $turproveanswerinputfields[1]['checked'] = 'checked';
-            } else {
-                unset($turproveanswerinputfields[0]['checked']);
-                unset($turproveanswerinputfields[1]['checked']);
+            if (array_key_exists('choice' . $value, $response)) {
+                if ($response['choice' . $value] == 1) {
+                    $turproveanswerinputfields[0]['checked'] = 'checked'; // yes
+                } else if ($response['choice' . $value] == 0) {
+                    $turproveanswerinputfields[1]['checked'] = 'checked'; // no
+                }
             }
             $turproveanswerfields = '';
             foreach ($turproveanswerinputfields as $turproveanswerinputfield) {
                 $turproveanswerfields .= html_writer::empty_tag('input', $turproveanswerinputfield);
             }
             $html .= html_writer::div($turproveanswerfields, 'turprove_rightblock');
-
             $html .= html_writer::end_div(); // .turprove_answer
         }
 
         $html .= html_writer::end_div(); // #turprove_leftcolumn
-
         $turprovequestionimage = html_writer::img(
                 $this->get_questionimage($question->id, $question->contextid, $qa->get_slot(), $qa->get_usage_id()),
                 '', array('class' => '', 'width' => '', 'height' => ''));
         $html .= html_writer::div($turprovequestionimage, '', array('id' => 'turprove_rightcolumn'));
-
         $html .= html_writer::end_div(); // #turprove_wrapper
 
         if ($qa->get_state() == question_state::$invalid) {
@@ -223,19 +210,44 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
         return 'radio';
     }
 
+    protected function get_input_id(question_attempt $qa, $value) {
+
+        return $this->get_input_name($qa, $value);
+    }
+
+    protected function get_input_value($value) {
+
+        return 1;
+    }
+
+    protected function get_turprove_input_value($ansid, $value) {
+        global $DB;
+
+        $correctanswer = $DB->get_field('question_answers',
+                'tur_answer_truefalse', array('id' => $ansid));
+
+        if ($correctanswer == $value) {
+            $inputvalue = 1;
+        } else {
+            $inputvalue = 0;
+        }
+
+        return $inputvalue;
+    }
+
     protected function get_input_name(question_attempt $qa, $value) {
         return $qa->get_qt_field_name('choice' . $value);
     }
 
-    protected function get_input_value($value) {
-        return 1; // @TODO Set as either 1 or 0 depending whether it is the 'correct' answer
-    }
+    protected function get_turprove_field_name(question_attempt $qa, $value) {
 
-    protected function get_input_id(question_attempt $qa, $value) {
-        return $this->get_input_name($qa, $value);
+        return $qa->get_qt_field_name($value);
     }
 
     protected function is_right(question_answer $ans) {
+
+        // TODO: Review: depends on the custom column
+
         if ($ans->fraction > 0) {
             return 1;
         } else {
@@ -244,24 +256,27 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
     }
 
     public function correct_response(question_attempt $qa) {
+
         $question = $qa->get_question();
-
-        $right = array();
+        $html = html_writer::tag('p', 'The correct answers are:');
+        $html .= html_writer::start_tag('ul');
         foreach ($question->answers as $ansid => $ans) {
-            if ($ans->fraction > 0) {
-                $right[] = $question->make_html_inline($question->format_text($ans->answer, $ans->answerformat,
-                        $qa, 'question', 'answer', $ansid));
-            }
+            $answertext = strip_tags($ans->answer);
+            $yesorno = ($ans->tur_answer_truefalse == 1) ? get_string('yes') : get_string('no');
+            $answertext = $question->make_html_inline(
+                    $question->format_text($answertext . ': ' . $yesorno,
+                    $ans->answerformat, $qa, 'question', 'answer', $ansid));
+            $html .= html_writer::tag('li', $answertext);
         }
+        $html .= html_writer::end_tag('ul');
 
-        if (!empty($right)) {
-                return get_string('correctansweris', 'qtype_turprove',
-                        implode(', ', $right));
-        }
-        return '';
+        return $html;
     }
 
     protected function num_parts_correct(question_attempt $qa) {
+
+         // TODO: Review/rewrite -
+
         if ($qa->get_question()->get_num_selected_choices($qa->get_last_qt_data()) >
                 $qa->get_question()->get_num_correct_choices()) {
             return get_string('toomanyselected', 'qtype_turprove');

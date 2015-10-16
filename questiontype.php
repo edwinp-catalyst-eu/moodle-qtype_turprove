@@ -245,16 +245,21 @@ class qtype_turprove extends question_type {
      *      ingores answerformat. Pass false here to use answerformat. For example
      *      multichoice does this.
      */
-    /*
     protected function initialise_question_answers(question_definition $question,
             $questiondata, $forceplaintextanswers = true) {
 
-        // Functon doesn't load with the form
-        print_object($question);die;
-
-        parent::initialise_question_answers($question, $questiondata);
+        $question->answers = array();
+        if (empty($questiondata->options->answers)) {
+            return;
+        }
+        foreach ($questiondata->options->answers as $a) {
+            $question->answers[$a->id] = $this->make_answer($a);
+            if (!$forceplaintextanswers) {
+                $question->answers[$a->id]->answerformat = $a->answerformat;
+            }
+            $question->answers[$a->id]->tur_answer_truefalse = $a->tur_answer_truefalse;
+        }
     }
-     */
 
     public function delete_question($questionid, $contextid) {
         global $DB;
