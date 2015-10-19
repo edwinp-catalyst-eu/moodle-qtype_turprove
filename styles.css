@@ -105,12 +105,14 @@ div.turprove div.content div.formulation div.audioplay.playing {
 }
 
 .turprove_leftblock {
-    display: block;
     width: 25px;
 }
 
 .turprove_contentblock {
+    float: left;
     margin-bottom: 20px;
+    margin-left: 10px;
+    width: 70%;
 }
 
 .turprove_contentblock label span {
@@ -119,6 +121,8 @@ div.turprove div.content div.formulation div.audioplay.playing {
 
 .turprove_rightblock {
     float: right;
+    text-align: right;
+    width: 20%;
 }
 
 .turprove_answer {
