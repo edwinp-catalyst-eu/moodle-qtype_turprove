@@ -138,8 +138,8 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
             $ordinalspan = html_writer::span($ordinal . '. ');
             $ordinal++;
             $turproveanswertextlabel = html_writer::label(
-                    $question->make_html_inline(
-                        $question->format_text($ordinalspan . $ans->answer,
+                    $question->make_html_inline($ordinalspan .
+                        $question->format_text($ans->answer,
                                 $ans->answerformat, $qa, 'question', 'answer', $ansid)
                     ),
                     $this->get_input_id($qa, $value)
@@ -284,8 +284,8 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
             $yesorno = ($ans->tur_answer_truefalse == 1) ? get_string('yes') : get_string('no');
             $ordinalspan = html_writer::span($ordinal . '. ');
             $ordinal++;
-            $answertext = $question->make_html_inline(
-                    $question->format_text($ordinalspan . $answertext . ': ' . $yesorno,
+            $answertext = $question->make_html_inline($ordinalspan .
+                    $question->format_text($answertext . ': ' . $yesorno,
                     $ans->answerformat, $qa, 'question', 'answer', $ansid));
             $html .= html_writer::tag('li', $answertext);
         }
