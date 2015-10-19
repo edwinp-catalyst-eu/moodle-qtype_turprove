@@ -121,6 +121,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         $html .= html_writer::end_div(); // #turprove_yn
 
         $response = $question->get_response($qa);
+        $useranswers = $this->get_turprove_answers($question->get_order($qa), $response);
 
         $ordinal = 1;
         foreach ($question->get_order($qa) as $value => $ansid) {
@@ -159,12 +160,23 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 )
             );
             if (array_key_exists('choice' . $value, $response)) {
-                if ($response['choice' . $value] == 1) {
-                    $turproveanswerinputfields[0]['checked'] = 'checked'; // yes
-                } else if ($response['choice' . $value] == 0) {
-                    $turproveanswerinputfields[1]['checked'] = 'checked'; // no
+                if ($response['choice' . $value] == 1) { // If the response is correct
+                    if ($useranswers[$ansid] == 1) { // If the correct answer is 'Yes'
+                        $turproveanswerinputfields[0]['checked'] = 'checked'; // Set the 'Yes' radio button to checked
+                    } else { // If the correct answer is 'No'
+                        $turproveanswerinputfields[1]['checked'] = 'checked'; // Set the 'No' radio button to checked
+                    }
+                } else if ($response['choice' . $value] == 0) { // If the response is incorrect
+                    if ($useranswers[$ansid] == 1) { // If the correct answer is 'Yes'
+                        $turproveanswerinputfields[1]['checked'] = 'checked'; // Set the 'No' radio button to checked
+                    } else { // If the correct answer is 'No'
+                        $turproveanswerinputfields[0]['checked'] = 'checked'; // Set the 'Yes' radio button to checked
+                    }
                 }
+                $turproveanswerinputfields[0]['disabled'] = 'disabled';
+                $turproveanswerinputfields[1]['disabled'] = 'disabled';
             }
+
             $turproveanswerfields = '';
             foreach ($turproveanswerinputfields as $turproveanswerinputfield) {
                 $turproveanswerfields .= html_writer::empty_tag('input', $turproveanswerinputfield);
@@ -265,11 +277,15 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
         $question = $qa->get_question();
         $html = html_writer::tag('p', 'The correct answers are:');
         $html .= html_writer::start_tag('ul');
-        foreach ($question->answers as $ansid => $ans) {
+        $ordinal = 1;
+        foreach ($question->get_order($qa) as $value => $ansid) {
+            $ans = $question->answers[$ansid];
             $answertext = strip_tags($ans->answer);
             $yesorno = ($ans->tur_answer_truefalse == 1) ? get_string('yes') : get_string('no');
+            $ordinalspan = html_writer::span($ordinal . '. ');
+            $ordinal++;
             $answertext = $question->make_html_inline(
-                    $question->format_text($answertext . ': ' . $yesorno,
+                    $question->format_text($ordinalspan . $answertext . ': ' . $yesorno,
                     $ans->answerformat, $qa, 'question', 'answer', $ansid));
             $html .= html_writer::tag('li', $answertext);
         }
@@ -288,5 +304,21 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
         }
 
         return parent::num_parts_correct($qa);
+    }
+
+    protected function get_turprove_answers($answerids, $response) {
+        global $DB;
+
+        list($turprovesql, $params) = $DB->get_in_or_equal($answerids);
+        $sql = "SELECT id, tur_answer_truefalse
+                  FROM {question_answers}
+                 WHERE id {$turprovesql}
+              ORDER BY CASE id";
+        for ($i = 0; $i < count($answerids); $i++) {
+            $sql .= ' WHEN ' . $answerids[$i] . ' THEN ' . $i;
+        }
+        $sql .= ' END';
+
+        return $DB->get_records_sql_menu($sql, $params);
     }
 }

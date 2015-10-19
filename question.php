@@ -139,6 +139,13 @@ abstract class qtype_turprove_base extends question_graded_automatically {
                     $args, $forcedownload);
         }
     }
+
+    public function make_html_inline($html) {
+        $html = preg_replace('~\s*<p>\s*~u', '', $html);
+        $html = preg_replace('~\s*</p>\s*~u', '<br />', $html);
+        $html = preg_replace('~(<br\s*/?>)+$~u', '', $html);
+        return trim($html);
+    }
 }
 
 /**
@@ -147,7 +154,6 @@ abstract class qtype_turprove_base extends question_graded_automatically {
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_turprove_multi_question extends qtype_turprove_base {
-
     public function get_renderer(moodle_page $page) {
         return $page->get_renderer('qtype_turprove', 'multi');
     }
