@@ -122,6 +122,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
 
         $response = $question->get_response($qa);
 
+        $ordinal = 1;
         foreach ($question->get_order($qa) as $value => $ansid) {
             $ans = $question->answers[$ansid];
 
@@ -130,11 +131,15 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
 
             $html .= html_writer::start_div('turprove_answer');
             $turproveansweraudiodiv = html_writer::div('', 'audioplay',
-                    array('data-src' => $this->get_answersound($ans, $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
+                    array('data-src' => $this->get_answersound($ans,
+                            $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
             $html .= html_writer::div($turproveansweraudiodiv, 'turprove_leftblock');
+            $ordinalspan = html_writer::span($ordinal . '. ');
+            $ordinal++;
             $turproveanswertextlabel = html_writer::label(
                     $question->make_html_inline(
-                        $question->format_text($ans->answer, $ans->answerformat, $qa, 'question', 'answer', $ansid)
+                        $question->format_text($ordinalspan . $ans->answer,
+                                $ans->answerformat, $qa, 'question', 'answer', $ansid)
                     ),
                     $this->get_input_id($qa, $value)
                     );

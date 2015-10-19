@@ -113,6 +113,10 @@ div.turprove div.content div.formulation div.audioplay.playing {
     margin-bottom: 20px;
 }
 
+.turprove_contentblock label span {
+    font-weight: bold;
+}
+
 .turprove_rightblock {
     float: right;
 }
