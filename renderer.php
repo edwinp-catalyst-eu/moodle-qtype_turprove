@@ -127,9 +127,6 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         foreach ($question->get_order($qa) as $value => $ansid) {
             $ans = $question->answers[$ansid];
 
-            // Comment out temporarily
-            //$isselected = $question->is_choice_selected($response, $value);
-
             $html .= html_writer::start_div('turprove_answer');
             $turproveansweraudiodiv = html_writer::div('', 'audioplay',
                     array('data-src' => $this->get_answersound($ans,
@@ -159,7 +156,31 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                     'name' => $this->get_turprove_field_name($qa, 'choice' . $value)
                 )
             );
-            if (array_key_exists('choice' . $value, $response)) {
+
+            if ($responsesummary = $qa->get_response_summary()) {
+                // This question attempt has been completed
+                $responsearray = explode('; ', $responsesummary);
+                $thisanswer = $ans->answer;
+                $thisanswerisyes = $ans->tur_answer_truefalse;
+                if (in_array($thisanswer, $responsearray)) {
+                    // The correct answer has been selected
+                    if ($thisanswerisyes) {
+                        $turproveanswerinputfields[0]['checked'] = 'checked'; // Set the 'Yes' radio button to checked
+                    } else {
+                        $turproveanswerinputfields[1]['checked'] = 'checked'; // Set the 'No' radio button to checked
+                    }
+                } else {
+                    // The incorrect answer has been selected
+                    if ($thisanswerisyes) {
+                        $turproveanswerinputfields[1]['checked'] = 'checked'; // Set the 'No' radio button to checked
+                    } else {
+                        $turproveanswerinputfields[0]['checked'] = 'checked'; // Set the 'Yes' radio button to checked
+                    }
+                }
+                $turproveanswerinputfields[0]['disabled'] = 'disabled'; // yes radio button
+                $turproveanswerinputfields[1]['disabled'] = 'disabled'; // no radio button
+            } else if (array_key_exists('choice' . $value, $response)) {
+                // This question attempt has not yet been completed
                 if ($response['choice' . $value] == 1) { // If the response is correct
                     if ($useranswers[$ansid] == 1) { // If the correct answer is 'Yes'
                         $turproveanswerinputfields[0]['checked'] = 'checked'; // Set the 'Yes' radio button to checked
@@ -173,8 +194,6 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                         $turproveanswerinputfields[0]['checked'] = 'checked'; // Set the 'Yes' radio button to checked
                     }
                 }
-                $turproveanswerinputfields[0]['disabled'] = 'disabled';
-                $turproveanswerinputfields[1]['disabled'] = 'disabled';
             }
 
             $turproveanswerfields = '';
