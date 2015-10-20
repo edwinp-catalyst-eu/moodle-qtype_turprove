@@ -177,8 +177,6 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                         $turproveanswerinputfields[0]['checked'] = 'checked'; // Set the 'Yes' radio button to checked
                     }
                 }
-                $turproveanswerinputfields[0]['disabled'] = 'disabled'; // yes radio button
-                $turproveanswerinputfields[1]['disabled'] = 'disabled'; // no radio button
             } else if (array_key_exists('choice' . $value, $response)) {
                 // This question attempt has not yet been completed
                 if ($response['choice' . $value] == 1) { // If the response is correct
@@ -194,6 +192,11 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                         $turproveanswerinputfields[0]['checked'] = 'checked'; // Set the 'Yes' radio button to checked
                     }
                 }
+            }
+
+            if ($qa->get_state()->is_finished()) {
+                $turproveanswerinputfields[0]['disabled'] = 'disabled'; // yes radio button
+                $turproveanswerinputfields[1]['disabled'] = 'disabled'; // no radio button
             }
 
             $turproveanswerfields = '';
