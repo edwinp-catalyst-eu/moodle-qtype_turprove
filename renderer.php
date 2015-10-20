@@ -297,16 +297,13 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
     public function correct_response(question_attempt $qa) {
 
         $question = $qa->get_question();
-        $html = html_writer::tag('p', 'The correct answers are:');
-        $html .= html_writer::start_tag('ul');
-        $ordinal = 1;
+        $html = html_writer::tag('p', get_string('thecorrectanswersare', 'qtype_turprove'));
+        $html .= html_writer::start_tag('ol');
         foreach ($question->get_order($qa) as $value => $ansid) {
             $ans = $question->answers[$ansid];
             $answertext = strip_tags($ans->answer);
             $yesorno = ($ans->tur_answer_truefalse == 1) ? get_string('yes') : get_string('no');
-            $ordinalspan = html_writer::span($ordinal . '. ');
-            $ordinal++;
-            $answertext = $question->make_html_inline($ordinalspan .
+            $answertext = $question->make_html_inline(
                     $question->format_text($answertext . ': ' . $yesorno,
                     $ans->answerformat, $qa, 'question', 'answer', $ansid));
             $html .= html_writer::tag('li', $answertext);
