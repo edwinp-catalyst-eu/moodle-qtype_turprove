@@ -79,6 +79,18 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         }
     }
 
+    protected function get_questions_total($cmid) {
+        global $DB;
+
+        $sql = "SELECT COUNT(qs.slot)
+                  FROM {course_modules} cm
+                  JOIN {quiz_slots} qs ON qs.quizid = cm.instance
+                 WHERE cm.id = ?";
+        $params = array($cmid);
+
+        return $DB->count_records_sql($sql, $params);
+    }
+
     /**
      * Whether a choice should be considered right, wrong or partially right.
      * @param question_answer $ans representing one of the choices.
@@ -93,40 +105,41 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
      * @return type
      */
     public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
+        global $CFG;
 
         $question = $qa->get_question();
-        $html = '';
+        $questiontext = $question->format_questiontext($qa);
 
-        $html .= html_writer::start_div('', array('id' => 'turprove_wrapper'));
+        $html = html_writer::start_div('', array('id' => 'turprove_wrapper'));
         $html .= html_writer::start_div('', array('id' => 'turprove_leftcolumn'));
+        $questioninfo = new stdClass();
+        $questioninfo->questionnumber = $qa->get_slot();
+        $questioninfo->questionstotal = $this->get_questions_total($options->editquestionparams['cmid']);
+        $html .= html_writer::div(get_string('questionxofy', 'qtype_turprove', $questioninfo),
+                'turprove_leftcolumn_quiz_info');
         $html .= html_writer::start_div('', array('id' => 'turprove_question'));
-
         $questionsoundurl = $this->get_questionsound($question->id,
                 $question->contextid, $qa->get_slot(), $qa->get_usage_id());
         $audiosource = html_writer::tag('source', '',
                 array('type' => 'audio/mpeg', 'src' => $questionsoundurl));
-        $audiosource .= 'Your browser does not support the audio tag.'; // TODO: Lang string
-
+        $audiosource .= get_string('yourbrowserdoesnotsupporttheaudiotag', 'qtype_turprove');
         $html .= html_writer::tag('audio', $audiosource, array('id' => 'audiodiv'));
         $turprovequestionaudiodiv = html_writer::div('', 'audioplay', array('data-src' => $questionsoundurl));
         $html .= html_writer::div($turprovequestionaudiodiv, 'turprove_leftblock');
-        $turprovequestiontextspan = html_writer::span($question->format_questiontext($qa));
+        $turprovequestiontextspan = html_writer::span($questiontext);
         $html .= html_writer::div($turprovequestiontextspan, 'turprove_contentblock');
         $html .= html_writer::end_div(); // #turprove_question
-        $html .= html_writer::start_div('', array('id' => 'turprove_yn'));
+        $html .= html_writer::start_div('clearfix', array('id' => 'turprove_yn'));
         $html .= html_writer::div('', 'turprove_leftblock');
         $html .= html_writer::div('', 'turprove_contentblock');
-        $turproveyntextspan = html_writer::span('JA / NEJ'); // TODO: Lang string
+        $turproveyntextspan = html_writer::span(get_string('yes/no', 'qtype_turprove'));
         $html .= html_writer::div($turproveyntextspan, 'turprove_rightblock');
         $html .= html_writer::end_div(); // #turprove_yn
-
         $response = $question->get_response($qa);
         $useranswers = $this->get_turprove_answers($question->get_order($qa), $response);
-
         $ordinal = 1;
         foreach ($question->get_order($qa) as $value => $ansid) {
             $ans = $question->answers[$ansid];
-
             $html .= html_writer::start_div('turprove_answer');
             $turproveansweraudiodiv = html_writer::div('', 'audioplay',
                     array('data-src' => $this->get_answersound($ans,
@@ -141,6 +154,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                     ),
                     $this->get_input_id($qa, $value)
                     );
+            $html .= html_writer::start_div('turprove_answer_wrapper clearfix');
             $html .= html_writer::div($turproveanswertextlabel, 'turprove_contentblock');
             $turproveanswerinputfields = array(
                 array( // yes
@@ -156,7 +170,6 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                     'name' => $this->get_turprove_field_name($qa, 'choice' . $value)
                 )
             );
-
             if ($responsesummary = $qa->get_response_summary()) {
                 // This question attempt has been completed
                 $responsearray = explode('; ', $responsesummary);
@@ -193,25 +206,31 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                     }
                 }
             }
-
             if ($qa->get_state()->is_finished()) {
                 $turproveanswerinputfields[0]['disabled'] = 'disabled'; // yes radio button
                 $turproveanswerinputfields[1]['disabled'] = 'disabled'; // no radio button
             }
-
             $turproveanswerfields = '';
             foreach ($turproveanswerinputfields as $turproveanswerinputfield) {
                 $turproveanswerfields .= html_writer::empty_tag('input', $turproveanswerinputfield);
             }
             $html .= html_writer::div($turproveanswerfields, 'turprove_rightblock');
+            $html .= html_writer::end_div(); // .turprove_answer_wrapper
             $html .= html_writer::end_div(); // .turprove_answer
         }
-
         $html .= html_writer::end_div(); // #turprove_leftcolumn
-        $turprovequestionimage = html_writer::img(
-                $this->get_questionimage($question->id, $question->contextid, $qa->get_slot(), $qa->get_usage_id()),
-                '', array('class' => '', 'width' => '', 'height' => ''));
-        $html .= html_writer::div($turprovequestionimage, '', array('id' => 'turprove_rightcolumn'));
+
+        $turprovequestionimagesrc = $this->get_questionimage($question->id,
+                $question->contextid, $qa->get_slot(), $qa->get_usage_id());
+        $turprovequestionimage = html_writer::img($turprovequestionimagesrc,
+                $questiontext, array('class' => 'questionimage'));
+        $lightboxicon = html_writer::img(
+                $CFG->wwwroot . '/question/type/turprove/pix/lightboxicon.jpg', $questiontext);
+        $lightboxlink = html_writer::link($turprovequestionimagesrc, $lightboxicon,
+                array('data-lightbox' => $questiontext, 'data-title' => $questiontext));
+        $lighboxdiv = html_writer::div($lightboxlink, 'qtype_turprove_lightboxdiv');
+        $html .= html_writer::div($turprovequestionimage . $lighboxdiv, '',
+                array('id' => 'turprove_rightcolumn'));
         $html .= html_writer::end_div(); // #turprove_wrapper
 
         if ($qa->get_state() == question_state::$invalid) {
@@ -245,6 +264,15 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
  */
 class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
 
+    public function head_code(question_attempt $qa) {
+        global $CFG;
+
+        $js = new moodle_url($CFG->wwwroot . '/question/type/turprove/lightbox/lightbox-plus-jquery.min.js');
+        $this->page->requires->js($js);
+        $stylesheet = new moodle_url($CFG->wwwroot . '/question/type/turprove/lightbox/lightbox.css');
+        $this->page->requires->css($stylesheet);
+    }
+
     protected function get_input_type() {
         return 'radio';
     }
@@ -275,6 +303,7 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
     }
 
     protected function get_input_name(question_attempt $qa, $value) {
+
         return $qa->get_qt_field_name('choice' . $value);
     }
 
@@ -284,8 +313,6 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
     }
 
     protected function is_right(question_answer $ans) {
-
-        // TODO: Review: depends on the custom column
 
         if ($ans->fraction > 0) {
             return 1;
@@ -314,8 +341,6 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
     }
 
     protected function num_parts_correct(question_attempt $qa) {
-
-         // TODO: Review/rewrite -
 
         if ($qa->get_question()->get_num_selected_choices($qa->get_last_qt_data()) >
                 $qa->get_question()->get_num_correct_choices()) {

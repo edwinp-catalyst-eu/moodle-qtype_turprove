@@ -1,3 +1,8 @@
+div.turprove div.content div.formulation {
+    background-color: #ffffff;
+    border-color: #ffffff;
+}
+
 div.turprove div.content div.formulation:before,
 div.turprove div.content div.formulation:after {
     content: "";
@@ -53,13 +58,20 @@ div.turprove div.content div.formulation div.ablock div.answer div.r1 input[type
     float: right;
 }
 
+div.turprove div.content div.formulation div#turprove_question div.audioplay {
+    margin-top: 5px;
+}
+
+div.turprove div.content div.formulation div.turprove_answer div.audioplay {
+    margin-top: 15px;
+}
+
 div.turprove div.content div.formulation div.audioplay {
     background-image: url('/question/type/turprove/pix/icon_play.png');
     background-position: left top;
     cursor: pointer;
     height: 20px;
     width: 20px;
-    margin-top: 2px;
     float: left;
 }
 
@@ -81,14 +93,24 @@ div.turprove div.content div.formulation div.audioplay.playing {
     max-width: 50%;
 }
 
+.turprove_leftcolumn_quiz_info {
+    background-color: #e0f0ff;
+    color: #666666;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    padding: 5px;
+}
+
 #turprove_rightcolumn {
     float: right;
     margin-left: 2%;
     max-width: 48%;
 }
 
-#turprove_rightcolumn img {
+#turprove_rightcolumn img.questionimage {
     max-width: 100%;
+    border: 1px solid #666666;
 }
 
 #turprove_question {
@@ -97,11 +119,23 @@ div.turprove div.content div.formulation div.audioplay.playing {
 
 #turprove_question .turprove_contentblock span {
     font-weight: bold;
+    color: #336633;
 }
 
 #turprove_yn {
     display: block;
-    height: 20px;
+}
+
+#turprove_yn .turprove_leftblock {
+
+}
+
+#turprove_yn .turprove_contentblock {
+    margin-top: 1px;
+}
+
+#turprove_yn .turprove_rightblock {
+
 }
 
 .turprove_leftblock {
@@ -127,4 +161,47 @@ div.turprove div.content div.formulation div.audioplay.playing {
 
 .turprove_answer {
 
+}
+
+.turprove_answer .turprove_leftblock {
+    padding-top: 0;
+}
+
+.turprove_answer_wrapper {
+    border-top: 2px solid #c5d5c4;
+    margin-left: 30px;
+}
+
+.turprove_answer_wrapper .turprove_contentblock {
+    margin-left: 0;
+}
+
+.turprove_answer .turprove_contentblock,
+.turprove_answer .turprove_rightblock {
+    padding-top: 10px;
+}
+
+#turprove_yn .turprove_rightblock span {
+    color: #336633;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.qtype_turprove_lightboxdiv {
+    margin-top: 10px;
+}
+
+.qtype_turprove_lightboxdiv a {
+    float: right;
+}
+
+.turprove_answer input[type="radio"],
+.turprove_answer input[type="checkbox"] {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.turprove_answer:last-child .turprove_answer_wrapper {
+    border-bottom: 2px solid #c5d5c4;
 }
