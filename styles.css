@@ -176,6 +176,16 @@ div.turprove div.content div.formulation div.audioplay.playing {
     margin-left: 0;
 }
 
+.turprove_answer.correct,
+.turprove_answer.incorrect {
+    padding: 0 10px;
+}
+
+.turprove_answer.correct .turprove_answer_wrapper,
+.turprove_answer.incorrect .turprove_answer_wrapper {
+    border: none;
+}
+
 .turprove_answer .turprove_contentblock,
 .turprove_answer .turprove_rightblock {
     padding-top: 10px;
@@ -206,4 +216,12 @@ div.turprove div.content div.formulation div.audioplay.playing {
     font-style: italic;
     margin-top: 10px;
     margin-left: 30px;
+}
+
+.turprove_answer_feedback {
+    padding-bottom: 10px;
+}
+
+div.turprove div.content div.formulation div.turprove_answer .tp_feedbackaudio.audioplay {
+    margin-top: 3px;
 }
