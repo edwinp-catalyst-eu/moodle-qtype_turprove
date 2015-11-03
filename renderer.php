@@ -239,7 +239,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 $turproveanswerfields .= html_writer::empty_tag('input', $turproveanswerinputfield);
             }
             if ($options->feedback) {
-                $html .= html_writer::div($this->feedback_image($correct), 'turprove_feedbackimage');
+                $turproveanswerfields .= html_writer::div($this->feedback_image($correct), 'turprove_feedbackimage');
             }
             $html .= html_writer::div($turproveanswerfields, 'turprove_rightblock');
             $html .= html_writer::end_div(); // .turprove_answer_wrapper
