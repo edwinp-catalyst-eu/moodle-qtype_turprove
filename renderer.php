@@ -53,6 +53,19 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         }
     }
 
+    protected function get_answerfeedbacksound(question_answer $ans, $contextid, $slot, $usageid) {
+
+        $fs = get_file_storage();
+        $files = $fs->get_area_files(1, 'question', 'feedbacksound', $ans->id);
+        if ($file = end($files)) {
+            $filename = $file->get_filename();
+            if ($filename != '.') {
+                return moodle_url::make_file_url('/pluginfile.php',
+                        "/1/question/feedbacksound/$usageid/$slot/$ans->id/$filename");
+            }
+        }
+    }
+
     protected function get_questionimage($questionid, $contextid, $slot, $usageid) {
 
         $fs = get_file_storage();
@@ -140,22 +153,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         $ordinal = 1;
         foreach ($question->get_order($qa) as $value => $ansid) {
             $ans = $question->answers[$ansid];
-            $html .= html_writer::start_div('turprove_answer');
-            $turproveansweraudiodiv = html_writer::div('', 'audioplay',
-                    array('data-src' => $this->get_answersound($ans,
-                            $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
-            $html .= html_writer::div($turproveansweraudiodiv, 'turprove_leftblock');
-            $ordinalspan = html_writer::span($ordinal . '. ');
-            $ordinal++;
-            $turproveanswertextlabel = html_writer::label(
-                    $question->make_html_inline($ordinalspan .
-                        $question->format_text($ans->answer,
-                                $ans->answerformat, $qa, 'question', 'answer', $ansid)
-                    ),
-                    $this->get_input_id($qa, $value)
-                    );
-            $html .= html_writer::start_div('turprove_answer_wrapper clearfix');
-            $html .= html_writer::div($turproveanswertextlabel, 'turprove_contentblock');
+            $correct = null;
             $turproveanswerinputfields = array(
                 array( // yes
                     'type' => $this->get_input_type(),
@@ -177,6 +175,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 $thisanswerisyes = $ans->tur_answer_truefalse;
                 if (in_array($thisanswer, $responsearray)) {
                     // The correct answer has been selected
+                    $correct = true;
                     if ($thisanswerisyes) {
                         $turproveanswerinputfields[0]['checked'] = 'checked'; // Set the 'Yes' radio button to checked
                     } else {
@@ -184,6 +183,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                     }
                 } else {
                     // The incorrect answer has been selected
+                    $correct = false;
                     if ($thisanswerisyes) {
                         $turproveanswerinputfields[1]['checked'] = 'checked'; // Set the 'No' radio button to checked
                     } else {
@@ -210,12 +210,50 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 $turproveanswerinputfields[0]['disabled'] = 'disabled'; // yes radio button
                 $turproveanswerinputfields[1]['disabled'] = 'disabled'; // no radio button
             }
+            $answerdivclass = 'turprove_answer';
+            if ($options->feedback) {
+                if ($correct) {
+                    $answerdivclass .= ' correct';
+                } else {
+                    $answerdivclass .= ' incorrect';
+                }
+            }
+            $html .= html_writer::start_div($answerdivclass);
+            $turproveansweraudiodiv = html_writer::div('', 'audioplay',
+                    array('data-src' => $this->get_answersound($ans,
+                            $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
+            $html .= html_writer::div($turproveansweraudiodiv, 'turprove_leftblock');
+            $ordinalspan = html_writer::span($ordinal . '. ');
+            $ordinal++;
+            $turproveanswertextlabel = html_writer::label(
+                    $question->make_html_inline($ordinalspan .
+                        $question->format_text($ans->answer,
+                                $ans->answerformat, $qa, 'question', 'answer', $ansid)
+                    ),
+                    $this->get_input_id($qa, $value)
+                    );
+            $html .= html_writer::start_div('turprove_answer_wrapper clearfix');
+            $html .= html_writer::div($turproveanswertextlabel, 'turprove_contentblock');
             $turproveanswerfields = '';
             foreach ($turproveanswerinputfields as $turproveanswerinputfield) {
                 $turproveanswerfields .= html_writer::empty_tag('input', $turproveanswerinputfield);
             }
             $html .= html_writer::div($turproveanswerfields, 'turprove_rightblock');
             $html .= html_writer::end_div(); // .turprove_answer_wrapper
+            if ($options->feedback && trim($ans->feedback)) {
+
+                $html .= html_writer::start_div('turprove_answer_feedback'); // start div.turprove_answer_feedback
+                $tpanswerfeedbackimage = $this->feedback_image($correct);
+                $html .= html_writer::div($tpanswerfeedbackimage, 'tp_feedbackimage');
+                $tpanswerfeedbackaudio = '';
+                $html .= html_writer::div($tpanswerfeedbackaudio, 'tp_feedbackaudio audioplay',
+                    array('data-src' => $this->get_answerfeedbacksound($ans,
+                            $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
+                $tpanswerfeedbacktext = trim($ans->feedback);
+                $html .= html_writer::div($tpanswerfeedbacktext, 'tp_feedbacktext');
+
+                $html .= html_writer::end_div(); // end div.turprove_answer_feedback
+            }
             $html .= html_writer::end_div(); // .turprove_answer
         }
         $html .= html_writer::end_div(); // #turprove_leftcolumn

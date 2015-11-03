@@ -160,7 +160,7 @@ div.turprove div.content div.formulation div.audioplay.playing {
 }
 
 .turprove_answer {
-
+    margin-bottom: 10px;
 }
 
 .turprove_answer .turprove_leftblock {
@@ -200,8 +200,4 @@ div.turprove div.content div.formulation div.audioplay.playing {
 .turprove_answer input[type="checkbox"] {
     margin-left: 10px;
     margin-right: 0;
-}
-
-.turprove_answer:last-child .turprove_answer_wrapper {
-    border-bottom: 2px solid #c5d5c4;
 }
