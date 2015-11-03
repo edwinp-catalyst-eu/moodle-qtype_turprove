@@ -201,3 +201,9 @@ div.turprove div.content div.formulation div.audioplay.playing {
     margin-left: 10px;
     margin-right: 0;
 }
+
+.turprove_feedbacktext {
+    font-style: italic;
+    margin-top: 10px;
+    margin-left: 30px;
+}

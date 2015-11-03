@@ -238,19 +238,19 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
             foreach ($turproveanswerinputfields as $turproveanswerinputfield) {
                 $turproveanswerfields .= html_writer::empty_tag('input', $turproveanswerinputfield);
             }
+            if ($options->feedback) {
+                $html .= html_writer::div($this->feedback_image($correct), 'turprove_feedbackimage');
+            }
             $html .= html_writer::div($turproveanswerfields, 'turprove_rightblock');
             $html .= html_writer::end_div(); // .turprove_answer_wrapper
             if ($options->feedback && trim($ans->feedback)) {
-
                 $html .= html_writer::start_div('turprove_answer_feedback'); // start div.turprove_answer_feedback
-                $tpanswerfeedbackimage = $this->feedback_image($correct);
-                $html .= html_writer::div($tpanswerfeedbackimage, 'tp_feedbackimage');
                 $tpanswerfeedbackaudio = '';
                 $html .= html_writer::div($tpanswerfeedbackaudio, 'tp_feedbackaudio audioplay',
                     array('data-src' => $this->get_answerfeedbacksound($ans,
                             $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
                 $tpanswerfeedbacktext = trim($ans->feedback);
-                $html .= html_writer::div($tpanswerfeedbacktext, 'tp_feedbacktext');
+                $html .= html_writer::div($tpanswerfeedbacktext, 'turprove_feedbacktext');
 
                 $html .= html_writer::end_div(); // end div.turprove_answer_feedback
             }
