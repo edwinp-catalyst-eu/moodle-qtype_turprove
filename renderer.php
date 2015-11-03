@@ -362,25 +362,6 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
         }
     }
 
-    public function correct_response(question_attempt $qa) {
-
-        $question = $qa->get_question();
-        $html = html_writer::tag('p', get_string('thecorrectanswersare', 'qtype_turprove'));
-        $html .= html_writer::start_tag('ol');
-        foreach ($question->get_order($qa) as $value => $ansid) {
-            $ans = $question->answers[$ansid];
-            $answertext = strip_tags($ans->answer);
-            $yesorno = ($ans->tur_answer_truefalse == 1) ? get_string('yes') : get_string('no');
-            $answertext = $question->make_html_inline(
-                    $question->format_text($answertext . ': ' . $yesorno,
-                    $ans->answerformat, $qa, 'question', 'answer', $ansid));
-            $html .= html_writer::tag('li', $answertext);
-        }
-        $html .= html_writer::end_tag('ul');
-
-        return $html;
-    }
-
     protected function num_parts_correct(question_attempt $qa) {
 
         if ($qa->get_question()->get_num_selected_choices($qa->get_last_qt_data()) >
