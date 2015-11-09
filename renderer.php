@@ -263,12 +263,12 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         $turprovequestionimage = html_writer::img($turprovequestionimagesrc,
                 $questiontext, array('class' => 'questionimage'));
         $turprovequestionimagelink = html_writer::link($turprovequestionimagesrc, $turprovequestionimage,
-                array('data-lightbox' => $questiontext, 'data-title' => $questiontext));
+                array('data-lightbox' => 'imagelink', 'data-title' => $questiontext));
         $turprovequestionimagediv = html_writer::div($turprovequestionimagelink);
         $lightboxicon = html_writer::img(
                 $CFG->wwwroot . '/question/type/turprove/pix/lightboxicon.jpg', $questiontext);
         $lightboxlink = html_writer::link($turprovequestionimagesrc, $lightboxicon,
-                array('data-lightbox' => $questiontext, 'data-title' => $questiontext));
+                array('data-lightbox' => 'iconlink', 'data-title' => $questiontext));
         $lighboxdiv = html_writer::div($lightboxlink, 'qtype_turprove_lightboxdiv');
         $html .= html_writer::div($turprovequestionimagediv . $lighboxdiv, '',
                 array('id' => 'turprove_rightcolumn'));
