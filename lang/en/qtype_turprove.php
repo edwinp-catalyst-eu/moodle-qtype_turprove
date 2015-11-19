@@ -38,3 +38,8 @@ $string['shuffleanswers_help'] = 'If enabled, the order of the answers is random
 $string['thecorrectanswersare'] = 'The correct answers are:';
 $string['yes/no'] = 'JA / NEJ';
 $string['yourbrowserdoesnotsupporttheaudiotag'] = 'Your browser does not support the audio tag.';
+
+// Navigation
+$string['menu'] = 'Menu';
+$string['tilbage'] = '« Tilbage';
+$string['frem'] = 'Frem »';

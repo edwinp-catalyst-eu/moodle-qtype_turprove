@@ -225,3 +225,44 @@ div.turprove div.content div.formulation div.audioplay.playing {
 div.turprove div.content div.formulation div.turprove_answer .tp_feedbackaudio.audioplay {
     margin-top: 3px;
 }
+
+div.turprove div.content div.formulation .im-controls {
+    clear: both;
+    float: left;
+    position: relative;
+    top: -53px;
+}
+
+.singlebutton.turforlag {
+    clear: both;
+    float: right;
+    margin-top: 20px;
+}
+
+div.tf_prevnextquestion {
+    margin: 10px auto;
+    width: 200px;
+}
+
+div.tf_prevnextquestion .singlebutton {
+    float: left;
+    margin-top: 20px;
+}
+
+div.tf_prevnextquestion input[name='next'] {
+    display: block !important;
+    float: left;
+    margin-top: 20px;
+}
+
+a.arrow_link {
+    display: none;
+}
+
+input[name='next'] {
+    display: none !important;
+}
+
+.submitbtns a {
+    display: none;
+}
