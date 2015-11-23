@@ -118,7 +118,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
      * @return type
      */
     public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
-        global $CFG;
+        global $CFG, $DB;
 
         $question = $qa->get_question();
         $questiontext = $question->format_questiontext($qa);
@@ -127,7 +127,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         $html .= html_writer::start_div('', array('id' => 'turprove_leftcolumn'));
         $questioninfo = new stdClass();
         $questioninfo->questionnumber = $qa->get_slot();
-        $questioninfo->questionstotal = $this->get_questions_total($options->editquestionparams['cmid']);
+        $questioninfo->questionstotal = $this->get_questions_total($options->context->instanceid);
         $html .= html_writer::div(get_string('questionxofy', 'qtype_turprove', $questioninfo),
                 'turprove_leftcolumn_quiz_info');
         $html .= html_writer::start_div('', array('id' => 'turprove_question'));
@@ -274,8 +274,8 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 array('id' => 'turprove_rightcolumn'));
         $html .= html_writer::end_div(); // #turprove_wrapper
 
-        $attemptid = $options->editquestionparams['returnurl']->get_param('attempt');
-        $pageid    = $options->editquestionparams['returnurl']->get_param('page');
+        $attemptid = $DB->get_field('quiz_attempts', 'id', array('uniqueid' => $qa->get_usage_id()));
+        $pageid = (int) $qa->get_slot() - 1;
 
         // Menu button
         $menuurl = ($options->readonly) ? new moodle_url($CFG->wwwroot . '/mod/quiz/view.php',
