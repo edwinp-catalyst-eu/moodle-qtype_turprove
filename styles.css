@@ -1,3 +1,50 @@
+#page-mod-quiz-attempt #block-region-side-post {
+    display: none;
+}
+
+body.path-mod-quiz #region-main {
+    width: 100%;
+}
+
+#page-mod-quiz-review #mod_quiz_navblock {
+    position: relative;
+    top: -120px;
+    width: 435px;
+}
+
+#page-mod-quiz-review #mod_quiz_navblock .header {
+    display: none;
+}
+
+#page-mod-quiz-review .quizreviewsummary {
+    display: none;
+}
+
+body#page-mod-quiz-summary div#mod_quiz_navblock {
+    display: none;
+}
+
+body.path-mod-quiz div.turprove #turprove_leftcolumn {
+    width: 40%;
+}
+
+body.path-mod-quiz div.turprove #turprove_rightcolumn {
+    min-width: 58%;
+}
+
+body.path-mod-quiz div.turprove div.info {
+    display: none;
+}
+
+body.path-mod-quiz div.turprove div.content {
+    margin: 0;
+}
+
+body.path-mod-quiz div.turprove div.formulation {
+    padding: 8px 5px 8px 5px;
+}
+
+
 div.turprove div.content div.formulation {
     background-color: #ffffff;
     border-color: #ffffff;
