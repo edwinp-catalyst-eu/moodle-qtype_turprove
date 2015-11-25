@@ -278,9 +278,14 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         $pageid = (int) $qa->get_slot() - 1;
 
         // Menu button
-        $menuurl = ($options->readonly) ? new moodle_url($CFG->wwwroot . '/mod/quiz/view.php',
-                array('id' => $options->editquestionparams['cmid'])) :
-            new moodle_url($CFG->wwwroot . '/mod/quiz/summary.php', array('attempt' => $attemptid));
+        if ($options->readonly) {
+            $modulecontext = $options->context;
+            $coursecontext = $modulecontext->get_course_context();
+            $menuurl = $coursecontext->get_url();
+        } else {
+            $menuurl = new moodle_url($CFG->wwwroot . '/mod/quiz/summary.php', array('attempt' => $attemptid));
+        }
+
         $menubutton = html_writer::empty_tag('input',
                 array('type' => 'button', 'value' => get_string('menu', 'qtype_turmultiplechoice')));
         $link = html_writer::link($menuurl, $menubutton, array('id' => 'tf_menubutton'));
