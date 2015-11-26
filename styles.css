@@ -313,3 +313,15 @@ input[name='next'] {
 .submitbtns a {
     display: none;
 }
+
+.tf_button,
+.tf_button:link,
+.tf_button:active,
+.tf_button:hover,
+.tf_button:focus,
+.tf_button:visited {
+    display: block;
+    font-weight: normal;
+    color: #fff;
+    margin-left: 5px;
+}
