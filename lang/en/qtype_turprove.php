@@ -36,10 +36,9 @@ $string['selectmultiple'] = 'Select any correct answers:';
 $string['shuffleanswers'] = 'Shuffle the choices?';
 $string['shuffleanswers_help'] = 'If enabled, the order of the answers is randomly shuffled for each attempt, provided that "Shuffle within questions" in the activity settings is also enabled.';
 $string['thecorrectanswersare'] = 'The correct answers are:';
-$string['yes/no'] = 'JA / NEJ';
 $string['yourbrowserdoesnotsupporttheaudiotag'] = 'Your browser does not support the audio tag.';
 
 // Navigation
 $string['menu'] = 'Menu';
-$string['tilbage'] = '« Tilbage';
-$string['frem'] = 'Frem »';
+$string['back'] = '« Back';
+$string['forward'] = 'Forward »';
