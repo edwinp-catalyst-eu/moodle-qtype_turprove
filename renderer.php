@@ -174,7 +174,12 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 $responsearray = explode('; ', $responsesummary);
                 $thisanswer = $ans->answer;
                 $thisanswerisyes = $ans->tur_answer_truefalse;
-                if (in_array($thisanswer, $responsearray)) {
+                $thisanswerstringmatch = str_replace(' ', '', $thisanswer);
+                $responsearraystringmatch = array();
+                foreach ($responsearray as $stringmatch) {
+                    $responsearraystringmatch[] = str_replace(' ', '', $stringmatch);
+                }
+                if (in_array($thisanswerstringmatch, $responsearraystringmatch)) {
                     // The correct answer has been selected
                     $correct = true;
                     if ($thisanswerisyes) {
