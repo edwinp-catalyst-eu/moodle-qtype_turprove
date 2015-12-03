@@ -39,12 +39,14 @@ M.qtype_turprove.init = function (Y, questiondiv, quiet, autoplay) {
     audio[0].addEventListener('ended',function(e){
         $('.audioplay').removeClass('playing');
         if (current != tracks.length - 1 && !initialplaythroughcomplete) {
-            current++;
-            playing = $(playlist.find('.audioplay')[current]);
-            playing.addClass('playing');
-            audio[0].src = $(playlist.find('.audioplay')[current]).attr('data-src');
-            audio[0].load();
-            audio[0].play();
+            setTimeout(function() {
+                current++;
+                playing = $(playlist.find('.audioplay')[current]);
+                playing.addClass('playing');
+                audio[0].src = $(playlist.find('.audioplay')[current]).attr('data-src');
+                audio[0].load();
+                audio[0].play();
+            }, 1000);
         } else {
             initialplaythroughcomplete = true;
         }
