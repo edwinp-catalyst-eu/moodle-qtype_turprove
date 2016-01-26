@@ -169,8 +169,10 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                     'name' => $this->get_turprove_field_name($qa, 'choice' . $value)
                 )
             );
-            if ($responsesummary = $qa->get_response_summary()) {
-                // This question attempt has been completed
+
+            if ($options->feedback) {
+                // Whether or not this question has been completed, we are requesting feedback
+                $responsesummary = $qa->get_response_summary();
                 $responsearray = explode('; ', $responsesummary);
                 $thisanswer = $ans->answer;
                 $thisanswerisyes = $ans->tur_answer_truefalse;
