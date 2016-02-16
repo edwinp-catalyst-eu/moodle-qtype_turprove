@@ -26,6 +26,10 @@ M.qtype_turprove = M.qtype_turprove || {};
 
 M.qtype_turprove.init = function (Y, questiondiv, quiet, autoplay) {
 
+    if (!$(document.body).hasClass('turprove')) {
+        $(document.body).addClass('turprove');
+    }
+
     var initialplaythroughcomplete = false;
     var current = 0;
     var audio = $('#audiodiv');
