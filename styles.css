@@ -306,10 +306,6 @@ a.arrow_link {
     display: none;
 }
 
-#page-mod-quiz-attempt.turprove input[name='next'] {
-    display: none !important;
-}
-
 .submitbtns a {
     display: none;
 }
