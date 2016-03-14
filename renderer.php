@@ -308,13 +308,13 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 $previousurl = new moodle_url($CFG->wwwroot . '/mod/quiz/review.php',
                         array('attempt' => $attemptid, 'page' => $pageid - 1));
                 $link = html_writer::link($previousurl, get_string('back', 'qtype_turprove'),
-                        array('id' => 'tf_previousbutton', 'class' => 'tf_button'));
+                        array('id' => 'tf_previousbutton', 'class' => 'tf_button submit'));
                 $html .= html_writer::div($link, 'singlebutton');
             } else {
                 $previousurl = new moodle_url($CFG->wwwroot . '/mod/quiz/attempt.php',
                         array('attempt' => $attemptid, 'page' => $pageid - 1));
                 $link = html_writer::link($previousurl, get_string('back', 'qtype_turprove'),
-                        array('id' => 'tf_previousbutton',  'class' => 'tf_button'));
+                        array('id' => 'tf_previousbutton',  'class' => 'tf_button submit'));
                 $html .= html_writer::div($link, 'singlebutton');
             }
         }
