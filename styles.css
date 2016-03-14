@@ -306,6 +306,10 @@ a.arrow_link {
     display: none;
 }
 
+body.turprove .submitbtns input[name='next'] {
+    display: none !important;
+}
+
 .submitbtns a {
     display: none;
 }
