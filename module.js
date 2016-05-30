@@ -38,7 +38,6 @@ M.qtype_turprove.init = function (Y, questiondiv, quiet, autoplay) {
     var audio = $('#audiodiv');
     var playlist = $(questiondiv);
     var tracks = playlist.find('.content .formulation .audioplay');
-	console.log(tracks);
     if (!quiet && autoplay == 1) {
         var playing = $(playlist.find('.audioplay')[current]);
         playing.addClass('playing');
