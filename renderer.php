@@ -118,18 +118,39 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
      * @return type
      */
     public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
+		$selection = 1; // Normal layout (default)
+		$tableName = 'quiz_choose_layout';
+		$dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
 
-        $question = $qa->get_question();
-        $questiontext = $question->format_questiontext($qa);
+		if ($dbman->table_exists($tableName)) { 
+			if ($DB->record_exists($tableName, array('userid' => $USER->id))) {
+				$sel = $DB->get_record($tableName, array('userid' => $USER->id));
+				$selection = $sel->layout;
+			}
+		}
 
-        $html = html_writer::start_div('', array('id' => 'turprove_wrapper'));
-        $html .= html_writer::start_div('', array('id' => 'turprove_leftcolumn'));
-        $questioninfo = new stdClass();
+		$questioninfo = new stdClass();
         $questioninfo->questionnumber = $qa->get_slot();
         $questioninfo->questionstotal = $this->get_questions_total($options->context->instanceid);
-        $html .= html_writer::div(get_string('questionxofy', 'qtype_turprove', $questioninfo),
-                'turprove_leftcolumn_quiz_info');
+        $question = $qa->get_question();
+        $questiontext = $question->format_questiontext($qa);
+		
+		$html  = html_writer::empty_tag('selection', array('id' => 'selection', 'data-layout' => $selection));
+		if ($selection == 2 && !$options->feedback) {
+	        $html .= html_writer::div(get_string('questionxofy', 'qtype_turprove', $questioninfo), 'fullscreen-quizinfo');
+		}
+        $html .= html_writer::start_div('', array('id' => 'turprove_wrapper'));
+		if ($selection == 2 && !$options->feedback) {
+			$html .= html_writer::start_div('', array('id' => 'turprove_leftcolumn', 'style' => 'display:none;'));
+		} else if ($selection == 3 && !$options->feedback) { 
+			$html .= html_writer::start_div('', array('id' => 'turprove_leftcolumnNoText'));
+		} else {
+			$html .= html_writer::start_div('', array('id' => 'turprove_leftcolumn'));
+		}
+       
+
+        $html .= html_writer::div(get_string('questionxofy', 'qtype_turprove', $questioninfo), 'turprove_leftcolumn_quiz_info');
         $html .= html_writer::start_div('', array('id' => 'turprove_question'));
         $questionsoundurl = $this->get_questionsound($question->id,
                 $question->contextid, $qa->get_slot(), $qa->get_usage_id());
@@ -137,19 +158,35 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 array('type' => 'audio/mpeg', 'src' => $questionsoundurl));
         $audiosource .= get_string('yourbrowserdoesnotsupporttheaudiotag', 'qtype_turprove');
         $html .= html_writer::tag('audio', $audiosource, array('id' => 'audiodiv'));
-        $turprovequestionaudiodiv = html_writer::div('', 'audioplay', array('data-src' => $questionsoundurl));
-        $html .= html_writer::div($turprovequestionaudiodiv, 'turprove_leftblock');
-        $turprovequestiontextspan = html_writer::span($questiontext);
-        $html .= html_writer::div($turprovequestiontextspan, 'turprove_contentblock');
+		
+
+		if ($selection != 3 || $options->feedback === 1) {
+			$turprovequestionaudiodiv = html_writer::div('', 'audioplay', array('data-src' => $questionsoundurl));
+			$html .= html_writer::div($turprovequestionaudiodiv, 'turprove_leftblock');
+			$turprovequestiontextspan = html_writer::span($questiontext);
+			$html .= html_writer::div($turprovequestiontextspan, 'turprove_contentblock');
+		} else if ($selection == 3) {
+			$turprovequestionaudiodiv = html_writer::div('', 'audioplay hide', array('data-src' => $questionsoundurl));	
+			$html .= html_writer::div($turprovequestionaudiodiv, 'turprove_leftblock');
+		}
+		
+		
         $html .= html_writer::end_div(); // #turprove_question
         $html .= html_writer::start_div('clearfix', array('id' => 'turprove_yn'));
         $html .= html_writer::div('', 'turprove_leftblock');
         $html .= html_writer::div('', 'turprove_contentblock');
         $yesnotext = get_string('yes') . ' / ' . get_string('no');
         $turproveyntextspan = html_writer::span($yesnotext);
-        $html .= html_writer::div($turproveyntextspan, 'turprove_rightblock');
+		
+		if ($selection == 3 && !$options->feedback) { 
+		    $html .= html_writer::div($turproveyntextspan, 'turprove_rightblockNoText');
+		} else {
+			$html .= html_writer::div($turproveyntextspan, 'turprove_rightblock');
+		}
+		
         $html .= html_writer::end_div(); // #turprove_yn
         $response = $question->get_response($qa);
+		sort($response);
         $useranswers = $this->get_turprove_answers($question->get_order($qa), $response);
         $ordinal = 1;
         foreach ($question->get_order($qa) as $value => $ansid) {
@@ -221,7 +258,12 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 $turproveanswerinputfields[0]['disabled'] = 'disabled'; // yes radio button
                 $turproveanswerinputfields[1]['disabled'] = 'disabled'; // no radio button
             }
-            $answerdivclass = 'turprove_answer';
+			
+			$answerdivclass = 'turprove_answer';
+			if ($selection == 3 && !$options->feedback) {
+				$answerdivclass = 'turprove_answerNoText';
+			}
+            
             if ($options->feedback) {
                 if ($correct) {
                     $answerdivclass .= ' correct';
@@ -230,21 +272,38 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 }
             }
             $html .= html_writer::start_div($answerdivclass);
-            $turproveansweraudiodiv = html_writer::div('', 'audioplay',
-                    array('data-src' => $this->get_answersound($ans,
-                            $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
-            $html .= html_writer::div($turproveansweraudiodiv, 'turprove_leftblock');
+			
+			// Show only for normal layout and in feedback mode
+			if ($selection != 3 || $options->feedback) {
+				$turproveansweraudiodiv = html_writer::div('', 'audioplay',array('data-src' => $this->get_answersound($ans, $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
+				$html .= html_writer::div($turproveansweraudiodiv, 'turprove_leftblock');
+			} else if ($selection == 3 && !$options->feedback) {
+				$turproveansweraudiodiv = html_writer::div('', 'audioplay noIcon',array('data-src' => $this->get_answersound($ans, $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
+				$html .= html_writer::div($turproveansweraudiodiv, 'turprove_leftblock');
+			}
+				
             $ordinalspan = html_writer::span($ordinal . '. ');
             $ordinal++;
-            $turproveanswertextlabel = html_writer::label(
-                    $question->make_html_inline($ordinalspan .
-                        $question->format_text($ans->answer,
-                                $ans->answerformat, $qa, 'question', 'answer', $ansid)
-                    ),
-                    $this->get_input_id($qa, $value)
-                    );
-            $html .= html_writer::start_div('turprove_answer_wrapper clearfix');
-            $html .= html_writer::div($turproveanswertextlabel, 'turprove_contentblock');
+			
+			if ($selection == 3 && !$options->feedback) {
+				$turproveanswertextlabel = html_writer::label($question->make_html_inline($ordinalspan), $this->get_input_id($qa, $value));
+			} else {
+				$turproveanswertextlabel = html_writer::label($question->make_html_inline($ordinalspan.$question->format_text($ans->answer,$ans->answerformat, $qa, 'question', 'answer', $ansid)), $this->get_input_id($qa, $value));
+			}
+
+			if ($selection == 3 && !$options->feedback)
+			{
+				$html .= html_writer::start_div('turprove_answer_wrapperNoText clearfix');
+			} else {
+				$html .= html_writer::start_div('turprove_answer_wrapper clearfix');
+			}
+   
+			if ($selection == 3 && !$options->feedback) {
+				$html .= html_writer::div($turproveanswertextlabel, 'turprove_contentblockNoText');
+			} else {
+				$html .= html_writer::div($turproveanswertextlabel, 'turprove_contentblock');
+			}
+			
             $turproveanswerfields = '';
             foreach ($turproveanswerinputfields as $turproveanswerinputfield) {
                 $turproveanswerfields .= html_writer::empty_tag('input', $turproveanswerinputfield);
@@ -252,7 +311,12 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
             if ($options->feedback) {
                 $turproveanswerfields .= html_writer::div($this->feedback_image($correct), 'turprove_feedbackimage');
             }
-            $html .= html_writer::div($turproveanswerfields, 'turprove_rightblock');
+			
+			if ($selection == 3 && !$options->feedback){
+				$html .= html_writer::div($turproveanswerfields, 'turprove_rightblockNoText');
+			} else {
+				$html .= html_writer::div($turproveanswerfields, 'turprove_rightblock');
+			}
             $html .= html_writer::end_div(); // .turprove_answer_wrapper
             if ($options->feedback && trim($ans->feedback)) {
                 $html .= html_writer::start_div('turprove_answer_feedback'); // start div.turprove_answer_feedback
@@ -269,21 +333,30 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         }
         $html .= html_writer::end_div(); // #turprove_leftcolumn
 
-        $turprovequestionimagesrc = $this->get_questionimage($question->id,
-                $question->contextid, $qa->get_slot(), $qa->get_usage_id());
-        $turprovequestionimage = html_writer::img($turprovequestionimagesrc,
-                $questiontext, array('class' => 'questionimage'));
-        $turprovequestionimagelink = html_writer::link($turprovequestionimagesrc, $turprovequestionimage,
-                array('data-lightbox' => 'imagelink', 'data-title' => $questiontext));
+        $turprovequestionimagesrc = $this->get_questionimage($question->id, $question->contextid, $qa->get_slot(), $qa->get_usage_id());
+        $turprovequestionimage = html_writer::img($turprovequestionimagesrc, $questiontext, array('class' => 'questionimage'));
+        $turprovequestionimagelink = html_writer::link($turprovequestionimagesrc, $turprovequestionimage, array('data-lightbox' => 'imagelink', 'data-title' => $questiontext));
         $turprovequestionimagediv = html_writer::div($turprovequestionimagelink);
-        $lightboxicon = html_writer::img(
-                $CFG->wwwroot . '/question/type/turprove/pix/lightboxicon.jpg', $questiontext);
-        $lightboxlink = html_writer::link($turprovequestionimagesrc, $lightboxicon,
-                array('data-lightbox' => 'iconlink', 'data-title' => $questiontext));
+		
+		if ($selection == 2 && !$options->feedback) {
+			$lightboxicon = '';
+		} else {
+			$lightboxicon = html_writer::img($CFG->wwwroot . '/question/type/turprove/pix/lightboxicon.jpg', $questiontext);
+		}
+        $lightboxlink = html_writer::link($turprovequestionimagesrc, $lightboxicon, array('data-lightbox' => 'iconlink', 'data-title' => $questiontext));
         $lighboxdiv = html_writer::div($lightboxlink, 'qtype_turprove_lightboxdiv');
-        $html .= html_writer::div($turprovequestionimagediv . $lighboxdiv, '',
-                array('id' => 'turprove_rightcolumn'));
+		
+		if ($selection == 2 && !$options->feedback) {
+			$html .= html_writer::div($turprovequestionimagediv . $lighboxdiv, '', array('id' => 'turprove_rightcolumn', 'class' => 'fullscreen-rightcolumn'));
+		} else if ($selection == 3 && !$options->feedback) {
+			$html .= html_writer::div($turprovequestionimagediv . $lighboxdiv, '', array('id' => 'turprove_rightcolumn', 'class' => 'turprove_rightcolumnNoText'));
+		} else {
+			$html .= html_writer::div($turprovequestionimagediv . $lighboxdiv, '', array('id' => 'turprove_rightcolumn'));
+		}
+		
         $html .= html_writer::end_div(); // #turprove_wrapper
+	
+		
 
         $attemptid = $DB->get_field('quiz_attempts', 'id', array('uniqueid' => $qa->get_usage_id()));
         $pageid = (int) $qa->get_slot() - 1;
@@ -296,25 +369,38 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         } else {
             $menuurl = new moodle_url($CFG->wwwroot . '/mod/quiz/summary.php', array('attempt' => $attemptid));
         }
-        $link = html_writer::link($menuurl, get_string('menu', 'qtype_turprove'),
-                array('id' => 'tf_menubutton', 'class' => 'tf_button'));
-        $html .= html_writer::div($link, 'singlebutton turforlag');
-
-        $html .= html_writer::start_div('tf_prevnextquestion');
-
+		
+		if ($selection == 2 && !$options->feedback) {
+			$html .= html_writer::start_div('', array('class' => 'fullsize'));
+			$link = html_writer::link($menuurl, get_string('menu', 'qtype_turprove'), array('id' => 'tf_menubutton', 'class' => 'tf_button singlebutton fullscreen-quizinfo'));
+			$html .= html_writer::div($link, '');
+	        $html .= html_writer::end_div();
+		} else {
+			$link = html_writer::link($menuurl, get_string('menu', 'qtype_turprove'), array('id' => 'tf_menubutton', 'class' => 'tf_button'));
+		
+			$html .= html_writer::div($link, 'singlebutton turforlag');
+		}
+		if ($selection == 3) {
+			$html .= html_writer::start_div('tf_prevnextquestion', array('class' => 'tf_prevnextquestionNoText'));	
+		} else {
+			$html .= html_writer::start_div('tf_prevnextquestion');
+		}
+			
         // Previous button
         if ($pageid) {
             if ($options->readonly) {
-                $previousurl = new moodle_url($CFG->wwwroot . '/mod/quiz/review.php',
-                        array('attempt' => $attemptid, 'page' => $pageid - 1));
-                $link = html_writer::link($previousurl, get_string('back', 'qtype_turprove'),
-                        array('id' => 'tf_previousbutton', 'class' => 'tf_button submit'));
+                $previousurl = new moodle_url($CFG->wwwroot . '/mod/quiz/review.php', array('attempt' => $attemptid, 'page' => $pageid - 1));
+                $link = html_writer::link($previousurl, get_string('back', 'qtype_turprove'),array('id' => 'tf_previousbutton', 'class' => 'tf_button submit'));
                 $html .= html_writer::div($link, 'singlebutton');
             } else {
-                $previousurl = new moodle_url($CFG->wwwroot . '/mod/quiz/attempt.php',
-                        array('attempt' => $attemptid, 'page' => $pageid - 1));
-                $link = html_writer::link($previousurl, get_string('back', 'qtype_turprove'),
-                        array('id' => 'tf_previousbutton',  'class' => 'tf_button submit'));
+                $previousurl = new moodle_url($CFG->wwwroot . '/mod/quiz/attempt.php', array('attempt' => $attemptid, 'page' => $pageid - 1));
+				
+				if ($selection == 2 && !$options->feedback) {				
+					$link = html_writer::link($previousurl, get_string('back', 'qtype_turprove'), array('id' => 'tf_previousbutton',  'class' => 'tf_button submit hide'));
+				} else {
+					$link = html_writer::link($previousurl, get_string('back', 'qtype_turprove'), array('id' => 'tf_previousbutton',  'class' => 'tf_button submit'));
+				}
+								
                 $html .= html_writer::div($link, 'singlebutton');
             }
         }
@@ -324,13 +410,20 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
             if ($pageid + 1 != $this->get_questions_total($options->context->instanceid)) {
                 $nexturl = new moodle_url($CFG->wwwroot . '/mod/quiz/review.php',
                         array('attempt' => $attemptid, 'page' => $pageid + 1));
-                $link = html_writer::link($nexturl, get_string('forward', 'qtype_turprove'),
-                        array('id' => 'tf_nextbutton', 'class' => 'tf_button'));
+						
+						if ($selection == 2 && !$options->feedback) {	
+							$link = html_writer::link($nexturl, get_string('forward', 'qtype_turprove'), array('id' => 'tf_nextbutton', 'class' => 'tf_button hide'));
+						} else {
+							$link = html_writer::link($nexturl, get_string('forward', 'qtype_turprove'), array('id' => 'tf_nextbutton', 'class' => 'tf_button'));
+						}
                 $html .= html_writer::div($link, 'singlebutton');
             }
-        } else {
-            $html .=  html_writer::empty_tag('input',
-                    array('type' => 'submit', 'value' => get_string('forward', 'qtype_turprove'), 'name' => 'next'));
+        } else {			
+			if ($selection == 2 && !$options->feedback) {
+				$html .=  html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'btnNext', 'class' => 'hide', 'name' => 'next'));
+			} else {
+				$html .=  html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'btnNext', 'value' => get_string('forward', 'qtype_turprove'), 'name' => 'next'));
+			}
         }
 
         $html .= html_writer::end_div(); // tf_prevnextquestion

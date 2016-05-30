@@ -29,17 +29,22 @@ M.qtype_turprove.init = function (Y, questiondiv, quiet, autoplay) {
     if (!$(document.body).hasClass('turprove')) {
         $(document.body).addClass('turprove');
     }
+	var elem = $("#page-navbar");
+	$('body,html').animate({scrollTop: elem.offset().top }, 500);	
 
     var initialplaythroughcomplete = false;
     var current = 0;
+	var selection = $("#selection").data("layout");
     var audio = $('#audiodiv');
     var playlist = $(questiondiv);
     var tracks = playlist.find('.content .formulation .audioplay');
+	console.log(tracks);
     if (!quiet && autoplay == 1) {
         var playing = $(playlist.find('.audioplay')[current]);
         playing.addClass('playing');
         audio[0].play();
     }
+	
     audio[0].addEventListener('ended',function(e){
         $('.audioplay').removeClass('playing');
         if (current != tracks.length - 1 && !initialplaythroughcomplete) {
@@ -53,6 +58,15 @@ M.qtype_turprove.init = function (Y, questiondiv, quiet, autoplay) {
             }, 1000);
         } else {
             initialplaythroughcomplete = true;
+			if (selection !== undefined) {
+				if (selection == 2) {
+					function nextQuestion(){
+						$("#btnNext").click();
+					}
+					setTimeout(nextQuestion, 5000);
+				}
+			}
+			
         }
     });
 

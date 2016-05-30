@@ -27,6 +27,10 @@ body#page-mod-quiz-summary div#mod_quiz_navblock {
 body.path-mod-quiz div.turprove #turprove_leftcolumn {
     width: 40%;
 }
+body.path-mod-quiz div.turprove #turprove_leftcolumnNoText {
+    width: 35%;
+	display:inline-block;
+}
 
 body.path-mod-quiz div.turprove #turprove_rightcolumn {
     min-width: 58%;
@@ -41,7 +45,7 @@ body.path-mod-quiz div.turprove div.content {
 }
 
 body.path-mod-quiz div.turprove div.formulation {
-    padding: 8px 5px 8px 5px;
+    padding: 8px 0px 8px 0px;
 }
 
 
@@ -113,17 +117,36 @@ div.turprove div.content div.formulation div.turprove_answer div.audioplay {
     margin-top: 15px;
 }
 
+.hide{
+	display: none !important;
+	width: 0px !important;
+	height:0px !important;
+	opacity: 0 !important;
+}
+
+.fullscreen-rightcolumn{
+	width: 100%;
+	text-align: center;
+	float: none !important;
+	max-width: 100% !important;
+	margin-left: 0% !important;
+}
+
 div.turprove div.content div.formulation div.audioplay {
-    background-image: url('/question/type/turprove/pix/icon_play.png');
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAMAAAC6V+0/AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowNDgwMTE3NDA3MjA2ODExQkJFMkI2NDJDM0MyRDkxMSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpBQkQ5NDQzRjVDMDcxMUUxQTg1OUY4QTk1MTU2RDAwRiIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpBQkQ5NDQzRTVDMDcxMUUxQTg1OUY4QTk1MTU2RDAwRiIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjA0ODAxMTc0MDcyMDY4MTFCQkUyQjY0MkMzQzJEOTExIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjA0ODAxMTc0MDcyMDY4MTFCQkUyQjY0MkMzQzJEOTExIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+3yFX7QAAAE5QTFRFnb6dytvKaJpofah9+/z7/v/+wNXA7/TvvdO9s82zoMCgxdjFrcit1+XXm7ybrsmu8vfyzt7OYJVgj7WP/P38aZpp+/37ZZllZplm////dCOqRAAAABp0Uk5T/////////////////////////////////wAUIgDaAAAAVklEQVR42mKQhAEOZhEYkwHG4JRgYkETFOOSEBcVQxUUEJZAEeRhAAJmCVRBCRgYEEFeRiDgQxOEUPzYBCXZmLAISgqKC7FgCEqyc7NiCiIBCgUBAgwASqokToYypz4AAAAASUVORK5CYII=');
     background-position: left top;
     cursor: pointer;
     height: 20px;
     width: 20px;
     float: left;
 }
+.noIcon{
+	background-image: none !important;
+}
+
 
 div.turprove div.content div.formulation div.audioplay.playing {
-    background-image: url('/question/type/turprove/pix/icon_pause.png');
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAMAAAC6V+0/AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowNDgwMTE3NDA3MjA2ODExQkJFMkI2NDJDM0MyRDkxMSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpBQkQ5NDQzQjVDMDcxMUUxQTg1OUY4QTk1MTU2RDAwRiIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpBQkQ5NDQzQTVDMDcxMUUxQTg1OUY4QTk1MTU2RDAwRiIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjA0ODAxMTc0MDcyMDY4MTFCQkUyQjY0MkMzQzJEOTExIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjA0ODAxMTc0MDcyMDY4MTFCQkUyQjY0MkMzQzJEOTExIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Z2XgqgAAAQ5QTFRFaptqytvKYJVgnb6dapxq9Pf0aJpo+/z7ydvJvtO+oMCgfah9m7ybaZtpzt7OYpdirsmuqMWo/f79uNC4+/37xdjF9Pj0rcmtzd3Nzd7Nt9C35u/mlLiU/v7+wNXAssuyyNrIs82z+vz68vfyp8Sn9vn26/HrvdO93une3endXpRekraSi7KLZ5pnssyypMKkpsSmjLKMx9nHxtnGbZ5t+Pr4bJ1s7/Tvts+25O3k1+XXcqFy6PDoeKV4dqR26/Lr4evhmLuYZ5ln3OjcpcOlt8+3fql+4+zj/v/+u9G7w9fDj7WPY5dj+Pv4jbON4OrgfKd8////rMes7vTu1+TXrcit/P38ZZllZplm////TKrmPwAAAFp0Uk5T//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8A0daKbwAAANJJREFUeNpiiIQBde4wEMXlGhnJABNTjGBjj4wMjBTkd4AJinBFhDMAVaoIytrpQAWVvSMggsI+GowRmgyhzEDAHQEUZAmTMogMMBQx0WeIgIFwFiEvJlbOCDEZWyRBhjAxJmObCGeLCBTBSN4g1ggJIzRBXQHWCElRVMFgJj73CH95JxSLhPmV9Nh8/dwYrBiBgAfiJA5OdmtHU15xqI8EoI53YVLzjJCG+V2ODSyowKFqxoMIEL5wJnYQra1ljxCMNBf1AFEhlkhBhwwoFAQIMAA5WW13BA66xwAAAABJRU5ErkJggg==');
     background-position: left top;
     height: 20px;
     width: 20px;
@@ -153,6 +176,14 @@ div.turprove div.content div.formulation div.audioplay.playing {
     float: right;
     margin-left: 2%;
     max-width: 48%;
+	position:relative;
+}
+
+.turprove_rightcolumnNoText {
+    float: right;
+    margin-left: 2%;
+    min-width: 48%;
+	max-width: 62% !important;
 }
 
 #turprove_rightcolumn img.questionimage {
@@ -199,11 +230,24 @@ div.turprove div.content div.formulation div.audioplay.playing {
 .turprove_contentblock label span {
     font-weight: bold;
 }
+.turprove_contentblockNoText {
+	display: inline-block !important;	
+}
+
+.turprove_contentblockNoText label span {
+    font-weight: bold;
+	font-size: 24px;
+}
 
 .turprove_rightblock {
     float: right;
     text-align: right;
     width: 20%;
+}
+
+.turprove_rightblockNoText {
+    float: right;
+    text-align: right;
 }
 
 .turprove_answer {
@@ -217,6 +261,12 @@ div.turprove div.content div.formulation div.audioplay.playing {
 .turprove_answer_wrapper {
     border-top: 2px solid #c5d5c4;
     margin-left: 30px;
+}
+.turprove_answer_wrapperNoText {
+    border-top: 2px solid #c5d5c4;
+    margin-left: 0px;
+	padding-top: 20px;
+	padding-bottom: 18px;
 }
 
 .turprove_answer_wrapper .turprove_contentblock {
@@ -245,8 +295,16 @@ div.turprove div.content div.formulation div.audioplay.playing {
     text-align: right;
 }
 
+#turprove_yn .turprove_rightblockNoText span {
+    color: #336633;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: right;
+}
+
 .qtype_turprove_lightboxdiv {
-    margin-top: 10px;
+    margin-left: -24px;
+	bottom:0;
 }
 
 .qtype_turprove_lightboxdiv a {
@@ -257,6 +315,15 @@ div.turprove div.content div.formulation div.audioplay.playing {
 .turprove_answer input[type="checkbox"] {
     margin-left: 10px;
     margin-right: 0;
+}
+
+.turprove_answerNoText input[type="radio"],
+.turprove_answerNoText input[type="checkbox"] {
+    margin-left: 20px;
+	margin-right: 10px !important;
+    margin-right: 0;
+	width:20px;
+	height:20px;
 }
 
 .turprove_feedbacktext {
@@ -288,7 +355,14 @@ div.turprove div.content div.formulation .im-controls {
 
 div.tf_prevnextquestion {
     margin: 10px auto;
-    width: 200px;
+    width: auto;
+	padding-left: 41.6%;
+}
+
+.tf_prevnextquestionNoText {
+    margin: 10px auto;
+    width: auto;
+	padding-left: 38% !important;
 }
 
 div.tf_prevnextquestion .singlebutton {
@@ -297,7 +371,7 @@ div.tf_prevnextquestion .singlebutton {
 }
 
 div.tf_prevnextquestion input[name='next'] {
-    display: block !important;
+    display: block;
     float: left;
     margin-top: 20px;
 }
@@ -306,8 +380,24 @@ a.arrow_link {
     display: none;
 }
 
+.fullscreen-quizinfo{
+	background-color: #e0f0ff;
+    color: #666666;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    padding: 5px;
+	text-align: center;
+}
+
 body.turprove .submitbtns input[name='next'] {
-    display: none !important;
+    display: none ;
+}
+.fullsize{
+	width: 100% !important;
+	text-align: center !important;
+	height: 30px;
+	margin-top:20px;
 }
 
 .submitbtns a {
@@ -320,8 +410,12 @@ body.turprove .submitbtns input[name='next'] {
 .tf_button:hover,
 .tf_button:focus,
 .tf_button:visited {
-    display: block;
+    display: inline-block;
     font-weight: normal;
     color: #fff;
-    margin-left: 5px;
+}
+
+.imagewrapper{
+	width: 95%;
+	float:right;
 }
