@@ -38,6 +38,7 @@ M.qtype_turprove.init = function (Y, questiondiv, quiet, autoplay) {
     var audio = $('#audiodiv');
     var playlist = $(questiondiv);
     var tracks = playlist.find('.content .formulation .audioplay');
+	console.log(tracks);
     if (!quiet && autoplay == 1) {
         var playing = $(playlist.find('.audioplay')[current]);
         playing.addClass('playing');
@@ -58,7 +59,7 @@ M.qtype_turprove.init = function (Y, questiondiv, quiet, autoplay) {
         } else {
             initialplaythroughcomplete = true;
 			if (selection !== undefined) {
-				if (selection == 2) {
+				if (selection == 2 || selection == 3) {
 					function nextQuestion(){
 						$("#btnNext").click();
 					}

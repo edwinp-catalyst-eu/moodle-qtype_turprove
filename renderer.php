@@ -395,7 +395,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
             } else {
                 $previousurl = new moodle_url($CFG->wwwroot . '/mod/quiz/attempt.php', array('attempt' => $attemptid, 'page' => $pageid - 1));
 				
-				if ($selection == 2 && !$options->feedback) {				
+				if ($selection == 2  || $selection == 3 && !$options->feedback) {				
 					$link = html_writer::link($previousurl, get_string('back', 'qtype_turprove'), array('id' => 'tf_previousbutton',  'class' => 'tf_button submit hide'));
 				} else {
 					$link = html_writer::link($previousurl, get_string('back', 'qtype_turprove'), array('id' => 'tf_previousbutton',  'class' => 'tf_button submit'));
@@ -419,7 +419,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 $html .= html_writer::div($link, 'singlebutton');
             }
         } else {			
-			if ($selection == 2 && !$options->feedback) {
+			if ($selection == 2 || $selection == 3 && !$options->feedback) {
 				$html .=  html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'btnNext', 'class' => 'hide', 'name' => 'next'));
 			} else {
 				$html .=  html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'btnNext', 'value' => get_string('forward', 'qtype_turprove'), 'name' => 'next'));
