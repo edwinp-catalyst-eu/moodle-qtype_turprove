@@ -187,14 +187,13 @@ div.turprove div.content div.formulation div.audioplay.playing {
 }
 
 #turprove_rightcolumn img.questionimage {
-    max-width: 100%;
-    border: 1px solid #666666;
+   max-height:75vh !important;
 }
 
 @media (max-height: 900px) {
 	#turprove_rightcolumn img.questionimage {
-    height:75vh !important;
-	width:75vw ;
+     height: initial !important;
+ 	width: initial !important;
   }
 }
 
