@@ -412,9 +412,11 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                         array('attempt' => $attemptid, 'page' => $pageid + 1));
 						
 						if ($selection == 2 && !$options->feedback) {	
+							
 							$link = html_writer::link($nexturl, get_string('forward', 'qtype_turprove'), array('id' => 'tf_nextbutton', 'class' => 'tf_button hide'));
 						} else {
-							$link = html_writer::link($nexturl, get_string('forward', 'qtype_turprove'), array('id' => 'tf_nextbutton', 'class' => 'tf_button'));
+							$link = html_writer::link($nexturl, get_string('forward', 'qtype_turprove'), array('id' => 'tf_nextbutton', 'class' => 'tf_button submit'));
+							
 						}
                 $html .= html_writer::div($link, 'singlebutton');
             }
