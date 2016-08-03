@@ -38,10 +38,10 @@ $string['shuffleanswers_help'] = 'If enabled, the order of the answers is random
 $string['thecorrectanswersare'] = 'The correct answers are:';
 $string['yourbrowserdoesnotsupporttheaudiotag'] = 'Your browser does not support the audio tag.';
 
-$string['passedHead'] = 'Congratulations...';
-$string['passedText'] = 'You passed the quiz, with the score: {$a}%! Well done!';
-$string['failedHead'] = 'Sorry, better luck next time.';
-$string['failedText'] = 'Unfortunately, you did not pass the quiz, you got {$a}% correct.';
+$string['passedHead'] = 'Tillykke...';
+$string['passedText'] = 'Du bestod prøven, du fik scoren: {$a}%! Godt gået!';
+$string['failedHead'] = 'Desværre...';
+$string['failedText'] = 'Prøv igen, du bestod ikke prøven. Din score var: {$a}%';
 
 $string['settingsShow'] = 'Show popup with result after quiz is finished';
 

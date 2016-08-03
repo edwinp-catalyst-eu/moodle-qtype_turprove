@@ -111,17 +111,30 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
      */
     protected abstract function is_right(question_answer $ans);
 
+	public function array_in_string($str, array $arr) {
+		foreach($arr as $arr_value) { //start looping the array
+			if (strpos($str,$arr_value) !== false) {
+				return true;
+			}//if $arr_value is found in $str return true
+		}
+		return false; //else return false
+	}
+	
+	
     /**
      * 
      * @param question_attempt $qa
      * @param question_display_options $options
      * @return type
      */
+	 
     public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
         global $CFG, $DB, $USER;
 		$selection = 1; // Normal layout (default)
 		$tableName = 'quiz_choose_layout';
 		$dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
+		$attemptid = $DB->get_field('quiz_attempts', 'id', array('uniqueid' => $qa->get_usage_id()));
+		$pageid = (int) $qa->get_slot() - 1;
 
 		if ($dbman->table_exists($tableName)) { 
 			if ($DB->record_exists($tableName, array('userid' => $USER->id))) {
@@ -186,9 +199,10 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
 		
         $html .= html_writer::end_div(); // #turprove_yn
         $response = $question->get_response($qa);
-		sort($response);
         $useranswers = $this->get_turprove_answers($question->get_order($qa), $response);
         $ordinal = 1;
+		
+		
         foreach ($question->get_order($qa) as $value => $ansid) {
             $ans = $question->answers[$ansid];
             $correct = null;
@@ -207,7 +221,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                 )
             );
 
-            if ($options->feedback) {
+            if ($options->feedback) {			
                 // Whether or not this question has been completed, we are requesting feedback
                 $responsesummary = $qa->get_response_summary();
                 $responsearray = explode('; ', $responsesummary);
@@ -221,7 +235,8 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                     $stringmatch = str_replace("\t", '', $stringmatch);
                     $responsearraystringmatch[] = $stringmatch;
                 }
-                if (in_array($thisanswerstringmatch, $responsearraystringmatch)) {
+
+                if ($this->array_in_string($thisanswerstringmatch, $responsearraystringmatch)) {
                     // The correct answer has been selected
                     $correct = true;
                     if ($thisanswerisyes) {
@@ -355,11 +370,6 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
 		}
 		
         $html .= html_writer::end_div(); // #turprove_wrapper
-	
-		
-
-        $attemptid = $DB->get_field('quiz_attempts', 'id', array('uniqueid' => $qa->get_usage_id()));
-        $pageid = (int) $qa->get_slot() - 1;
 
         // Menu button
         if ($options->readonly) {
@@ -428,27 +438,59 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
 			}
         }
 
-        $html .= html_writer::end_div(); // tf_prevnextquestion
-
+        $html .= html_writer::end_div(); // tf_prevnextquestion		
+		
         if ($qa->get_state() == question_state::$invalid) {
             $html .= html_writer::div($question->get_validation_error($qa->get_last_qt_data()), 'validationerror');
         }
+		
+		$endMessageHead = '';
+		$endMessageText = '';
+		$imageUrl = '';
+		
+		if ($options->feedback && $pageid == 0) {
+			
+			$config = get_config('qtype_turprove');
+			if ($config->show) {
+				
+				$attempt = $DB->get_record('quiz_attempts', array('id' => $attemptid));
+				if ($attempt->userid != $USER->id){
+					return;
+				}
+				
+				$attemptResult = ($attempt->sumgrades / $questioninfo->questionstotal) * 100;
+				
+				if ($attemptResult >= 80) {
+					$endMessageHead = get_string("passedHead", "qtype_turprove");
+					$endMessageText = get_string("passedText", "qtype_turprove", $attemptResult);
+					$imageUrl = $CFG->wwwroot . '/question/type/turprove/images/passed.png';
+					$html .= '<div hidden id="isDone"></div>';	
+				} else if ($attemptResult > 0 && $attemptResult < 80) {
+					$endMessageHead = get_string("failedHead", "qtype_turprove");
+					$endMessageText = get_string("failedText", "qtype_turprove", $attemptResult);
+					$imageUrl = $CFG->wwwroot . '/question/type/turprove/images/failed.png';
+					$html .= '<div hidden id="isDone"></div>';	
+				}
+			}
+		}
 
         $this->page->requires->js_init_call(
             'M.qtype_turprove.init',
             array(
                 '#q' . $qa->get_slot(),
                 $options->readonly,
-                $question->autoplay
+                $question->autoplay,
+				$endMessageHead,
+				$endMessageText,
+				$imageUrl
             ),
             false,
             array(
                 'name'     => 'qtype_turprove',
-                'fullpath' => '/question/type/turprove/module.js',
+                'fullpath' => '/question/type/turprove/js/module.js',
                 'requires' => array('base', 'node', 'event', 'overlay'),
             )
         );
-
         return $html;
     }
 }
@@ -465,9 +507,18 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
         global $CFG;
 
         $js = new moodle_url($CFG->wwwroot . '/question/type/turprove/lightbox/lightbox-plus-jquery.min.js');
+		$jsAlert = new moodle_url($CFG->wwwroot . '/question/type/turprove/js/sweetalert.min.js');
+		
         $this->page->requires->js($js);
+		$this->page->requires->js($jsAlert);
+		
         $stylesheet = new moodle_url($CFG->wwwroot . '/question/type/turprove/lightbox/lightbox.css');
+		$stylesheetMain = new moodle_url($CFG->wwwroot . '/question/type/turprove/css/styles.css');
+		$stylesheetAlert = new moodle_url($CFG->wwwroot . '/question/type/turprove/css/sweetalert.css');
+		
         $this->page->requires->css($stylesheet);
+		$this->page->requires->css($stylesheetMain);
+		$this->page->requires->css($stylesheetAlert);
     }
 
     protected function get_input_type() {

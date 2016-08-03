@@ -15,20 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Serve question type files
+ * Internal library of functions for module quizgame
  *
- * @since      Moodle 2.0
- * @package    qtype_turprove
+ * All the quizgame specific functions, needed to implement the module
+ * logic, should go here. Never include this file from your lib.php!
+ *
+ * @package    mod_quizgame
+ * @copyright  2014 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 defined('MOODLE_INTERNAL') || die();
-require_once(dirname(dirname(__DIR__)) . '/config.php');
- 
- 
-function qtype_turprove_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
-    global $CFG;
-    require_once($CFG->libdir . '/questionlib.php');
-    question_pluginfile($course, $context, 'qtype_turprove', $filearea, $args, $forcedownload, $options);
-}
+
