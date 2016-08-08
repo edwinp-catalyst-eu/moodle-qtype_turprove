@@ -170,6 +170,7 @@ div.turprove div.content div.formulation div.audioplay.playing {
     font-weight: bold;
     margin-bottom: 20px;
     padding: 5px;
+	width:100%;
 	text-align: left !important;
 }
 
