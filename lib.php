@@ -24,9 +24,8 @@
 
 
 defined('MOODLE_INTERNAL') || die();
-require_once(dirname(dirname(__DIR__)) . '/config.php');
- 
- 
+require_once(dirname(dirname(dirname(__DIR__))) . '/config.php');
+
 function qtype_turprove_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
     global $CFG;
     require_once($CFG->libdir . '/questionlib.php');
