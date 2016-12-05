@@ -202,7 +202,6 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         $useranswers = $this->get_turprove_answers($question->get_order($qa), $response);
         $ordinal = 1;
 		
-		
         foreach ($question->get_order($qa) as $value => $ansid) {
             $ans = $question->answers[$ansid];
             $correct = null;
@@ -303,7 +302,9 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
 			if ($selection == 3 && !$options->feedback) {
 				$turproveanswertextlabel = html_writer::label($question->make_html_inline($ordinalspan), $this->get_input_id($qa, $value));
 			} else {
-				$turproveanswertextlabel = html_writer::label($question->make_html_inline($ordinalspan.$question->format_text($ans->answer,$ans->answerformat, $qa, 'question', 'answer', $ansid)), $this->get_input_id($qa, $value));
+				$strip = strip_tags($ans->answer); // Strip HTML Tags from question answers
+				$turproveanswertextlabel = html_writer::label($question->make_html_inline($ordinalspan.$question->format_text($strip,$ans->answerformat, $qa, 'question', 'answer', $ansid)), $this->get_input_id($qa, $value));
+				//echo $turproveanswertextlabel;
 			}
 
 			if ($selection == 3 && !$options->feedback)
