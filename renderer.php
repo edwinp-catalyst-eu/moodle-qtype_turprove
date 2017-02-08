@@ -170,16 +170,19 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
         $audiosource = html_writer::tag('source', '',
                 array('type' => 'audio/mpeg', 'src' => $questionsoundurl));
         $audiosource .= get_string('yourbrowserdoesnotsupporttheaudiotag', 'qtype_turprove');
-        $html .= html_writer::tag('audio', $audiosource, array('id' => 'audiodiv'));
+        $html .= html_writer::tag('audio', '', array('id' => 'audiodiv'));
 		
 
 		if ($selection != 3 || $options->feedback === 1) {
-			$turprovequestionaudiodiv = html_writer::div('', 'audioplay', array('data-src' => $questionsoundurl));
+			$turprovequestionaudiodiv = html_writer::div('', 'audioplay', array('data-qid' => '0' ,'data-src' => $questionsoundurl));
 			$html .= html_writer::div($turprovequestionaudiodiv, 'turprove_leftblock');
-			$turprovequestiontextspan = html_writer::span($questiontext);
+			//$turprovequestiontextspan = html_writer::start_div('', array('id' => ''));
+		    $turprovequestiontextspan = html_writer::div($questiontext, '', array('id' => 'questionW'));
+			//$turprovequestiontextspan .= html_writer::();
+			//$turprovequestiontextspan .= html_writer::end_div();
 			$html .= html_writer::div($turprovequestiontextspan, 'turprove_contentblock');
 		} else if ($selection == 3) {
-			$turprovequestionaudiodiv = html_writer::div('', 'audioplay hide', array('data-src' => $questionsoundurl));	
+			$turprovequestionaudiodiv = html_writer::div('', 'audioplay hide', array('data-qid' => '0' ,'data-src' => $questionsoundurl));	
 			$html .= html_writer::div($turprovequestionaudiodiv, 'turprove_leftblock');
 		}
 		
@@ -285,18 +288,19 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
                     $answerdivclass .= ' incorrect';
                 }
             }
-            $html .= html_writer::start_div($answerdivclass);
+            $html .= html_writer::start_div($answerdivclass,array('id' => $ansid));
 			
 			// Show only for normal layout and in feedback mode
 			if ($selection != 3 || $options->feedback) {
-				$turproveansweraudiodiv = html_writer::div('', 'audioplay',array('data-src' => $this->get_answersound($ans, $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
+				$turproveansweraudiodiv = html_writer::div('', 'audioplay',array('data-qid' => $ansid, 'data-src' => $this->get_answersound($ans, $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
 				$html .= html_writer::div($turproveansweraudiodiv, 'turprove_leftblock');
 			} else if ($selection == 3 && !$options->feedback) {
-				$turproveansweraudiodiv = html_writer::div('', 'audioplay noIcon',array('data-src' => $this->get_answersound($ans, $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
+				$turproveansweraudiodiv = html_writer::div('', 'audioplay noIcon',array('data-qid' => $ansid,'data-src' => $this->get_answersound($ans, $question->contextid, $qa->get_slot(), $qa->get_usage_id())));
 				$html .= html_writer::div($turproveansweraudiodiv, 'turprove_leftblock');
 			}
 				
-            $ordinalspan = html_writer::span($ordinal . '. ');
+			$ordinalspan = html_writer::start_span('count') . $ordinal . '. ' . html_writer::end_span();
+            //$ordinalspan = html_writer::span($ordinal . '. ');
             $ordinal++;
 			
 			if ($selection == 3 && !$options->feedback) {
@@ -347,6 +351,7 @@ abstract class qtype_turprove_renderer_base extends qtype_with_combined_feedback
             }
             $html .= html_writer::end_div(); // .turprove_answer
         }
+		
         $html .= html_writer::end_div(); // #turprove_leftcolumn
 
         $turprovequestionimagesrc = $this->get_questionimage($question->id, $question->contextid, $qa->get_slot(), $qa->get_usage_id());
@@ -509,9 +514,12 @@ class qtype_turprove_multi_renderer extends qtype_turprove_renderer_base {
 
         $js = new moodle_url($CFG->wwwroot . '/question/type/turprove/lightbox/lightbox-plus-jquery.min.js');
 		$jsAlert = new moodle_url($CFG->wwwroot . '/question/type/turprove/js/sweetalert.min.js');
+		$speech = new moodle_url('http://speech.leseweb.dk/script/gylir66fj7slp2kkvx9v.js');
+
 		
         $this->page->requires->js($js);
 		$this->page->requires->js($jsAlert);
+		$this->page->requires->js($speech);
 		
         $stylesheet = new moodle_url($CFG->wwwroot . '/question/type/turprove/lightbox/lightbox.css');
 		$stylesheetMain = new moodle_url($CFG->wwwroot . '/question/type/turprove/css/styles.css');

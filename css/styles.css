@@ -237,8 +237,13 @@ div.turprove div.content div.formulation div.audioplay.playing {
 }
 
 .turprove_contentblock label span {
-    font-weight: bold;
+  /*  font-weight: bold;*/
 }
+
+.turprove_contentblock label .count {
+    font-weight: bold !important;
+}
+
 .turprove_contentblockNoText {
 	display: inline-block !important;	
 }
@@ -429,4 +434,6 @@ body.turprove .submitbtns input[name='next'] {
 	float:right;
 }
 
-.
+.vFact_highlighted_to_read{
+	font-weight: normal !important;
+}
